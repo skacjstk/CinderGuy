@@ -28,6 +28,7 @@ public:
 
 public:
 	virtual void DoAction() {};
+	virtual void DoStrongAction() {};	// 강공격
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
 

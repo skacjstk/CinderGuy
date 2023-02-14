@@ -4,6 +4,12 @@
 #include "UObject/NoExportTypes.h"
 #include "CActionObjectContainer.generated.h"
 
+UENUM(BlueprintType)
+enum class EStrongActionEndType : uint8
+{
+	Once, Doing, MAX
+};
+
 /*
 @ struct Equipment
 */
@@ -22,14 +28,13 @@ public:
 		bool bCanMove = true;
 	UPROPERTY(EditAnywhere)
 		bool bPawnControl = true;	// LookForward: true라면, 정면 고정, orientRotation을 사용하지 않을 것
-
 };
-
 /*
 @ struct DoAction
 */
+
 USTRUCT(BlueprintType)
-struct FDoActionData : public FEquipmentData
+struct FDoActionData : public FEquipmentData	// 상속받았기에, DataAsset에선 아래쪽에 얘가 보임
 {
 	GENERATED_BODY()
 public:
@@ -48,6 +53,19 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ACThrow> ThrowClass;	// 액션 수행시 던져질 아이템
 };
+
+/*
+@ struct DoStrongAction
+*/
+USTRUCT(BlueprintType)
+struct FDoStrongActionData : public FDoActionData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		EStrongActionEndType EndType;	// 강공격이 단타인지, 아닌지
+};
+
 /*------------------------------------------------------------------------
 * @ class Action Object Container
 ------------------------------------------------------------------------*/

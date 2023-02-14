@@ -15,6 +15,7 @@ class GAME_API ACDoAction_Melee : public ACDoAction
 public:
 	virtual void DoAction()			override;
 	virtual void Begin_DoAction()	override;
+	virtual void DoStrongAction()	override;
 	virtual void End_DoAction()		override;
 
 	// 부모에서 UFUNCTION() 이면, 자식은 빠져도 됨.

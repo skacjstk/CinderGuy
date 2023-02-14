@@ -235,12 +235,14 @@ void ACPlayer::OnDoAction()
 }
 void ACPlayer::OnDoStrongAction()
 {
+	CheckFalse(State->IsStrongActionMode());
 	CLog::Print("OnDoStrongAction", -1, 1.0f, FColor::Cyan);
-//	Action->OnDoStrongAction();
+	Action->DoStrongAction();
 }
 void ACPlayer::OffDoAction()
 {
-
+	CheckFalse(State->IsStrongActionMode());
+	// Todo: EndDoStrongAction: Repeat를 반복하다가, 여기서 bool 변수가 바뀌면 내부 몽타주 재생이 반복 될 때 End를 호출하게 바꾸기 
 }
 
 void ACPlayer::OnAim()

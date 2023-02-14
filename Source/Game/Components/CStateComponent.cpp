@@ -44,6 +44,11 @@ void UCStateComponent::SetActionMode()
 	ChangeType(EStateType::Action);
 }
 
+void UCStateComponent::SetStrongActionMode()
+{
+	ChangeType(EStateType::StrongAction);	
+}
+
 void UCStateComponent::SetEquipMode()
 {
 	ChangeType(EStateType::Equip);

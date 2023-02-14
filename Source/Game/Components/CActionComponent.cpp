@@ -78,6 +78,19 @@ void UCActionComponent::DoAction()
 	}
 }
 
+void UCActionComponent::DoStrongAction()
+{
+	CheckTrue(IsUnarmedMode());
+	// Todo: StrongAction 상태일 경우 CheckTrue()
+	if (!!DataObjects[(int32)Type])
+	{
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->DoStrongAction();
+	}
+}
+
 void UCActionComponent::DoOnAim()
 {
 	if (!!DataObjects[(int32)Type])

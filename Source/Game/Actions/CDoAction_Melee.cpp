@@ -40,6 +40,11 @@ void ACDoAction_Melee::Begin_DoAction()
 	else
 		End_DoAction();
 }
+void ACDoAction_Melee::DoStrongAction()
+{
+	Super::DoStrongAction();
+	// 강공격은 콤보가 없다.
+}
 
 void ACDoAction_Melee::End_DoAction()
 {
