@@ -8,7 +8,6 @@ void ACDoAction_Melee::DoAction()
 {
 	Super::DoAction();
 	CheckFalse(Datas.Num() > 0);
-
 	if (bCanCombo == true)
 	{
 		bCanCombo = false;
@@ -16,6 +15,8 @@ void ACDoAction_Melee::DoAction()
 	}
 	CheckFalse(State->IsIdleMode());
 	State->SetActionMode();
+
+	IsStrongAction = false;
 
 	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
@@ -43,7 +44,22 @@ void ACDoAction_Melee::Begin_DoAction()
 void ACDoAction_Melee::DoStrongAction()
 {
 	Super::DoStrongAction();
-	// 강공격은 콤보가 없다.
+
+	IsStrongAction = true;
+
+	State->SetStrongActionMode();
+	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
+	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
+}
+
+void ACDoAction_Melee::EndDoStrongAction()
+{
+	Super::EndDoStrongAction();
+
+	IsStrongAction = true;	// 후속타 나가는중임
+
+	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
+	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
 void ACDoAction_Melee::End_DoAction()
@@ -68,12 +84,31 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	int32 before = HittedCharacters.Num();
 	HittedCharacters.AddUnique(InOtherCharacter);
 
+	TSubclassOf<UCameraShake> shake;
+
 	// HitStop
-	if (FMath::IsNearlyZero(Datas[ComboCount].HitStop) == false)
+	if (IsStrongAction == true)
 	{
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
-		UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * Datas[ComboCount].HitStop, false);
+		// 강공격 HitStop
+		if (FMath::IsNearlyZero(StrongData.HitStop) == false)
+		{
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
+			UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * StrongData.HitStop, false);
+		}
+		// 강공격 CameraShake
+		shake = StrongData.ShakeClass;
 	}
+	else
+	{	// 일반공격 HitStop
+		if (FMath::IsNearlyZero(Datas[ComboCount].HitStop) == false)
+		{
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
+			UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * Datas[ComboCount].HitStop, false);
+		}
+		// 일반공격 CameraShake
+		shake = Datas[ComboCount].ShakeClass;
+	}
+
 
 	//Play Particle
 	UParticleSystem* hitEffect = Datas[ComboCount].Effect;
@@ -85,7 +120,7 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	}
 
 	//Camera Shake
-	TSubclassOf<UCameraShake> shake = Datas[ComboCount].ShakeClass;
+	// Strong여부는 위에서 설정
 	if (!!shake)
 	{
 		APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -99,7 +134,15 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	if (before < HittedCharacters.Num())
 	{
 		FDamageEvent e;
-		InOtherCharacter->TakeDamage(Datas[ComboCount].Power, e, InAttacker->GetController(), InCauser);
+		if (IsStrongAction == true)	//StrongAction 피해 주기
+		{
+			InOtherCharacter->TakeDamage(StrongData.Power, e, InAttacker->GetController(), InCauser);
+		}
+		else // 일반공격 피해 주기
+		{
+			InOtherCharacter->TakeDamage(Datas[ComboCount].Power, e, InAttacker->GetController(), InCauser);
+		}
+
 	}
 }
 

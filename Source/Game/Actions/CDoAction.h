@@ -17,6 +17,7 @@ public:
 	ACDoAction();
 
 	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
+	FORCEINLINE void SetStrongData(FDoStrongActionData InData) { StrongData = InData; }
 	FORCEINLINE void SetEquipped(const bool* InEquipped) { bEquipped = InEquipped; }
 protected:
 	// Called when the game starts or when spawned
@@ -29,6 +30,7 @@ public:
 public:
 	virtual void DoAction() {};
 	virtual void DoStrongAction() {};	// 강공격
+	virtual void EndDoStrongAction() {};
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
 
@@ -50,5 +52,6 @@ protected:
 		class UCStatusComponent* Status;
 
 	TArray<FDoActionData> Datas;
+	FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
 	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };

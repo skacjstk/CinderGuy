@@ -13,10 +13,11 @@ class GAME_API ACDoAction_Melee : public ACDoAction
 	GENERATED_BODY()
 
 public:
-	virtual void DoAction()			override;
-	virtual void Begin_DoAction()	override;
-	virtual void DoStrongAction()	override;
-	virtual void End_DoAction()		override;
+	virtual void DoAction()				override;
+	virtual void Begin_DoAction()		override;
+	virtual void DoStrongAction()		override;
+	virtual void EndDoStrongAction()	override;
+	virtual void End_DoAction()			override;
 
 	// 부모에서 UFUNCTION() 이면, 자식은 빠져도 됨.
 	virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter)override;
@@ -33,9 +34,10 @@ public: //노티파이 호출
 
 private:
 	int32 ComboCount = 0;	// 평타 콤보
-	int32 SamshCount;	// 커스텀: 언젠가 스매시 만들 것comboCount * SmashCount 곱으로 스매시 데이터 접근 
+//	int32 SamshCount;	// 커스텀: 언젠가 스매시 만들 것comboCount * SmashCount 곱으로 스매시 데이터 접근 
 	bool bCanCombo;	//콤보 허용구간 켜고 끄기
 	bool bSucceed;	//콤보 성공여부
+	bool IsStrongAction = false;	// 오직 HitStop 변수 파악용
 	TArray<class ACharacter*> HittedCharacters;	// 다단히트 방지용 타격대상 등록 
 
 };

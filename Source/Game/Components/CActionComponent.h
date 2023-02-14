@@ -53,6 +53,7 @@ public:
 
 	void DoAction();
 	void DoStrongAction();	// 꾹 눌러서 사용하는 강공격
+	void EndDoStrongAction();	// 강공격 해제 대기
 
 	void DoOnAim();		// 우클릭 누르기
 	void DoOffAim();	// 우클릭 떼기

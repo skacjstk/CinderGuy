@@ -42,6 +42,8 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACDoAction>(DoActionClass, transform, InOwnerCharacter);
 		DoAction->AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 		DoAction->SetDatas(DoActionDatas);
+		// StrongData 넣기 ( DoAction 하위개념이라 Subclass가 필요 없음
+		DoAction->SetStrongData(StrongData);
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
@@ -57,6 +59,8 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 			Attachment->OnAttachmentBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentBeginOverlap);
 			Attachment->OnAttachmentEndOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentEndOverlap);
 		}
+
+
 	}//end if
 
 	*OutObject = NewObject<UCActionObjectContainer>();

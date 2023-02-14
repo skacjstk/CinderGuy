@@ -33,5 +33,9 @@ public:
 		TSubclassOf<class ACDoAction> DoActionClass;	// 무기 내부 공격 몽타주 및 데미지 담당
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoAction")
 		TArray<FDoActionData> DoActionDatas;
+
+	// DoStrongAction
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoStrongAction")
+		FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
 		
 };

@@ -13,7 +13,8 @@ void UCAnimNotifyState_Collision::NotifyBegin(class USkeletalMeshComponent* Mesh
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
 	CheckNull(MeshComp);	
-	
+
+	CheckNull(MeshComp->GetOwner());
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(action);
 
@@ -31,6 +32,7 @@ void UCAnimNotifyState_Collision::NotifyEnd(USkeletalMeshComponent* MeshComp, UA
 	Super::NotifyEnd(MeshComp, Animation);
 	CheckNull(MeshComp);
 
+	CheckNull(MeshComp->GetOwner());
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(action);
 

@@ -53,7 +53,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ACThrow> ThrowClass;	// 액션 수행시 던져질 아이템
 };
-
 /*
 @ struct DoStrongAction
 */
@@ -64,6 +63,8 @@ struct FDoStrongActionData : public FDoActionData
 public:
 	UPROPERTY(EditAnywhere)
 		EStrongActionEndType EndType;	// 강공격이 단타인지, 아닌지
+	UPROPERTY(EditAnywhere)
+		FName EndSection = L"End";
 };
 
 /*------------------------------------------------------------------------
