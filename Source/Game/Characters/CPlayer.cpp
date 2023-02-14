@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "GameFramework/PlayerInput.h"
 
 ACPlayer::ACPlayer()
 {
@@ -77,15 +78,30 @@ void ACPlayer::BeginPlay()
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// 상태 등록
 
 	Action->SetUnarmedMode();
-
-
+	Controller = Cast<APlayerController>(GetController());
+	// "Action" 매핑된 키 값 가져오기
+	if (!!Controller)
+	{
+		const TArray<FInputActionKeyMapping>& mapping = Controller->PlayerInput->GetKeysForAction("Action");
+		for (const FInputActionKeyMapping map : mapping) {		
+			if (map.ActionName.IsEqual("Action")) {
+				ActionMapKey = map.Key;
+			}
+		}
+	}
 
 }
 
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	// 있는 것들 전부 가져오기
 
+
+	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+	{
+		OnDoStrongAction();
+	}
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -109,7 +125,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Warp", EInputEvent::IE_Pressed, this, &ACPlayer::OnWarp);
 
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Pressed, this, &ACPlayer::OnDoAction);
-
+	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Repeat, this, &ACPlayer::OnDoStrongAction);	// 강공격
+	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Released, this, &ACPlayer::OffDoAction);	// 강공격 해제용
+	
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 
@@ -214,6 +232,15 @@ void ACPlayer::OnWarp()
 void ACPlayer::OnDoAction()
 {
 	Action->DoAction();
+}
+void ACPlayer::OnDoStrongAction()
+{
+	CLog::Print("OnDoStrongAction", -1, 1.0f, FColor::Cyan);
+//	Action->OnDoStrongAction();
+}
+void ACPlayer::OffDoAction()
+{
+
 }
 
 void ACPlayer::OnAim()
