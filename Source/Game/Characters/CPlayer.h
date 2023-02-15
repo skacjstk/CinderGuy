@@ -37,6 +37,10 @@ private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 
+	// 강공격을 구현하기 위한 
+	APlayerController* Controller;
+	FKey ActionMapKey;	// "Action" 과 연결된 키 구하기
+
 	UPROPERTY(EditDefaultsOnly)
 		uint8 TeamID = 0;
 protected:
@@ -65,8 +69,11 @@ private:
 	void OnTwoHand();
 	void OnMagicBall();
 	void OnWarp();
+	void OnKatana();
 
-	void OnDoAction();
+	void OnDoAction();	// 좌클릭
+	void OnDoStrongAction(); // 좌클릭 0.5초 이상 누르기
+	void OffDoAction();	// 강공격 해제용
 
 	void OnAim();	// 우클릭
 	void OffAim();

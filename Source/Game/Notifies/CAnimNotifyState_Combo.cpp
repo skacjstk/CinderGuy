@@ -13,6 +13,7 @@ void UCAnimNotifyState_Combo::NotifyBegin(class USkeletalMeshComponent* MeshComp
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
 	CheckNull(MeshComp);
 
+	CheckNull(MeshComp->GetOwner());	// 임시조치
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(action);
 
@@ -25,6 +26,7 @@ void UCAnimNotifyState_Combo::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	Super::NotifyEnd(MeshComp, Animation);
 	CheckNull(MeshComp);
 
+	CheckNull(MeshComp->GetOwner());	// 임시조치
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(action);
 

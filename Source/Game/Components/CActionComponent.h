@@ -7,7 +7,7 @@
 UENUM(BlueprintType)
 enum class EActionType : uint8
 {
-	Unarmed, Fist, OneHand, TwoHand, Warp, MagicBall, Storm, Max
+	Unarmed, Fist, OneHand, TwoHand, Warp, MagicBall, Storm, Katana, Max
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActionTypeChanged, EActionType, InPrevType, EActionType, InNewType);
@@ -41,6 +41,8 @@ public:
 		FORCEINLINE bool IsMagicBallMode() { return Type == EActionType::MagicBall; }
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE bool IsStormMode() { return Type == EActionType::Storm; }
+	UFUNCTION(BlueprintPure)
+		FORCEINLINE bool IsKatanaMode() { return Type == EActionType::Katana; }
 public:
 	// ActionType Set								 
 	UFUNCTION(BlueprintCallable) void SetUnarmedMode();								 
@@ -50,8 +52,11 @@ public:
 	UFUNCTION(BlueprintCallable) void SetWarpMode();								 
 	UFUNCTION(BlueprintCallable) void SetMagicBallMode();								 
 	UFUNCTION(BlueprintCallable) void SetStormMode();
+	UFUNCTION(BlueprintCallable) void SetKatanaMode();
 
 	void DoAction();
+	void DoStrongAction();	// 꾹 눌러서 사용하는 강공격
+	void EndDoStrongActionWait();	// 강공격 해제 대기
 
 	void DoOnAim();		// 우클릭 누르기
 	void DoOffAim();	// 우클릭 떼기

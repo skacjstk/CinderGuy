@@ -55,6 +55,11 @@ void UCActionComponent::SetWarpMode()
 	SetMode(EActionType::Warp);
 }
 
+void UCActionComponent::SetKatanaMode()
+{
+	SetMode(EActionType::Katana);
+}
+
 void UCActionComponent::SetMagicBallMode()
 {
 	SetMode(EActionType::MagicBall);
@@ -78,6 +83,30 @@ void UCActionComponent::DoAction()
 	}
 }
 
+void UCActionComponent::DoStrongAction()
+{
+	CheckTrue(IsUnarmedMode());
+	// Todo: StrongAction 상태일 경우 CheckTrue()
+	if (!!DataObjects[(int32)Type])
+	{
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->DoStrongAction();
+	}
+}
+
+void UCActionComponent::EndDoStrongActionWait()
+{
+	CheckTrue(IsUnarmedMode());
+	if (!!DataObjects[(int32)Type])
+	{
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->EndDoStrongActionWait();	// 강공격 해제 대기
+	}
+}
 void UCActionComponent::DoOnAim()
 {
 	if (!!DataObjects[(int32)Type])

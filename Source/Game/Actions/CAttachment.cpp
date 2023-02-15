@@ -37,6 +37,11 @@ void ACAttachment::AttachTo(FName InSocketName)
 	this->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);
 }
 
+void ACAttachment::AttachToMesh(FName InSocketName, UStaticMeshComponent* AttachMesh)
+{
+	AttachMesh->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);	
+}
+
 void ACAttachment::AttachToCollision(USceneComponent* InComponent, FName InSocketName)
 {
 	InComponent->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);
