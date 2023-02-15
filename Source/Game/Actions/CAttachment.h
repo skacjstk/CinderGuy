@@ -27,13 +27,15 @@ public:
 	void OffCollisions();
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void OnEquip(); 
+		void OnEquip();				// CActionData 에서 바인딩
 	UFUNCTION(BlueprintImplementableEvent)	// 우리 Equipment Delegate 가 이런 타입
 		void OnUnequip();
 
 protected:
 	UFUNCTION(BlueprintCallable)
 		void AttachTo(FName InSocketName);
+	UFUNCTION(BlueprintCallable)
+		void AttachToMesh(FName InSocketName, UStaticMeshComponent* AttachMesh);
 	UFUNCTION(BlueprintCallable)
 		void AttachToCollision(class USceneComponent* InComponent, FName InSocketName);
 

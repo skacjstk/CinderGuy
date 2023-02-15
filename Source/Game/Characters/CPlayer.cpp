@@ -124,6 +124,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("MagicBall", EInputEvent::IE_Pressed, this, &ACPlayer::OnMagicBall);
 	PlayerInputComponent->BindAction("Warp", EInputEvent::IE_Pressed, this, &ACPlayer::OnWarp);
 
+	PlayerInputComponent->BindAction("Katana", EInputEvent::IE_Pressed, this, &ACPlayer::OnKatana);
+
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Pressed, this, &ACPlayer::OnDoAction);
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Repeat, this, &ACPlayer::OnDoStrongAction);	// 강공격
 	PlayerInputComponent->BindAction("Action", EInputEvent::IE_Released, this, &ACPlayer::OffDoAction);	// 강공격 해제용
@@ -229,6 +231,11 @@ void ACPlayer::OnWarp()
 	CheckFalse(State->IsIdleMode());
 	Action->SetWarpMode();
 }
+void ACPlayer::OnKatana()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetKatanaMode();
+}
 void ACPlayer::OnDoAction()
 {
 	Action->DoAction();
@@ -236,14 +243,13 @@ void ACPlayer::OnDoAction()
 void ACPlayer::OnDoStrongAction()
 {
 	CheckTrue(State->IsStrongActionMode());
+	CheckTrue(State->IsEndingStrongActionMode());	// StrongAction 관련 상태일 경우 수행하지 않음
 	Action->DoStrongAction();
 }
 void ACPlayer::OffDoAction()
 {
-	CheckFalse(State->IsStrongActionMode());
-	CLog::Print("CPlayer::OffDoStrongAction", -1, 1.0f, FColor::Cyan);
-	Action->EndDoStrongAction();
-	// Todo: EndDoStrongAction: Repeat를 반복하다가, 여기서 bool 변수가 바뀌면 내부 몽타주 재생이 반복 될 때 End를 호출하게 바꾸기 
+	CheckTrue(State->IsEndingStrongActionMode());
+	Action->EndDoStrongActionWait();	// Ending 재생 대기
 }
 
 void ACPlayer::OnAim()

@@ -17,6 +17,8 @@ public:
 	virtual void Begin_DoAction()		override;
 	virtual void DoStrongAction()		override;
 	virtual void EndDoStrongAction()	override;
+	virtual void CheckEndDoStrongAction() override;		// 노티파이 호출
+	virtual void EndDoStrongActionWait()	override;
 	virtual void End_DoAction()			override;
 
 	// 부모에서 UFUNCTION() 이면, 자식은 빠져도 됨.
@@ -38,6 +40,7 @@ private:
 	bool bCanCombo;	//콤보 허용구간 켜고 끄기
 	bool bSucceed;	//콤보 성공여부
 	bool IsStrongAction = false;	// 오직 HitStop 변수 파악용
+	bool NextEndStrongAction = false;	// StrongAction의 End 파트를 재생할 여부를 결정할 변수
 	TArray<class ACharacter*> HittedCharacters;	// 다단히트 방지용 타격대상 등록 
 
 };

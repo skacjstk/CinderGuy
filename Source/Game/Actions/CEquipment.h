@@ -48,14 +48,6 @@ public:
 		void Unequip();	// 장착 몽타주 재생 함수 _Implementation
 	void Unequip_Implementation();
 
-//	UFUNCTION(BlueprintNativeEvent)
-//		void Begin_UnEquip();
-//	void Begin_Equip_Implementation();
-//
-//	UFUNCTION(BlueprintNativeEvent)
-//		void End_UnEquip();
-//	void End_Equip_Implementation();
-
 public:
 	UPROPERTY(BlueprintAssignable)
 		FEquipmentDelegate OnEquipmentDelegate;

@@ -30,7 +30,9 @@ public:
 public:
 	virtual void DoAction() {};
 	virtual void DoStrongAction() {};	// 강공격
-	virtual void EndDoStrongAction() {};
+	virtual void EndDoStrongAction() {};		// 강공격의 Ending 재생
+	virtual void CheckEndDoStrongAction() {};	// 조건 만족시 EndDoStrongAction 재생
+	virtual void EndDoStrongActionWait() {};	// 뗏을 때 강공격 끝부분 재생 대기 
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
 

@@ -69,6 +69,7 @@ private:
 	void OnTwoHand();
 	void OnMagicBall();
 	void OnWarp();
+	void OnKatana();
 
 	void OnDoAction();	// 좌클릭
 	void OnDoStrongAction(); // 좌클릭 0.5초 이상 누르기

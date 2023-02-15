@@ -49,6 +49,11 @@ void UCStateComponent::SetStrongActionMode()
 	ChangeType(EStateType::StrongAction);	
 }
 
+void UCStateComponent::SetEndingStrongActionMode()
+{
+	ChangeType(EStateType::EndingStrongAction);
+}
+
 void UCStateComponent::SetEquipMode()
 {
 	ChangeType(EStateType::Equip);

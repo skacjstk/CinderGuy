@@ -46,6 +46,7 @@ void ACDoAction_Melee::DoStrongAction()
 	Super::DoStrongAction();
 
 	IsStrongAction = true;
+	NextEndStrongAction = false;	// 일단은 false 로 
 
 	State->SetStrongActionMode();
 	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
@@ -58,8 +59,25 @@ void ACDoAction_Melee::EndDoStrongAction()
 
 	IsStrongAction = true;	// 후속타 나가는중임
 
+	State->SetEndingStrongActionMode();
 	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
+}
+
+void ACDoAction_Melee::CheckEndDoStrongAction()
+{
+	Super::CheckEndDoStrongAction();
+	if (NextEndStrongAction)
+	{
+		EndDoStrongAction();
+	}
+}
+
+void ACDoAction_Melee::EndDoStrongActionWait()
+{
+	Super::EndDoStrongActionWait();
+	// 노티파이 체크용 변수를 true로 만든다
+	NextEndStrongAction = true;
 }
 
 void ACDoAction_Melee::End_DoAction()
@@ -71,7 +89,10 @@ void ACDoAction_Melee::End_DoAction()
 	
 	ComboCount = 0;
 	DisableCombo();
+
 	bSucceed = false;
+	IsStrongAction = false; 
+	NextEndStrongAction = false;
 
 	State->SetIdleMode();
 	Status->SetMove();
@@ -142,7 +163,6 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 		{
 			InOtherCharacter->TakeDamage(Datas[ComboCount].Power, e, InAttacker->GetController(), InCauser);
 		}
-
 	}
 }
 
