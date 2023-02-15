@@ -109,8 +109,6 @@ void UCActionComponent::SetMode(EActionType InNewType)
 	}
 	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
 	{
-		CLog::Print((int32)InNewType);
-
 		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
 			DataObjects[(int32)Type]->GetEquipment()->Unequip();
 	}

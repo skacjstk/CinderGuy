@@ -1,8 +1,12 @@
 #include "CDoAction_Warp.h"
 #include "Global.h"
+#include "Characters/CPlayer.h"
+#include "AIController.h"
+#include "CAIController.h"
 #include "Actions/CAttachment.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
+#include "Components/CBehaviorComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/DecalComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -29,11 +33,26 @@ void ACDoAction_Warp::DoAction()
 {
 	CheckFalse(*bEquipped);
 	CheckFalse(State->IsIdleMode());
+
+	bool bPlayer = OwnerCharacter->IsA<ACPlayer>();
+	if (bPlayer)
+	{
+		FRotator rotator;
+		CheckFalse(GetCursorLocationAndRotation(Location, rotator));
+	}
+	else  // AI 일 경우
+	{
+		AAIController* controller = OwnerCharacter->GetController<AAIController>();
+		UCBehaviorComponent* behavior = CHelpers::GetComponent<UCBehaviorComponent>(controller);
+		Location = behavior->GetWarpLocation();	// 이동위치를 Warp로 바꾸기
+
+		Decal->SetVisibility(false);
+		SkelMesh->SetVisibility(false);
+		StaticMesh->SetVisibility(false);
+	}
+
+
 	State->SetActionMode();
-
-	FRotator rotator;
-	CheckFalse(GetCursorLocationAndRotation(Location, rotator));
-
 	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
@@ -68,9 +87,14 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	CheckFalse(*bEquipped);
+
+	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
+	CheckNull(player);
+
 	FVector location;
 	FRotator rotator;
 	// 데칼 표시 및 회전 
+
 	if (GetCursorLocationAndRotation(location, rotator))
 	{
 		FRotator ownerRotator = OwnerCharacter->GetController<APlayerController>()->GetControlRotation();

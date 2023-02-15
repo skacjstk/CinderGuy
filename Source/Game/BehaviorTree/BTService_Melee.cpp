@@ -6,6 +6,7 @@
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
 #include "Components/CPatrolComponent.h"
+#include "Components/CStateComponent.h"
 
 UBTService_Melee::UBTService_Melee()
 {
@@ -24,6 +25,8 @@ void UBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(aiPawn);
 	UCPatrolComponent* patrol = CHelpers::GetComponent<UCPatrolComponent>(aiPawn);
 	
+	CheckTrue(state->IsDeadMode());
+
 	if (state->IsHittedMode())
 	{
 		behavior->SetHittedMode();	// StateComponent랑 비슷함 
@@ -40,6 +43,15 @@ void UBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 			behavior->SetWaitMode();
 
 		return;
+	}
+	else // 대상의 상태가 Dead면 중지
+	{
+		UCStateComponent* targetState = CHelpers::GetComponent<UCStateComponent>(target);
+		if (targetState->IsDeadMode())
+		{
+			behavior->SetWaitMode();	// Dead라면 Wait으로 
+			return;
+		}
 	}
 
 	float distance = aiPawn->GetDistanceTo(target);

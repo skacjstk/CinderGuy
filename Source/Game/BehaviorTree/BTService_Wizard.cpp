@@ -5,6 +5,7 @@
 #include "CAIController.h"
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
+#include "Components/CStateComponent.h"
 
 UBTService_Wizard::UBTService_Wizard()
 {
@@ -21,6 +22,8 @@ void UBTService_Wizard::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	ACEnemy_AI* aiPawn = Cast<ACEnemy_AI>(controller->GetPawn());
 	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(aiPawn);
 
+	CheckTrue(state->IsDeadMode());
+
 	if (state->IsHittedMode())
 	{
 		behavior->SetHittedMode();
@@ -33,6 +36,15 @@ void UBTService_Wizard::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		behavior->SetWaitMode();
 		controller->ClearFocus(EAIFocusPriority::Gameplay);
 		return;
+	}
+	else // 대상의 상태가 Dead면 중지
+	{
+		UCStateComponent* targetState = CHelpers::GetComponent<UCStateComponent>(target);
+		if (targetState->IsDeadMode())
+		{
+			behavior->SetWaitMode();	// Dead라면 Wait으로 
+			return;
+		}
 	}
 
 	// 플레이어 감지 시 
