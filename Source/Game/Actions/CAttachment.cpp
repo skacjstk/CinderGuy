@@ -28,10 +28,9 @@ void ACAttachment::BeginPlay()
 	}
 
 	OffCollisions();
-
 	Super::BeginPlay();	
-
 }
+
 void ACAttachment::AttachTo(FName InSocketName)
 {
 	this->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);

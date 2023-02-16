@@ -67,7 +67,7 @@ void ACDoAction_Melee::EndDoStrongAction()
 void ACDoAction_Melee::CheckEndDoStrongAction()
 {
 	Super::CheckEndDoStrongAction();
-	if (NextEndStrongAction)
+	if (NextEndStrongAction || StrongData.EndType == EStrongActionEndType::Once)	// 직접 끄거나, Once인 경우 호출
 	{
 		EndDoStrongAction();
 	}

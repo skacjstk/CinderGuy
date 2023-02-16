@@ -58,11 +58,12 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 			// DoAction 오버랩 이벤트 바인딩
 			Attachment->OnAttachmentBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentBeginOverlap);
 			Attachment->OnAttachmentEndOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentEndOverlap);
+//			Attachment->OnAttachmentBeginOverlap.Remove(DoAction, "OnAttachmentBeginOverlap");
 		}
 
 
 	}//end if
-
+	// 최종적으로 UCActionData의 BeginPlay를 호출한 곳의 OutObject에 완성된 결과를 반환. 현재는 CActionComponent::BeginPlay() 에서 호출한다.
 	*OutObject = NewObject<UCActionObjectContainer>();
 	(*OutObject)->Attachment = Attachment;
 	(*OutObject)->Equipment = Equipment;

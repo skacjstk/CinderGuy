@@ -53,7 +53,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		class UCStatusComponent* Status;
 
-	TArray<FDoActionData> Datas;
+	TArray<FDoActionData> Datas;	// CActionData에서 생성한 값이 저장되는 곳
 	FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
 	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };
