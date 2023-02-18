@@ -36,7 +36,7 @@ public:
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
 	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
-
+	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
 	virtual void OnAim() {};
 	virtual void OffAim() {};
 
@@ -44,6 +44,8 @@ public:
 		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
 	UFUNCTION()
 		virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
+private:
+	UCAttachmentStatusComponent* GetCurrentStatus();
 protected:
 	UPROPERTY(BlueprintReadOnly)
 		class ACharacter* OwnerCharacter;

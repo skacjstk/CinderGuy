@@ -38,20 +38,24 @@ void ACDoAction::PlayAttackAnimMontage(UAnimMontage* AnimMontage, float InPlayRa
 {
 	// AttachmentStatus 의 변수들 불러오기
 
-	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
-	if (!!player)
-	{
-		float atkSpeed = 1.0f;
 
-		UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(player);
-		UCActionObjectContainer* container = actionComp->GetCurrent();
-		atkSpeed = container->GetAttachment()->GetAttachmentStatusComponent()->CurrentAtkSpeed;
+	float atkSpeed = 1.0f;
+	atkSpeed *= GetCurrentStatus()->CurrentAtkSpeed;
+	OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate * atkSpeed, StartSectionName);
+}
 
-		OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate * atkSpeed, StartSectionName);
-	}
-	else  // 없으면 일단 공속미적용 재생
-	{
-		OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);	
-	}
+void ACDoAction::SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker,  AActor* InCauser, ACharacter* InOtherCharacter)
+{
+	float finalPower = 1.0f;
+	finalPower *= (GetCurrentStatus()->CurrentPower * Damage);
+	InOtherCharacter->TakeDamage(finalPower, E, InAttacker->GetController(), InCauser);
+}
+
+UCAttachmentStatusComponent* ACDoAction::GetCurrentStatus()
+{
+	// 널 검사는 하지말자. 안될리가 없어
+	UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
+	UCActionObjectContainer* container = actionComp->GetCurrent();
+	return container->GetAttachment()->GetAttachmentStatusComponent();
 }
 
