@@ -11,7 +11,7 @@ class GAME_API UCActionData : public UDataAsset
 	GENERATED_BODY()
 		
 public:
-	void BeginPlay(class ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject);	// 얘는 BeginPlay가 없어서 직접 만듬;
+	void BeginPlay(class ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject);	// 얘는 BeginPlay가 없어서 직접 만듬
 
 private:
 	FString GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName);

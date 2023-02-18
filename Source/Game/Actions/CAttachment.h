@@ -70,5 +70,5 @@ protected:
 		class UDataAsset* StatusAsset;
 private:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
-	class UCAttachmentStatusComponent* AttachmentStatus;
+	class UCAttachmentStatusComponent* AttachmentStatus;	// 무기의 기본 피해량 등을 담은 클래스
 };

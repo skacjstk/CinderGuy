@@ -3,7 +3,10 @@
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/CActionComponent.h"
+#include "Actions/CAttachment.h"
+#include "Components/CAttachmentStatusComponent.h"
 #include "GameFramework/Character.h"
+#include "Characters/CPlayer.h"
 
 // Sets default values
 ACDoAction::ACDoAction()
@@ -29,5 +32,26 @@ void ACDoAction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ACDoAction::PlayAttackAnimMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
+{
+	// AttachmentStatus 의 변수들 불러오기
+
+	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
+	if (!!player)
+	{
+		float atkSpeed = 1.0f;
+
+		UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(player);
+		UCActionObjectContainer* container = actionComp->GetCurrent();
+		atkSpeed = container->GetAttachment()->GetAttachmentStatusComponent()->CurrentAtkSpeed;
+
+		OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate * atkSpeed, StartSectionName);
+	}
+	else  // 없으면 일단 공속미적용 재생
+	{
+		OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);	
+	}
 }
 

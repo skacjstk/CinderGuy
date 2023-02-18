@@ -53,7 +53,7 @@ void ACDoAction_Warp::DoAction()
 
 
 	State->SetActionMode();
-	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);	// 얘를 공격속도로 보는게 맞을까?
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 

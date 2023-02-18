@@ -15,9 +15,6 @@ void UCAttachmentStatusComponent::InitStatus(FAttachmentStatusData AttachmentSta
 {
 	CurrentPower = BasePower = AttachmentStatusData.BasePower;
 	CurrentAtkSpeed = BaseAtkSpeed = AttachmentStatusData.BaseAtkSpeed;	// 기본스탯 초기화 
-
-	CLog::Print(CurrentPower);
-	CLog::Print(CurrentAtkSpeed);
 }
 
 void UCAttachmentStatusComponent::IncreasePower(float Amount)

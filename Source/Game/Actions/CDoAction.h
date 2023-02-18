@@ -35,6 +35,7 @@ public:
 	virtual void EndDoStrongActionWait() {};	// 뗏을 때 강공격 끝부분 재생 대기 
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
+	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 	virtual void OnAim() {};
 	virtual void OffAim() {};
