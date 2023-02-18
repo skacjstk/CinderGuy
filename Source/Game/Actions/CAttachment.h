@@ -64,6 +64,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		class UCStatusComponent* Status;
 
+	UPROPERTY(BlueprintReadOnly)
+		class UDataAsset* StatusAsset;
 private:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
+	class CAttachmentStatusComponent* AttachmentStatus;
 };
