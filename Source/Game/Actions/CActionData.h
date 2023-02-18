@@ -20,6 +20,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment")
 		TSubclassOf<class ACAttachment> AttachmentClass;	// 무기 Mesh, Attach 담당
 
+	//AttachmentStatus
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "AttachmentStatus")
+		FAttachmentStatusData AttachmentStatusData;
+
+
 	// Equipment
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
 		TSubclassOf<class ACEquipment> EquipmentClass;	// 무기 내부 장착 몽타주 담당 

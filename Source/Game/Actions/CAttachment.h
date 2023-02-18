@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	ACAttachment();
 
+	FORCEINLINE class UCAttachmentStatusComponent* GetAttachmentStatusComponent() { return AttachmentStatus; }
+	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -68,5 +70,5 @@ protected:
 		class UDataAsset* StatusAsset;
 private:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
-	class CAttachmentStatusComponent* AttachmentStatus;
+	class UCAttachmentStatusComponent* AttachmentStatus;
 };

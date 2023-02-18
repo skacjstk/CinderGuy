@@ -1,34 +1,43 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CAttachmentStatusComponent.h"
+#include "Global.h"
+#include "Actions/CAttachment.h"
 
-// Sets default values for this component's properties
 UCAttachmentStatusComponent::UCAttachmentStatusComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
 void UCAttachmentStatusComponent::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	Super::BeginPlay();	
 }
 
-
-// Called every frame
-void UCAttachmentStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UCAttachmentStatusComponent::InitStatus(FAttachmentStatusData AttachmentStatusData)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	CurrentPower = BasePower = AttachmentStatusData.BasePower;
+	CurrentAtkSpeed = BaseAtkSpeed = AttachmentStatusData.BaseAtkSpeed;	// 기본스탯 초기화 
 
-	// ...
+	CLog::Print(CurrentPower);
+	CLog::Print(CurrentAtkSpeed);
 }
+
+void UCAttachmentStatusComponent::IncreasePower(float Amount)
+{
+	CurrentPower += (BasePower *Amount);
+}
+
+void UCAttachmentStatusComponent::DecreasePower(float Amount)
+{
+	CurrentPower -= (BasePower * Amount);
+}
+
+void UCAttachmentStatusComponent::IncreaseAtkSpeed(float Amount)
+{
+	CurrentAtkSpeed += (BaseAtkSpeed * Amount);
+}
+
+void UCAttachmentStatusComponent::DecreaseAtkSpeed(float Amount)
+{
+	CurrentAtkSpeed -= (BaseAtkSpeed * Amount);
+}
+
 
