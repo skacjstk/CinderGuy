@@ -196,6 +196,7 @@ void ACEnemy::Dead()
 
 void ACEnemy::End_Dead()
 {
+	// 다른애들은 직속 컴포넌트라 알아서 지워짐
 	Action->End_Dead();
 	Destroy();
 }

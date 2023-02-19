@@ -35,11 +35,13 @@ public:
 	virtual void EndDoStrongActionWait() {};	// 뗏을 때 강공격 끝부분 재생 대기 
 	virtual void Begin_DoAction() {};
 	virtual void End_DoAction() {};
-	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
-	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
+
 	virtual void OnAim() {};
 	virtual void OffAim() {};
+	virtual void Abort() {};
 
+	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
 	UFUNCTION()
 		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
 	UFUNCTION()

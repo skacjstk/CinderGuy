@@ -37,11 +37,9 @@ void ACDoAction::Tick(float DeltaTime)
 void ACDoAction::PlayAttackAnimMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
 {
 	// AttachmentStatus 의 변수들 불러오기
-
-
 	float atkSpeed = 1.0f;
-	atkSpeed *= GetCurrentStatus()->CurrentAtkSpeed;
-	OwnerCharacter->PlayAnimMontage(AnimMontage, InPlayRate * atkSpeed, StartSectionName);
+	atkSpeed *= (GetCurrentStatus()->CurrentAtkSpeed * InPlayRate);
+	OwnerCharacter->PlayAnimMontage(AnimMontage, atkSpeed, StartSectionName);
 }
 
 void ACDoAction::SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker,  AActor* InCauser, ACharacter* InOtherCharacter)

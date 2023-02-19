@@ -84,10 +84,20 @@ public:
 	void End_Roll();
 	void End_BackStep();	// 거의 notify 호출 
 
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Hitted() override;
+	virtual void Dead() override;
+	virtual void End_Dead() override;
+
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
 	// CStateComponent에 OnStateTypeChanged에 바인딩
+
+private:
+	float DamageValue;
+	AActor* Causer;
+	ACharacter* Attacker;
 };

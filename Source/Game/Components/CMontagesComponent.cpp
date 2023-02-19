@@ -1,5 +1,6 @@
 #include "CMontagesComponent.h"
 #include "Global.h"
+#include "Components/CStatusComponent.h"
 #include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
@@ -50,7 +51,10 @@ void UCMontagesComponent::PlayHitted()
 {
 	PlayAnimMontage(EStateType::Hitted);
 }
-
+void UCMontagesComponent::PlayDead()
+{
+	PlayAnimMontage(EStateType::Dead);
+}
 void UCMontagesComponent::PlayAnimMontage(EStateType InType)
 {
 	ACharacter* character = Cast<ACharacter>(GetOwner());
@@ -61,6 +65,10 @@ void UCMontagesComponent::PlayAnimMontage(EStateType InType)
 	{
 		if (!!data->AnimMontage)
 			character->PlayAnimMontage(data->AnimMontage, data->PlayRate, data->StartSection);
+
+		UCStatusComponent* Status = CHelpers::GetComponent<UCStatusComponent>(character);
+		if (!!Status)
+			data->bCanMove ? Status->SetMove() : Status->SetStop();
 	}
 }
 

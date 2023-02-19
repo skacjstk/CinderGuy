@@ -24,10 +24,10 @@ public:
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
-	void Hitted();
-	void Dead();
+	virtual void Hitted() override;
+	virtual void Dead() override;
 	UFUNCTION()
-		void End_Dead();
+		void End_Dead() override;
 	UFUNCTION()
 		void RestoreLogoColor();
 protected:
@@ -56,7 +56,7 @@ private:
 	class UMaterialInstanceDynamic* LogoMaterial;
 
 	UPROPERTY(EditAnywhere)
-		float DeadLaunchValue = 10000000.f;
+		float DeadLaunchValue = 10000.f;
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 25.f;	// 밀려나는 고유값
 	float DamageValue;

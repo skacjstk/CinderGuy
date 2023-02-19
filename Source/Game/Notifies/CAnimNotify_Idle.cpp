@@ -1,5 +1,6 @@
 #include "CAnimNotify_Idle.h"
 #include "Global.h"
+#include "Components/CStatusComponent.h"
 #include "Components/CStateComponent.h"
 
 FString UCAnimNotify_Idle::GetNotifyName_Implementation() const
@@ -13,7 +14,9 @@ void UCAnimNotify_Idle::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 	CheckNull(MeshComp);
 
 	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(MeshComp->GetOwner());
+	UCStatusComponent* status = CHelpers::GetComponent<UCStatusComponent>(MeshComp->GetOwner());
 	CheckNull(state);
-
 	state->SetIdleMode();
+	CheckNull(status);
+	status->SetMove();
 }
