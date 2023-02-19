@@ -67,6 +67,20 @@ public:
 		FName EndSection = L"End";
 };
 
+/*
+@ struct FAttachmentStatus
+*/
+USTRUCT(BlueprintType)
+struct FAttachmentStatusData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		float BasePower = 1.0f;
+	UPROPERTY(EditAnywhere)
+		float BaseAtkSpeed = 1.0f;
+};
+
 /*------------------------------------------------------------------------
 * @ class Action Object Container
 ------------------------------------------------------------------------*/
@@ -76,6 +90,7 @@ class GAME_API UCActionObjectContainer : public UObject
 	GENERATED_BODY()
 public:
 	friend class UCActionData;	// UCActionData에서 this를 모두 공개한다. 
+	friend class UCAttachmentStatusComponent;
 public:
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
 	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }

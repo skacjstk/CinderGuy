@@ -163,7 +163,18 @@ void UCActionComponent::Dead()
 
 void UCActionComponent::End_Dead()
 {
-	// Tod. All Attachment, Equipment, DoAction Release
+	// ActionComponent가 가진 것들 지우기
+	for (int32 i = 0; i < (int32)EActionType::Max; ++i)
+	{
+		if (!!DataObjects[i] && !!DataObjects[i]->GetAttachment())
+			DataObjects[i]->GetAttachment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetEquipment())
+			DataObjects[i]->GetEquipment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetDoAction())
+			DataObjects[i]->GetDoAction()->Destroy();
+	}
 }
 
 void UCActionComponent::OffAllCollisions()
@@ -174,4 +185,15 @@ void UCActionComponent::OffAllCollisions()
 			continue;
 		data->GetAttachment()->OffCollisions();
 	}
+}
+
+void UCActionComponent::AbortByDamaged()
+{
+	CheckNull(DataObjects[(int32)Type]);
+	CheckTrue(IsUnarmedMode());
+
+	DataObjects[(int32)Type]->GetEquipment()->Begin_Equip();
+	DataObjects[(int32)Type]->GetEquipment()->End_Equip();	// Idle로 돌려주는 코드
+
+	DataObjects[(int32)Type]->GetDoAction()->Abort();
 }

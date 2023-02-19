@@ -5,14 +5,17 @@
 #include "CDoAction.h"
 #include "CThrow.h"
 #include "GameFramework/Character.h"
+#include "Components/CAttachmentStatusComponent.h"
 
-void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject)
+void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject)	// CActionComponent 에서 호출
 {
 	FTransform transform;
 
 	ACAttachment* Attachment = nullptr;
 	ACEquipment* Equipment = nullptr;
 	ACDoAction* DoAction = nullptr;
+	UCAttachmentStatusComponent* AttachmentStatusComp = nullptr;
+
 	//CEquipment 생성: Character 만 World가 있기에 
 	if (!!AttachmentClass)
 	{
@@ -20,6 +23,20 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
 		UGameplayStatics::FinishSpawningActor(Attachment, transform);	// 얘는 상속받은 위치에서 AttachTo 함 
 	}
+
+	if (!!Attachment)
+	{
+		// 클래스 생성하기	
+		AttachmentStatusComp = NewObject<UCAttachmentStatusComponent>(Attachment, UCAttachmentStatusComponent::StaticClass(), TEXT("AttachmentStatus"));
+		// Outer는 객체를 소유하는 객체.
+		// https://minusi.tistory.com/entry/%EC%96%B8%EB%A6%AC%EC%96%BC-%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8Unreal-Object-Outer
+		if (!!AttachmentStatusComp)
+		{
+			Attachment->SetAttachmentStatusComponent(AttachmentStatusComp);	// GetOwner()로 가져오면 되는데 혹시몰라서
+			AttachmentStatusComp->InitStatus(AttachmentStatusData);
+		}
+	}
+
 	if (!!EquipmentClass)
 	{
 		Equipment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACEquipment>(EquipmentClass, transform, InOwnerCharacter);

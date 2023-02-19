@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	ACAttachment();
 
+	FORCEINLINE class UCAttachmentStatusComponent* GetAttachmentStatusComponent() { return AttachmentStatus; }
+	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,6 +66,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		class UCStatusComponent* Status;
 
+	UPROPERTY(BlueprintReadOnly)
+		class UDataAsset* StatusAsset;
 private:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
+	class UCAttachmentStatusComponent* AttachmentStatus;	// 무기의 기본 피해량 등을 담은 클래스
 };

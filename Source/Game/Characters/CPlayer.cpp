@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/PlayerInput.h"
+#include "Components/CapsuleComponent.h"
 
 ACPlayer::ACPlayer()
 {
@@ -75,7 +76,7 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(1, LogoMaterial);
 	
 
-	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// 상태 등록
+	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// StateComponent의 상태 변경 관련 델리게이트 등록
 
 	Action->SetUnarmedMode();
 	Controller = Cast<APlayerController>(GetController());
@@ -184,7 +185,7 @@ void ACPlayer::OnEvade() {
 	CheckFalse(State->IsIdleMode());
 	CheckFalse(Status->IsCanMove());
 
-	if (InputComponent->GetAxisValue("MoveForward") < 0.f)
+	if (InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
 	{
 		State->SetBackStepMode();
 		return;
@@ -300,12 +301,57 @@ void ACPlayer::End_BackStep()
 	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Causer = DamageCauser;
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+
+	CLog::Print(DamageValue, -1, 1);
+
+	Action->AbortByDamaged();
+
+	Status->DecreaseHealth(this->DamageValue);
+	if (Status->GetHealth() <= 0.f) {
+		State->SetDeadMode();
+		return this->DamageValue;
+	}
+	State->SetHittedMode();
+	return this->DamageValue;
+}
+
+void ACPlayer::Hitted()
+{
+	Montages->PlayHitted();
+//	Status->SetMove();	// Idle 쪽에 넣어버렸음 
+}
+
+void ACPlayer::Dead()
+{
+	CheckFalse(State->IsDeadMode());
+	Action->Dead();
+
+	// Montage 재생: 플레이어는 죽는 몽타주로 
+	Montages->PlayDead();
+
+	// End_Dead는 노티파이 재생
+	GetCapsuleComponent()->SetCollisionProfileName("Spectator");
+}
+
+void ACPlayer::End_Dead()	// End_Dead는 노티파이 재생
+{
+	Action->End_Dead();
+	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "Quit");	// 콘솔 명령어로 강제종료
+}
+
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 {
 	switch (InNewType)
 	{
 	case EStateType::Roll:			Begin_Roll();			break;
 	case EStateType::BackStep:		Begin_BackStep();		break;
+	case EStateType::Hitted:		Hitted();				break;
+	case EStateType::Dead:			Dead();					break;
 	default:
 		break;
 	}

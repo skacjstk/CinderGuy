@@ -18,7 +18,7 @@ void ACDoAction_Melee::DoAction()
 
 	IsStrongAction = false;
 
-	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -35,7 +35,7 @@ void ACDoAction_Melee::Begin_DoAction()
 	ComboCount++;
 	if (ComboCount != Datas.Num())
 	{
-		OwnerCharacter->PlayAnimMontage(Datas[ComboCount].AnimMontage, Datas[ComboCount].PlayRate, Datas[ComboCount].StartSection);
+		PlayAttackAnimMontage(Datas[ComboCount].AnimMontage, Datas[ComboCount].PlayRate, Datas[ComboCount].StartSection);
 		Datas[ComboCount].bCanMove ? Status->SetMove() : Status->SetStop();
 	}
 	else
@@ -49,7 +49,7 @@ void ACDoAction_Melee::DoStrongAction()
 	NextEndStrongAction = false;	// 일단은 false 로 
 
 	State->SetStrongActionMode();
-	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
+	PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -60,7 +60,7 @@ void ACDoAction_Melee::EndDoStrongAction()
 	IsStrongAction = true;	// 후속타 나가는중임
 
 	State->SetEndingStrongActionMode();
-	OwnerCharacter->PlayAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
+	PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -157,11 +157,11 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 		FDamageEvent e;
 		if (IsStrongAction == true)	//StrongAction 피해 주기
 		{
-			InOtherCharacter->TakeDamage(StrongData.Power, e, InAttacker->GetController(), InCauser);
+			SendDamage(StrongData.Power, e, InAttacker, InCauser, InOtherCharacter);
 		}
 		else // 일반공격 피해 주기
 		{
-			InOtherCharacter->TakeDamage(Datas[ComboCount].Power, e, InAttacker->GetController(), InCauser);
+			SendDamage(Datas[ComboCount].Power, e, InAttacker, InCauser, InOtherCharacter);
 		}
 	}
 }
