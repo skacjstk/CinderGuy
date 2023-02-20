@@ -17,13 +17,14 @@ public:
 	// Sets default values for this actor's properties
 	ACItemBase();
 
+public:
+	virtual	void LoadItem(ACInventoryBase* NewInventory);	// 인벤토리에 적재시 수행해야 하는 함수
+	virtual void UnloadItem(ACInventoryBase* NewInventory);	// 인벤토리에 하역시 수행해야 하는 함수
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-protected:
-	virtual	void LoadItem(ACInventoryBase* NewInventory);	// 인벤토리에 적재시 수행해야 하는 함수
-	virtual void UnloadItem(ACInventoryBase* PrevInventory);	// 인벤토리에 하역시 수행해야 하는 함수
 
 public:
 	ACInventoryBase* OwnerInventory;

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,14 +10,12 @@ class GAME_API ACInventoryBase : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ACInventoryBase();
-
 	AActor* GetOwnerActor() { return OwnerActor; }
+
+	virtual void EquipItem(int32 selectedIndex, class ACItemBase** prevItem, class ACItemBase** newItem) {};	// 2중 포인터는 순수가상함수가 될 수 없나보다.
+	void SwapItem(class ACItemBase** itemA, class ACItemBase** itemB);	// 아이템을 참조로 넘기면 서로의 포인터를 바꿔줌
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
 	AActor* OwnerActor;	// 이건, Player가 될 수도, Attachment가 될 수도 있음
 };

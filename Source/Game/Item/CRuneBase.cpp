@@ -32,11 +32,12 @@ void ACRuneBase::LoadItem(ACInventoryBase* NewInventory)
 	}
 }
 
-void ACRuneBase::UnloadItem(ACInventoryBase* PrevInventory)
+void ACRuneBase::UnloadItem(ACInventoryBase* NewInventory)
 {
-	// 무기에서 떼온거면
+	// 현재가 RuneInventory 이면서
 	if (Cast<ACRuneInventory>(OwnerInventory))	// 룬 인벤토리 일 경우: 이건 무조건 Attachment 임
 	{
+		// Todo: NewInventory 가 CharacterInventory 일 경우...
 		// Attachment 가져오기
 		if (ACAttachment* attachment = Cast<ACAttachment>(OwnerInventory->GetOwnerActor()))
 		{
