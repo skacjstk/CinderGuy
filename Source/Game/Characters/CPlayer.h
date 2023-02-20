@@ -93,7 +93,7 @@ public:
 	virtual void ChangeColor(FLinearColor InColor);
 private:
 	UFUNCTION()
-		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
 	// CStateComponent에 OnStateTypeChanged에 바인딩
 
 private:

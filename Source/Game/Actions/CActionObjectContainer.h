@@ -67,20 +67,6 @@ public:
 		FName EndSection = L"End";
 };
 
-/*
-@ struct FAttachmentStatus
-*/
-USTRUCT(BlueprintType)
-struct FAttachmentStatusData
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-		float BasePower = 1.0f;
-	UPROPERTY(EditAnywhere)
-		float BaseAtkSpeed = 1.0f;
-};
-
 /*------------------------------------------------------------------------
 * @ class Action Object Container
 ------------------------------------------------------------------------*/

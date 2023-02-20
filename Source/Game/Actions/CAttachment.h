@@ -9,6 +9,20 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlp, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentEndOverlp, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
 
+/*
+@ struct FAttachmentStatus
+*/
+USTRUCT(BlueprintType)
+struct FAttachmentStatusData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		float BasePower = 1.0f;
+	UPROPERTY(EditAnywhere)
+		float BaseAtkSpeed = 1.0f;
+};
+
 UCLASS()
 class GAME_API ACAttachment : public AActor
 {
