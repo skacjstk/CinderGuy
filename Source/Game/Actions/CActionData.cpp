@@ -33,7 +33,7 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		if (!!AttachmentStatusComp)
 		{
 			Attachment->SetAttachmentStatusComponent(AttachmentStatusComp);	// GetOwner()로 가져오면 되는데 혹시몰라서
-			AttachmentStatusComp->InitStatus(AttachmentStatusData);
+			AttachmentStatusComp->InitStatus(Attachment->AttachmentStatusData);
 		}
 	}
 

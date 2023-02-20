@@ -17,24 +17,24 @@ void UCAttachmentStatusComponent::InitStatus(FAttachmentStatusData AttachmentSta
 	CurrentAtkSpeed = BaseAtkSpeed = AttachmentStatusData.BaseAtkSpeed;	// 기본스탯 초기화 
 }
 
-void UCAttachmentStatusComponent::IncreasePower(float Amount)
+void UCAttachmentStatusComponent::IncreasePower(float Percent)
 {
-	CurrentPower += (BasePower *Amount);
+	CurrentPower += (BasePower *Percent);
 }
 
-void UCAttachmentStatusComponent::DecreasePower(float Amount)
+void UCAttachmentStatusComponent::DecreasePower(float Percent)
 {
-	CurrentPower -= (BasePower * Amount);
+	CurrentPower -= (BasePower * Percent);
 }
 
-void UCAttachmentStatusComponent::IncreaseAtkSpeed(float Amount)
+void UCAttachmentStatusComponent::IncreaseAtkSpeed(float Percent)
 {
-	CurrentAtkSpeed += (BaseAtkSpeed * Amount);
+	CurrentAtkSpeed += (BaseAtkSpeed * Percent);
 }
 
-void UCAttachmentStatusComponent::DecreaseAtkSpeed(float Amount)
+void UCAttachmentStatusComponent::DecreaseAtkSpeed(float Percent)
 {
-	CurrentAtkSpeed -= (BaseAtkSpeed * Amount);
+	CurrentAtkSpeed -= (BaseAtkSpeed * Percent);
 }
 
 

@@ -53,6 +53,9 @@ public:
 		FAttachmentBeginOverlp OnAttachmentBeginOverlap;
 	UPROPERTY(BlueprintAssignable)
 		FAttachmentEndOverlp OnAttachmentEndOverlap;
+	//AttachmentStatus
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "AttachmentStatus")
+		FAttachmentStatusData AttachmentStatusData;
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USceneComponent* Scene;
