@@ -6,6 +6,7 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CInventoryComponent.h"
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -28,6 +29,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
+	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
@@ -90,7 +92,6 @@ void ACPlayer::BeginPlay()
 			}
 		}
 	}
-
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -133,6 +134,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("Inventory", EInputEvent::IE_Pressed, this, &ACPlayer::ToggleInventory);
 
 }
 
@@ -261,6 +264,24 @@ void ACPlayer::OnAim()
 void ACPlayer::OffAim()
 {
 	Action->DoOffAim();
+}
+
+void ACPlayer::ToggleInventory()
+{
+	// Inventory 열고 닫기
+	// 1. Widget 열기,
+	if (!!Inventory)
+	{
+		Inventory->bActive = !Inventory->bActive;
+		if (Inventory->bActive == true)
+		{
+			Inventory->Open();
+		}
+		else {
+			Inventory->Close();
+		}
+	}
+
 }
 
 void ACPlayer::Begin_Roll()

@@ -35,7 +35,7 @@ public:
 	FORCEINLINE class UCAttachmentStatusComponent* GetAttachmentStatusComponent() { return AttachmentStatus; }
 	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }
 
-	class ACRuneInventory* GetInventory() { return Inventory; }
+	class UCInventoryComponent* GetInventory() { return Inventory; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -87,8 +87,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 		class UDataAsset* StatusAsset;
+	UPROPERTY(EditDefaultsOnly)
+		class UCInventoryComponent* Inventory;
 private:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
 	class UCAttachmentStatusComponent* AttachmentStatus;	// 무기의 기본 피해량 등을 담은 클래스
-	class ACRuneInventory* Inventory;
 };

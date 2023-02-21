@@ -33,6 +33,8 @@ private:
 	class UCMontagesComponent* Montages;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCInventoryComponent* Inventory;
 
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
@@ -77,6 +79,8 @@ private:
 
 	void OnAim();	// 우클릭
 	void OffAim();
+
+	void ToggleInventory();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

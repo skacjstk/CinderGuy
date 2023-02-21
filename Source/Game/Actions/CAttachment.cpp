@@ -5,13 +5,13 @@
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CAttachmentStatusComponent.h"
-#include "Inventory/CRuneInventory.h"
+#include "Components/CInventoryComponent.h"
 
 // Sets default values
 ACAttachment::ACAttachment()
 {
-	CHelpers:: CreateSceneComponent(this, &Scene, "Scene");
-
+	CHelpers::CreateSceneComponent(this, &Scene, "Scene");
+	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 }
 
 // Called when the game starts or when spawned
