@@ -1,6 +1,10 @@
 #include "CInventory.h"
 #include "Item/CItemBase.h"
 
+void ACInventory::SetSlotVisibility(bool value)
+{
+}
+
 void ACInventory::BeginPlay()
 {
 	Super::BeginPlay();

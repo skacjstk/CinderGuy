@@ -25,6 +25,8 @@ void ACInventoryBase::OpenInven()
 		return;
 	}
 	InventoryUI->SetVisibility(ESlateVisibility::Visible);
+	SetSlotVisibility(true);
+
 }
 
 void ACInventoryBase::CloseInven()
@@ -35,6 +37,7 @@ void ACInventoryBase::CloseInven()
 		return;
 	}
 	InventoryUI->SetVisibility(ESlateVisibility::Collapsed);
+	SetSlotVisibility(false);
 }
 
 void ACInventoryBase::BeginPlay()
@@ -50,9 +53,9 @@ void ACInventoryBase::BeginPlay()
 	else if(Cast<ACPlayer>(GetOwner()->GetOwner()))
 	{
 		// Todo: Attachment  이기 때문에 Rune 전용 Widget을 만들어 주어야 한다.
-//		InventoryUI = CreateWidget<UCUserWidget_Inventory, APlayerController>(Cast<APlayerController>(player->GetController()), InventoryUIClass);
-//		InventoryUI->AddToViewport();
-//		InventoryUI->SetVisibility(ESlateVisibility::Hidden);
+		InventoryUI = CreateWidget<UCUserWidget_Inventory, APlayerController>(Cast<APlayerController>(player->GetController()), InventoryUIClass);
+		InventoryUI->AddToViewport();
+		InventoryUI->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

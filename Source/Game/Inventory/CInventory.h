@@ -14,6 +14,7 @@ public:
 	virtual void EquipItem(int32 DragIndex, int32 DropIndex, class ACItemBase** prevItem, class ACItemBase** newItem) override;
 	virtual void GetSlots(TArray<class ACItemBase*> OutSlots) override { OutSlots = InventorySlots; }
 
+	virtual void SetSlotVisibility(bool value);
 protected:
 	virtual void BeginPlay() override;
 

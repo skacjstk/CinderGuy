@@ -1,9 +1,14 @@
 #include "CItemBase.h"
+#include "Widgets/CUserWidget_ItemSlot.h"
 #include "Global.h"
 
 ACItemBase::ACItemBase()
 {
+	CHelpers::GetClass<UCUserWidget_ItemSlot>(&SlotUIClass, "/Game/Widgets/Inventory/WB_Inventory_Slot");
 
+	SlotUI = CreateWidget<UCUserWidget_ItemSlot>(GetWorld(), SlotUIClass);
+	SlotUI->AddToViewport();
+	
 }
 
 void ACItemBase::BeginPlay()

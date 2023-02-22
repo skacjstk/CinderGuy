@@ -23,6 +23,10 @@ void ACRuneInventory::EquipItem(int32 DragIndex, int32 DropIndex, ACItemBase** p
 
 }
 
+void ACRuneInventory::SetSlotVisibility(bool value)
+{
+}
+
 void ACRuneInventory::BeginPlay()
 {
 	Super::BeginPlay();

@@ -28,4 +28,9 @@ protected:
 
 public:
 	ACInventoryBase* OwnerInventory;
+
+private:
+	TSubclassOf<class UCUserWidget_ItemSlot> SlotUIClass;
+	class UCUserWidget_ItemSlot* SlotUI;
+
 };

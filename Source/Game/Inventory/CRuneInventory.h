@@ -11,10 +11,9 @@ class GAME_API ACRuneInventory : public ACInventoryBase
 	
 public:
 	virtual void EquipItem(int32 DragIndex, int32 DropIndex, class ACItemBase** prevItem, class ACItemBase** newItem) override;
-
-
 	virtual void GetSlots(TArray<class ACRuneBase*> OutSlots) { OutSlots = InventorySlots; }	// 얘는 오버로딩
 
+	virtual void SetSlotVisibility(bool value);
 protected:
 	virtual void BeginPlay() override;
 
