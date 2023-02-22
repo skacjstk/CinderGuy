@@ -13,9 +13,6 @@ class UICharacter : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class GAME_API IICharacter
 {
 	GENERATED_BODY()
