@@ -10,6 +10,7 @@ UCMontagesComponent::UCMontagesComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	SetIsReplicated(true);
 	// ...
 }
 

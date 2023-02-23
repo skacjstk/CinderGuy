@@ -77,6 +77,8 @@ void ACEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	//Widget Property Settings
+
+	CheckFalse(HasAuthority());
 	NameWidget->InitWidget();
 	UCUserWidget_Name* nameWidgetObject = Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)	

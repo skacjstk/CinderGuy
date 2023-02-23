@@ -80,6 +80,9 @@ private:
 
 	void OnAim();	// 우클릭
 	void OffAim();
+
+	// Interact
+	void OnInteract();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

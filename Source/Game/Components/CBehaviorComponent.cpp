@@ -3,6 +3,11 @@
 #include "Characters/CPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+UCBehaviorComponent::UCBehaviorComponent()
+{
+	SetIsReplicated(true);
+}
+
 void UCBehaviorComponent::BeginPlay()
 {
 	Super::BeginPlay();

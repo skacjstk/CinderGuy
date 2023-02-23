@@ -50,6 +50,8 @@ public:
 	FORCEINLINE int32 GetInventorySize() { return InventorySize; }
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void ToggleInventroy();
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -60,6 +62,12 @@ protected:
 	// IInteract 상속
 	virtual bool LookAt_Implementation(AActor* InActor, FText& OutMessage) override;
 	virtual bool InteractWith_Implementation() override;
+
+public:
+	UFUNCTION(Reliable, Server)	// 서버에서 실행: 아니이거 전혀 다른데서 문제생기네
+		void Server_Interact(class AActor* Target);
+	void Server_Interact_Implementation(class AActor* Target);
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 		int32 InventorySize;
@@ -69,5 +77,7 @@ private:
 		TArray<FSlot> Content;
 private:
 	class AActor* LookAtActor;
+
+	bool bActive = false;
 
 };

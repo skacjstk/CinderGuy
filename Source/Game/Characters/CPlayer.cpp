@@ -64,7 +64,6 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	//Create Dynamic 
 	UMaterialInstanceConstant* bodyMaterial;
 	UMaterialInstanceConstant* logoMaterial;
@@ -98,13 +97,12 @@ void ACPlayer::BeginPlay()
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// 있는 것들 전부 가져오기
 
-
-	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
-	{
-		OnDoStrongAction();
-	}
+//	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+//	{
+//		OnDoStrongAction();
+//	}
+	
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -136,6 +134,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ACPlayer::OnInteract);
 }
 
 FGenericTeamId ACPlayer::GetGenericTeamId() const
@@ -263,6 +262,11 @@ void ACPlayer::OnAim()
 void ACPlayer::OffAim()
 {
 	Action->DoOffAim();
+}
+
+void ACPlayer::OnInteract()
+{
+	Inventory->Server_Interact_Implementation(nullptr);
 }
 
 void ACPlayer::Begin_Roll()
