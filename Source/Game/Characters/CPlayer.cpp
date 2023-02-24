@@ -98,10 +98,10 @@ void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-//	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
-//	{
-//		OnDoStrongAction();
-//	}
+	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+	{
+		OnDoStrongAction();
+	}
 	
 }
 
@@ -135,8 +135,12 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 
 	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ACPlayer::OnInteract);
+	PlayerInputComponent->BindAction("Inventory", EInputEvent::IE_Pressed, this, &ACPlayer::OnTestInventory);
 }
-
+void ACPlayer::OnTestInventory()
+{
+	Inventory->DEBUG_PrintContents();
+}
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {
 	return FGenericTeamId(TeamID);

@@ -19,6 +19,6 @@ public:
 	virtual bool LookAt_Implementation(class AActor* InActor, FText& OutMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interact")
-		bool InteractWith();
-	virtual bool InteractWith_Implementation();
+		bool InteractWith(class ACharacter* playerCharacter);
+	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter);
 };

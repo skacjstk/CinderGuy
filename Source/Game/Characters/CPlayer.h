@@ -83,6 +83,7 @@ private:
 
 	// Interact
 	void OnInteract();
+	void OnTestInventory();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

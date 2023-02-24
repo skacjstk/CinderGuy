@@ -22,8 +22,8 @@ public:
 //	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// IInteract 상속
-//	virtual bool LookAt_Implementation(AActor* InActor, FText& OutMessage) override;
-	virtual bool InteractWith_Implementation() override;
+	virtual bool LookAt_Implementation(AActor* InActor, FText& OutMessage) override;
+	virtual bool InteractWith_Implementation(class ACharacter* InPlayerCharacter) override;
 public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "ItemData")
 		FDataTableRowHandle ItemID;	// 포인터 쓸수있나?
