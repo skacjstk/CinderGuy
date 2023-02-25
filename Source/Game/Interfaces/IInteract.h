@@ -4,6 +4,7 @@
 #include "UObject/Interface.h"
 #include "IInteract.generated.h"
 
+
 UINTERFACE(Blueprintable, MinimalAPI)
 class UIInteract : public UInterface
 {

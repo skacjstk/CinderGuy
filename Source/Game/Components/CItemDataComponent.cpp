@@ -6,7 +6,7 @@
 
 UCItemDataComponent::UCItemDataComponent()
 {
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("DataTable'/Game/Inventory/DT_Item.DT_Item'"));
+	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemID.DataTable = defaultTable.Object;
 }

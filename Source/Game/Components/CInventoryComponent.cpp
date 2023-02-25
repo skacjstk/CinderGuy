@@ -13,7 +13,7 @@ UCInventoryComponent::UCInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true; 
 
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("DataTable'/Game/Inventory/DT_Item.DT_Item'"));
+	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
 }
@@ -58,12 +58,10 @@ void UCInventoryComponent::InteractionTrace()
 
 			bool bImpl = LookAtActor->Implements<UIInteract>();
 			if (bImpl)
-			{		
-
-				// Todo: 상위 Cpp 클래스 상속 이후 사용
-			//	IIInteract* interfaceActor = Cast<IIInteract>(LookAtActor);
-			//	if(!!interfaceActor)
-			//		interfaceActor->Execute_LookAt(LookAtActor, LookAtActor, test);
+			{						
+				IIInteract* interfaceActor = Cast<IIInteract>(LookAtActor);
+				if(!!interfaceActor)
+					interfaceActor->Execute_LookAt(LookAtActor, LookAtActor, test);	// Implementation 사용시 바로 그 함수가 호출됨.
 			}
 			// 객체가 블루프린트 단에서 Interface가 설치되면 작동하지 않음 (Cpp 이라면 컴파일 타임에 이미 들어있어야 하는 듯: CItem 만들때 상속하여 해결하기)
 			// https://forums.unrealengine.com/t/c-uinterface-cast-failing-and-other-problems/95673/2
@@ -132,7 +130,7 @@ int32 UCInventoryComponent::FindSlot(FName& InItemID, bool& OutFoundSlot)
 
 int32 UCInventoryComponent::GetMaxStackSize(FName& InItemID)
 {
-	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");	// ContextString은 에러 미시지
+	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");	// ContextString은 에러 메시지
 	if (!!item)
 		return item->StckSize;
 	else
@@ -196,18 +194,21 @@ bool UCInventoryComponent::LookAt_Implementation(AActor* InActor, FText& OutMess
 
 bool UCInventoryComponent::InteractWith_Implementation(class ACharacter* playerCharacter)
 {
-	return false;
+	Server_Interact_Implementation(nullptr);
+	return true;
 }
 
 void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 {
 	// Target 넣어놓긴 했는데 쓸일이 있나?
 	if (!!LookAtActor)
-	{		
-		// GetComponent는 또 되네?? 
+	{	
+		CLog::Print("LookAtACtor Pass");
+		// GetComponent는 또 되네??			// Todo:: ItemDataComponent를 못찾는 문제 해결하기
 		UCItemDataComponent* item = CHelpers::GetComponent<UCItemDataComponent>(LookAtActor);		
 		if (!!item)
 		{
+			CLog::Print("itemComp Pass");
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
 		}
 	}

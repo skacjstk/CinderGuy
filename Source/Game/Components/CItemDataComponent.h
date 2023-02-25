@@ -26,7 +26,7 @@ public:
 	virtual bool InteractWith_Implementation(class ACharacter* InPlayerCharacter) override;
 public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "ItemData")
-		FDataTableRowHandle ItemID;	// 포인터 쓸수있나?
+		FDataTableRowHandle ItemID;	// 포인터 쓸수없다.
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "ItemData")
 		int32 Quantity = 1;
 

@@ -14,6 +14,8 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/PlayerInput.h"
 #include "Components/CapsuleComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Widgets/CWidget_PlayerHUD.h"
 
 ACPlayer::ACPlayer()
 {
@@ -31,10 +33,12 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
+
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
+	// Get Subclass
 	USkeletalMesh* meshAsset;
 	CHelpers::GetAsset<USkeletalMesh>(&meshAsset, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
 	GetMesh()->SetSkeletalMesh(meshAsset);
@@ -42,7 +46,8 @@ ACPlayer::ACPlayer()
 	TSubclassOf<UAnimInstance> animInstanceClass;
 	CHelpers::GetClass<UAnimInstance>(&animInstanceClass, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstanceClass);
-	
+
+	CHelpers::GetClass<UUserWidget>(&DefaultHUDClass, "/Game/Widgets/WB_PlayerHUD");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
@@ -92,6 +97,9 @@ void ACPlayer::BeginPlay()
 		}
 	}
 
+	// Player 기본 UI 생성
+	PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
+	PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -139,7 +147,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 void ACPlayer::OnTestInventory()
 {
-	Inventory->DEBUG_PrintContents();
+	PlayerHUD->DisplayPlayerMenu();
 }
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {

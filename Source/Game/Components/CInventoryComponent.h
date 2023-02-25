@@ -5,6 +5,7 @@
 #include "Engine/EngineBaseTypes.h"
 #include "Engine/Texture2D.h"
 #include "Interfaces/IInteract.h"
+#include "Engine/DataTable.h"
 #include "CInventoryComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -12,26 +13,26 @@ struct FSlot
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		FName ItemID;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		int32 Quantity;
 };
 
 USTRUCT(BlueprintType)
-struct FItem
+struct FItem : public FTableRowBase	// Editor에서 인식하게 하기 위해
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		FText Name;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		FText Description;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UTexture2D* Thumbnail;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		TSubclassOf<AActor> ItemClass;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		int32 StckSize;
 };
 
@@ -78,6 +79,10 @@ public:
 
 public:
 	void DEBUG_PrintContents();
+
+public:
+	UPROPERTY(BlueprintReadWrite, Replicated)
+		TArray<FSlot> Content;
 private:
 	UPROPERTY(EditDefaultsOnly)
 		int32 InventorySize;
@@ -85,8 +90,6 @@ private:
 		float InteractionRange = 20.f;
 	UPROPERTY(EditDefaultsOnly)
 		class UDataTable* ItemTable;
-	UPROPERTY(Replicated)
-		TArray<FSlot> Content;
 private:
 	class AActor* LookAtActor;
 	bool bActive = false;
