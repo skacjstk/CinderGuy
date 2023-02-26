@@ -87,7 +87,7 @@ void ACPlayer::BeginPlay()
 	Action->SetUnarmedMode();
 	Controller = Cast<APlayerController>(GetController());
 	// "Action" 매핑된 키 값 가져오기
-	if (!!Controller)
+	if (!!Controller)	// CHelpers 에 등록했음
 	{
 		const TArray<FInputActionKeyMapping>& mapping = Controller->PlayerInput->GetKeysForAction("Action");
 		for (const FInputActionKeyMapping map : mapping) {		
@@ -144,10 +144,6 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ACPlayer::OnInteract);
 	PlayerInputComponent->BindAction("Inventory", EInputEvent::IE_Pressed, this, &ACPlayer::OnTestInventory);
-}
-void ACPlayer::OnTestInventory()
-{
-	PlayerHUD->DisplayPlayerMenu();
 }
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {
@@ -274,6 +270,11 @@ void ACPlayer::OnAim()
 void ACPlayer::OffAim()
 {
 	Action->DoOffAim();
+}
+
+void ACPlayer::OnTestInventory()
+{
+	PlayerHUD->DisplayPlayerMenu();
 }
 
 void ACPlayer::OnInteract()

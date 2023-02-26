@@ -18,6 +18,7 @@ void UCWidget_InventoryGrid::NativePreConstruct()
 {
 	if(!!InventoryComponent)
 	{
+		int index = 0;
 		for (FSlot& slot : InventoryComponent->Content)
 		{
 			// 스폰시 노출 해도 CreateWidget은 그게 안되는 것 같음.
@@ -25,9 +26,11 @@ void UCWidget_InventoryGrid::NativePreConstruct()
 			widgetSlot->InitItem(
 				slot.ItemID,
 				slot.Quantity,
-				InventoryComponent
+				InventoryComponent,
+				index
 			);
 			ItemGrid->AddChildToWrapBox(widgetSlot);
+			++index;
 		}
 	}
 }

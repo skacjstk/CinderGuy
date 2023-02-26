@@ -12,8 +12,11 @@ public:
 	UCWidget_InventrorySlot(const FObjectInitializer& ObjectInitializer);
 
 public:
-	void InitItem(FName InItemID, int32 InQuantity, class UCInventoryComponent* InInventoryComponent);
+	void InitItem(FName InItemID, int32 InQuantity, class UCInventoryComponent* InInventoryComponent, int32 InIndex);
+	virtual bool Initialize() override;
 protected:
+	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;	// DragDrop 마우스이벤트
+//	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation); // DragDrop 감지 이벤트(BP에서 구현)
 	virtual void NativePreConstruct() override;
 	UFUNCTION(BlueprintCallable)
 		void InitWidgets(class UButton* InButton, class  UImage* InImage, class UTextBlock* InText, class  USizeBox* InBox);
@@ -31,10 +34,13 @@ protected:
 		FName ItemID = "None";
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemValue", meta = (ExposeOnSpawn = true))
 		int32 Quantity;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemValue", meta = (ExposeOnSpawn = true))
+		int32 ContentIndex;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true))
 		class UCInventoryComponent* InventoryComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UDataTable* ItemTable;
+	TSubclassOf<class UCWidget_DragPreview> PreviewClass;
 
 };

@@ -203,12 +203,10 @@ void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 	// Target 넣어놓긴 했는데 쓸일이 있나?
 	if (!!LookAtActor)
 	{	
-		CLog::Print("LookAtACtor Pass");
-		// GetComponent는 또 되네??			// Todo:: ItemDataComponent를 못찾는 문제 해결하기
+		// GetComponent는 또 되네??
 		UCItemDataComponent* item = CHelpers::GetComponent<UCItemDataComponent>(LookAtActor);		
 		if (!!item)
 		{
-			CLog::Print("itemComp Pass");
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
 		}
 	}
