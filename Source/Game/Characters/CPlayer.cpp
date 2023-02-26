@@ -103,7 +103,7 @@ void ACPlayer::BeginPlay()
 	if (GetController()->IsLocalPlayerController())
 	{
 		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
-	//	PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
+		PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
 	}
 
 }

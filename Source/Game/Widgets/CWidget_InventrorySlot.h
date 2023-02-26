@@ -15,11 +15,12 @@ public:
 	void InitItem(FName InItemID, int32 InQuantity, class UCInventoryComponent* InInventoryComponent, int32 InIndex);
 	virtual bool Initialize() override;
 protected:
-	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;	// DragDrop 마우스이벤트
-//	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation); // DragDrop 감지 이벤트(BP에서 구현)
+//	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;	// DragDrop 마우스이벤트
 	virtual void NativePreConstruct() override;
 	UFUNCTION(BlueprintCallable)
 		void InitWidgets(class UButton* InButton, class  UImage* InImage, class UTextBlock* InText, class  USizeBox* InBox);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		FKey GetActionEventKey(FName ActionName);
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (BindWidget))
 	class UButton* ItemButton;

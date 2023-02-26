@@ -27,8 +27,12 @@ UCWidget_InventrorySlot::UCWidget_InventrorySlot(const FObjectInitializer& Objec
 
 bool UCWidget_InventrorySlot::Initialize()
 {
+	if (Super::Initialize())
+	{
+		return true;
+	}
 //	ItemButton->OnClicked.AddDynamic(this, &UCWidget_InventrorySlot::OnItemClicked);	// DragDrop은 이렇게 반환하는게 아님
-	return true;
+	return false;
 }
 
 void UCWidget_InventrorySlot::InitItem(FName InItemID, int32 InQuantity, UCInventoryComponent* InInventoryComponent, int32 InIndex)
@@ -40,42 +44,26 @@ void UCWidget_InventrorySlot::InitItem(FName InItemID, int32 InQuantity, UCInven
 	PreConstruct(true);
 }
 
-FReply UCWidget_InventrorySlot::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (ItemID.IsEqual("None") || ItemID.IsEqual(""))
-	{
-		return FReply::Unhandled();
-	}
-	FName ActionName = "Action";
-	FKey keyEvent;
-	if (InMouseEvent.IsMouseButtonDown(keyEvent = CHelpers::GetKeyName<FInputActionKeyMapping>(UGameplayStatics::GetPlayerController(GetWorld(), 0), ActionName)))
-	{
-		UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, keyEvent);
-
-		return FReply::Handled();
-	}
-	return FReply::Unhandled();
-}
-
-//void UCWidget_InventrorySlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+//FReply UCWidget_InventrorySlot::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 //{
-//	UCWidget_DragPreview* dragPreview = CreateWidget<UCWidget_DragPreview>(GetWorld(), PreviewClass, "DragPreview");
-//	dragPreview->ItemID = ItemID;
-//	UWidgetBlueprintLibrary::CreateDragDropOperation();
-//
+////	Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//	if (ItemID.IsEqual("None") || ItemID.IsEqual(""))
+//	{		
+//		return FReply::Unhandled();
+//	}
+//	FName ActionName = "Action";
+//	FKey keyEvent;
+//	if (InMouseEvent.IsMouseButtonDown(keyEvent = CHelpers::GetKeyName<FInputActionKeyMapping>(UGameplayStatics::GetPlayerController(GetWorld(), 0), ActionName)))
+//	{
+//		UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, keyEvent);
+//		return FReply::Handled();		
+//	}
+//	return FReply::Unhandled();
 //}
 
 void UCWidget_InventrorySlot::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	UE_LOG(LogTemp, Warning, TEXT("Slot itemID is %s"), *ItemID.ToString());
-	TArray<FName> rowNames;
-
-	rowNames = ItemTable->GetRowNames();
-	for (FName& rowName : rowNames)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("rowName is %s"), *rowName.ToString());
-	}
 	if (ItemTable == nullptr)
 	{
 		CLog::Print("Slot DT_Item is Nullptr");
@@ -84,29 +72,6 @@ void UCWidget_InventrorySlot::NativePreConstruct()
 	else
 	{
 		FItem* item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
-
-		if (!ItemImage)
-		{
-			CLog::Print("No");
-		}
-		if (!BoxQuantity)
-		{
-
-			CLog::Print("No");
-		}
-		if (!TextQuantity)
-		{
-
-			CLog::Print("No");
-		}
-		if (!ItemButton)
-		{
-			CLog::Print("No");
-
-		}
-
-		return;
-
 
 		if (item != nullptr)
 		{
@@ -138,4 +103,10 @@ void UCWidget_InventrorySlot::InitWidgets(UButton* InButton, UImage* InImage, UT
 	ItemImage = InImage;
 	TextQuantity = InText; 
 	BoxQuantity = InBox;
+}
+
+FKey UCWidget_InventrorySlot::GetActionEventKey(FName ActionName)
+{
+	return CHelpers::GetKeyName<FInputActionKeyMapping>
+		(UGameplayStatics::GetPlayerController(GetWorld(), 0), ActionName);
 }
