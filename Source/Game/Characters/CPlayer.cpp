@@ -98,8 +98,14 @@ void ACPlayer::BeginPlay()
 	}
 
 	// Player 기본 UI 생성
-	PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
-	PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
+
+
+	if (GetController()->IsLocalPlayerController())
+	{
+		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
+	//	PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
+	}
+
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -305,6 +311,7 @@ void ACPlayer::Begin_BackStep()
 void ACPlayer::End_Roll()
 {
 	State->SetIdleMode();
+	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
 	bUseControllerRotationYaw = lookForward;
@@ -314,6 +321,7 @@ void ACPlayer::End_Roll()
 void ACPlayer::End_BackStep()
 {
 	State->SetIdleMode();
+	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
 	bUseControllerRotationYaw = lookForward;

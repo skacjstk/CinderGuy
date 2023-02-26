@@ -67,7 +67,7 @@ FReply UCWidget_InventrorySlot::NativeOnPreviewMouseButtonDown(const FGeometry& 
 
 void UCWidget_InventrorySlot::NativePreConstruct()
 {
-	NativePreConstruct();
+	Super::NativePreConstruct();
 	UE_LOG(LogTemp, Warning, TEXT("Slot itemID is %s"), *ItemID.ToString());
 	TArray<FName> rowNames;
 
