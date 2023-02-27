@@ -16,7 +16,10 @@ public:
 
 protected:
 	virtual void NativePreConstruct() override;
-
+private:
+	// 작동 안되는건 아닌데, DragDropOperation 생성을 동시에 못해서 못씀(BP 구현으로 대체)
+	UFUNCTION()
+		void UpdatedInventory();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UCInventoryComponent* InventoryComponent;

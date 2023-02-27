@@ -23,18 +23,15 @@ void ACTestItem::BeginPlay()
 void ACTestItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 bool ACTestItem::LookAt_Implementation(AActor* InActor, FText& OutMessage)
 {
-	CLog::Print("Here is CPP");
 	return false;
 }
 
 bool ACTestItem::InteractWith_Implementation(ACharacter* playerCharacter)
 {
-	CLog::Print("Here is CPP");
 	return false;
 }
 

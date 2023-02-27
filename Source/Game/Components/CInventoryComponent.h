@@ -8,6 +8,8 @@
 #include "Engine/DataTable.h"
 #include "CInventoryComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
+
 USTRUCT(BlueprintType)
 struct FSlot
 {
@@ -61,6 +63,22 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void ToggleInventroy();
+	void TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+
+public:
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
+		void Server_TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+	void Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+
+	UFUNCTION(Reliable, Server)	// 서버에서 실행: 
+		void Server_Interact(class AActor* Target);
+	void Server_Interact_Implementation(class AActor* Target);
+
+	void DEBUG_PrintContents();
+	UFUNCTION(Reliable, NetMulticast)
+		void MC_Update();	// 델리게이트 호출
+	void MC_Update_Implementation();	// 델리게이트 호출
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -73,14 +91,8 @@ protected:
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
 public:
-	UFUNCTION(Reliable, Server)	// 서버에서 실행: 아니이거 전혀 다른데서 문제생기네
-		void Server_Interact(class AActor* Target);
-	void Server_Interact_Implementation(class AActor* Target);
-
-public:
-	void DEBUG_PrintContents();
-
-public:
+	UPROPERTY(BlueprintAssignable, Replicated)
+		FInventoryUpdated OnInventoryUpdated;		// 델리게이트
 	UPROPERTY(BlueprintReadWrite, Replicated)
 		TArray<FSlot> Content;
 private:

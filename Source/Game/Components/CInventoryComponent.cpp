@@ -220,14 +220,46 @@ void UCInventoryComponent::DEBUG_PrintContents()
 	}
 }
 
+void UCInventoryComponent::MC_Update_Implementation()
+{
+	if (OnInventoryUpdated.IsBound())
+		OnInventoryUpdated.Broadcast();
+}
+
 void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCInventoryComponent, Content);
+	DOREPLIFETIME(UCInventoryComponent, OnInventoryUpdated);	// 델리게이트도 리플리케이트 등록이 되겠지?
 }
 
 void UCInventoryComponent::ToggleInventroy()
 {
 	bActive = !bActive;
 	// Client 만 
+}
+
+void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
+{
+	if (InSourceIndex < 0) return;	// Index 검사
+	FSlot sourceSlot = InSourceInventory->Content[InSourceIndex];	// 기존 아이템
+
+	// 같으면 아이템 합치기, 다르면 Swap
+	// 아이템이 같으면 합치기, 최대수량을 파악해야 함.
+	if (sourceSlot.ItemID == this->Content[InDestinationIndex].ItemID)
+	{
+	}
+	else  // 아이템이 다르면 Swap
+	{		
+		InSourceInventory->Content[InSourceIndex] = this->Content[InDestinationIndex];
+		this->Content[InDestinationIndex] = sourceSlot;
+		MC_Update();
+		InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
+	}
+}
+
+void UCInventoryComponent::Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
+{
+	TransferSlots(InSourceIndex, InSourceInventory, InDestinationIndex);
+
 }
