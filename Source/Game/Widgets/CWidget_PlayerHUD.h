@@ -9,7 +9,8 @@ class GAME_API UCWidget_PlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "HUD")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "HUD")
 		void DisplayPlayerMenu();
-	virtual void DisplayPlayerMenu_Implementation();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "HUD")
+		void ShowContainer(UCInventoryComponent* ContainerInventoryComp);
 };

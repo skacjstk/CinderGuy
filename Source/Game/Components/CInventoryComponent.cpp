@@ -8,6 +8,7 @@
 #include "Components/CItemDataComponent.h"
 #include "Global.h"
 #include "Engine/DataTable.h"
+#include "Characters/CPlayer.h"
 
 UCInventoryComponent::UCInventoryComponent()
 {
@@ -203,13 +204,29 @@ void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 	// Target 넣어놓긴 했는데 쓸일이 있나?
 	if (!!LookAtActor)
 	{	
-		// GetComponent는 또 되네??
 		UCItemDataComponent* item = CHelpers::GetComponent<UCItemDataComponent>(LookAtActor);		
 		if (!!item)
 		{
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
 		}
+		else
+		{	// Container 일 때의 기능 추가
+			ACPlayer* player = Cast<ACPlayer>(GetOwner());
+			if (player == nullptr) return;
+			LookAtActor->SetOwner(player);// Todo: 만약 HUD를 Controller에 넣을 경우 얘도 바뀌어야 한다.
+			OnLocalInteract(LookAtActor, player);
+		}
+		// 추가: Container 일 때에 대한 기능 추가
 	}
+}
+
+void UCInventoryComponent::OnLocalInteract_Implementation(AActor* Target, AActor* Interactor)
+{
+	IIInteract* interact = Cast<IIInteract>(Target);
+	if (!!interact)
+		interact->Execute_InteractWith(Target, Cast<ACharacter>(Interactor));
+	else
+		CLog::Print("LoaclInteract Fail: you need Check Target's is work only cpp interface Implemet scope");
 }
 
 void UCInventoryComponent::DEBUG_PrintContents()

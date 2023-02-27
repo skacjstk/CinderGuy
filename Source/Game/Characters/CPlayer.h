@@ -36,7 +36,6 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCInventoryComponent* Inventory;
 
-
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 	class UCWidget_PlayerHUD* PlayerHUD;
@@ -56,6 +55,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	FGenericTeamId GetGenericTeamId() const override;	// Interface 재정의 
 
+	// Todo: 이걸 Controller에 넣을까 고민중
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		class UCWidget_PlayerHUD* GetPlayerHUD() { return PlayerHUD; }
 private:
 	//Axis Mapping
 	void OnMoveForward(float InAxis);

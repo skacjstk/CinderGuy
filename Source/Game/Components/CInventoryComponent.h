@@ -59,6 +59,7 @@ public:
 	bool CreateNewStack(FName& InItemID, int32 InQuantity, bool IsVerified, int32 InVerifyIndex);
 
 	FORCEINLINE int32 GetInventorySize() { return InventorySize; }
+	FORCEINLINE void SetInventorySize(int32 newSize) { InventorySize = newSize; }
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -73,6 +74,10 @@ public:
 	UFUNCTION(Reliable, Server)	// 서버에서 실행: 
 		void Server_Interact(class AActor* Target);
 	void Server_Interact_Implementation(class AActor* Target);
+
+	UFUNCTION(Client, Unreliable)
+		void OnLocalInteract(AActor* Target, AActor* Interactor);
+	void OnLocalInteract_Implementation(AActor* Target, AActor* Interactor);
 
 	void DEBUG_PrintContents();
 	UFUNCTION(Reliable, NetMulticast)
