@@ -5,15 +5,16 @@
 ACChest::ACChest()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
-	Inventory->SetInventorySize(8);
+	CHelpers::CreateActorComponent(this, &InventoryComponent, "Inventory");
+	InventoryComponent->SetInventorySize(8);
 }
 
 // Called when the game starts or when spawned
 void ACChest::BeginPlay()
 {
 	Super::BeginPlay();
-	Inventory->Content.SetNumZeroed(Inventory->GetInventorySize());// 인벤토리 사이즈 초기화
+	if(!!InventoryComponent)
+		InventoryComponent->Content.SetNumZeroed(InventoryComponent->GetInventorySize());// 인벤토리 사이즈 초기화
 }
 
 // Called every frame

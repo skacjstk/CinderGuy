@@ -26,5 +26,5 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
-		class UCInventoryComponent* Inventory;
+		class UCInventoryComponent* InventoryComponent;
 };
