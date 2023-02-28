@@ -49,7 +49,7 @@ void UCInventoryComponent::InteractionTrace()
 	// 그래도 대략 맞는것 같다
 
 	// 새로운 채널 3번
-	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 15, ETraceTypeQuery::TraceTypeQuery3, false, ignoreActor, EDrawDebugTrace::ForOneFrame, hitResult, true))
+	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 15, ETraceTypeQuery::TraceTypeQuery3, false, ignoreActor, EDrawDebugTrace::None, hitResult, true))
 	{
 		if (LookAtActor != hitResult.GetActor())
 		{
@@ -267,14 +267,13 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 	{
 		int32 maxQuantity = GetMaxStackSize(sourceSlot.ItemID);
 		int32 cur = (Content[InDestinationIndex].Quantity + sourceSlot.Quantity) - maxQuantity;
-		CLog::Print(cur);
 		int remainQuantity = FMath::Clamp(cur, (int32)0 , maxQuantity);
 		if (remainQuantity > 0)	// 0보다 크다는 건, 잔여량이 있다는 뜻
 		{
 			InSourceInventory->Content[InSourceIndex].Quantity = remainQuantity;
 			this->Content[InDestinationIndex].Quantity = maxQuantity;
 		}
-		else // 잔여량이 없으면, Dest 쪽에 합병해버리기 
+		else // 잔여량이 없으면, Dest 쪽에 합병해버리기
 		{
 			this->Content[InDestinationIndex].Quantity += InSourceInventory->Content[InSourceIndex].Quantity;
 			InSourceInventory->Content[InSourceIndex].Quantity = 0;
