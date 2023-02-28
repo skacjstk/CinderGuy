@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/IInteract.h"
-#include "CTestItem.generated.h"
+#include "CItemBase.generated.h"
 
 UCLASS()
-class GAME_API ACTestItem : public AActor , public IIInteract
+class GAME_API ACItemBase : public AActor , public IIInteract
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ACTestItem();
+	ACItemBase();
 
 protected:
 	// Called when the game starts or when spawned

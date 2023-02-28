@@ -61,7 +61,7 @@ void UCInventoryComponent::InteractionTrace()
 			if (bImpl)
 			{						
 				IIInteract* interfaceActor = Cast<IIInteract>(LookAtActor);
-				if(!!interfaceActor)
+				if (!!interfaceActor)
 					interfaceActor->Execute_LookAt(LookAtActor, LookAtActor, test);	// Implementation 사용시 바로 그 함수가 호출됨.
 			}
 			// 객체가 블루프린트 단에서 Interface가 설치되면 작동하지 않음 (Cpp 이라면 컴파일 타임에 이미 들어있어야 하는 듯: CItem 만들때 상속하여 해결하기)
@@ -255,7 +255,7 @@ void UCInventoryComponent::ToggleInventroy()
 	bActive = !bActive;
 	// Client 만 
 }
-
+// Drop에서 호출해서 DestComp는 필요가없다
 void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
 {
 	if (InSourceIndex < 0) return;	// Index 검사
@@ -265,14 +265,29 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 	// 아이템이 같으면 합치기, 최대수량을 파악해야 함.
 	if (sourceSlot.ItemID == this->Content[InDestinationIndex].ItemID)
 	{
+		int32 maxQuantity = GetMaxStackSize(sourceSlot.ItemID);
+		int32 cur = (Content[InDestinationIndex].Quantity + sourceSlot.Quantity) - maxQuantity;
+		CLog::Print(cur);
+		int remainQuantity = FMath::Clamp(cur, (int32)0 , maxQuantity);
+		if (remainQuantity > 0)	// 0보다 크다는 건, 잔여량이 있다는 뜻
+		{
+			InSourceInventory->Content[InSourceIndex].Quantity = remainQuantity;
+			this->Content[InDestinationIndex].Quantity = maxQuantity;
+		}
+		else // 잔여량이 없으면, Dest 쪽에 합병해버리기 
+		{
+			this->Content[InDestinationIndex].Quantity += InSourceInventory->Content[InSourceIndex].Quantity;
+			InSourceInventory->Content[InSourceIndex].Quantity = 0;
+		}		
 	}
 	else  // 아이템이 다르면 Swap
 	{		
 		InSourceInventory->Content[InSourceIndex] = this->Content[InDestinationIndex];
 		this->Content[InDestinationIndex] = sourceSlot;
-		MC_Update();
-		InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
 	}
+
+	MC_Update();
+	InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
 }
 
 void UCInventoryComponent::Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)

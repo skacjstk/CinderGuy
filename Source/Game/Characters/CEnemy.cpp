@@ -205,6 +205,8 @@ void ACEnemy::End_Dead()
 
 void ACEnemy::RestoreLogoColor()
 {
+	if (IsPendingKill()) return;
+
 	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
 	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
 	LogoMaterial->SetScalarParameterValue("IsHitted", 0);
