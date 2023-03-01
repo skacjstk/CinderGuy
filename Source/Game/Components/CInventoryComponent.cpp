@@ -19,7 +19,10 @@ UCInventoryComponent::UCInventoryComponent()
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
 
-	CHelpers::GetAsset<UCWidget_DisplayMessage>(&DisplayMessage,TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
+	ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
+	if (defaultDisplay.Succeeded())	
+		DisplayMessage = CreateWidget<UCWidget_DisplayMessage>(GetWorld(), defaultDisplay.Class);	
+
 }
 
 
@@ -27,12 +30,16 @@ void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();	
 	Content.SetNumZeroed(InventorySize);// 인벤토리 사이즈 초기화
+	if (!!DisplayMessage)
+	{
+		DisplayMessage->SetOwningPlayer(Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)));
+		DisplayMessage->AddToViewport();
+	}
 }
 
 void UCInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	InteractionTrace();
 }
 
@@ -62,13 +69,20 @@ void UCInventoryComponent::InteractionTrace()
 			bool bImpl = LookAtActor->Implements<UIInteract>();
 			if (bImpl)
 			{				
-				FText message;
 				IIInteract* interfaceActor = Cast<IIInteract>(LookAtActor);
 				if (!!interfaceActor)
 				{
+					FText message;
 					message = interfaceActor->Execute_LookAt(LookAtActor, LookAtActor);	// Implementation 사용시 바로 그 함수가 호출됨.
-					int32 itemQuantity = Cast<ACItemBase>(LookAtActor)->GetItemData()->Quantity;
-					DisplayMessage->ShowMessage(itemQuantity, message);
+				
+						ACItemBase* item = Cast<ACItemBase>(LookAtActor);
+						int32 itemQuantity = 0;
+						if (!!item)	// 아이템이 있으면 수량 받아오기, 아니라면 그냥 0
+						{
+							itemQuantity = item->GetItemData()->Quantity;
+						}					
+					if(!!DisplayMessage)
+						DisplayMessage->ShowMessage(message, itemQuantity);
 				}
 			}
 			// 객체가 블루프린트 단에서 Interface가 설치되면 작동하지 않음 (Cpp 이라면 컴파일 타임에 이미 들어있어야 하는 듯: CItem 만들때 상속하여 해결하기)
@@ -78,6 +92,8 @@ void UCInventoryComponent::InteractionTrace()
 	else
 	{
 		LookAtActor = nullptr;
+		if(!!DisplayMessage)
+			DisplayMessage->HiddenMessage();
 	}
 }
 
@@ -111,6 +127,7 @@ bool UCInventoryComponent::AddToInventory(FName InitemID, int32 InQuantity, int3
 		}//end if
 	}//end while
 	OutQuantityRemaining = quantityRemaining;
+	MC_Update();
 	return !hasFailed;	// 실패여부 역반환 반환값이 true면 성공임
 }
 
@@ -184,12 +201,6 @@ bool UCInventoryComponent::CreateNewStack(FName& InItemID, int32 InQuantity, boo
 		return true;
 	}
 	return false;
-}
-
-
-FText UCInventoryComponent::LookAt_Implementation(AActor* InActor)
-{	
-	return FText();
 }
 
 bool UCInventoryComponent::InteractWith_Implementation(class ACharacter* playerCharacter)

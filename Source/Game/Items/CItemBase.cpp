@@ -16,12 +16,6 @@ void ACItemBase::BeginPlay()
 	Super::BeginPlay();	
 }
 
-
-FText ACItemBase::LookAt_Implementation(AActor* InActor)
-{
-	return FText();
-}
-
 bool ACItemBase::InteractWith_Implementation(ACharacter* playerCharacter)
 {
 	return false;

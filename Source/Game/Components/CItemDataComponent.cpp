@@ -19,11 +19,6 @@ void UCItemDataComponent::BeginPlay()
 	GetOwner()->SetReplicates(true);	
 }
 
-FText UCItemDataComponent::LookAt_Implementation(AActor* InActor)
-{
-	return FText();
-}
-
 bool UCItemDataComponent::InteractWith_Implementation(class ACharacter* InPlayerCharacter)
 {
 	UCInventoryComponent* inventory = CHelpers::GetComponent<UCInventoryComponent>(InPlayerCharacter);

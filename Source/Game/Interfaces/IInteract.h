@@ -15,9 +15,8 @@ class GAME_API IIInteract
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interact")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Interact")
 		FText LookAt(AActor* InActor);
-	virtual FText LookAt_Implementation(class AActor* InActor);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interact")
 		bool InteractWith(class ACharacter* playerCharacter);

@@ -24,7 +24,6 @@ public:
 //	// Called every frame
 //	virtual void Tick(float DeltaTime) override;
 	// IInteract 상속
-	virtual FText LookAt_Implementation(AActor* InActor) override;
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
 	class UStaticMeshComponent* GetMesh() { return ItemMesh; }

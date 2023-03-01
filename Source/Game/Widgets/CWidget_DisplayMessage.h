@@ -11,4 +11,6 @@ class GAME_API UCWidget_DisplayMessage : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DisplayMessage")
 		void ShowMessage(const FText& Message, int32 InQuantity);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DisplayMessage")
+		void HiddenMessage();
 };

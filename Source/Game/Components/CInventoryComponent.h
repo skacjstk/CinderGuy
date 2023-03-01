@@ -101,7 +101,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	// IInteract 상속
-	virtual FText LookAt_Implementation(AActor* InActor) override;
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
 public:
@@ -119,6 +118,6 @@ private:
 private:
 	class AActor* LookAtActor;
 	bool bActive = false;
-	class UCWidget_DisplayMessage DisplayMessage;
+	class UCWidget_DisplayMessage* DisplayMessage;
 
 };
