@@ -1,9 +1,9 @@
 #include "IInteract.h"
 #include "GameFramework/Character.h"
 
-bool IIInteract::LookAt_Implementation(AActor* InActor, FText& OutMessage)
+FText IIInteract::LookAt_Implementation(AActor* InActor)
 {
-	return false;
+	return FText();
 }
 
 bool IIInteract::InteractWith_Implementation(class ACharacter* playerCharacter)

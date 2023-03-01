@@ -9,6 +9,7 @@
 #include "Global.h"
 #include "Engine/DataTable.h"
 #include "Characters/CPlayer.h"
+#include "Widgets/CWidget_DisplayMessage.h"
 
 UCInventoryComponent::UCInventoryComponent()
 {
@@ -17,6 +18,8 @@ UCInventoryComponent::UCInventoryComponent()
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
+
+	CHelpers::GetAsset<UCWidget_DisplayMessage>(&DisplayMessage,TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
 }
 
 
@@ -55,15 +58,18 @@ void UCInventoryComponent::InteractionTrace()
 		if (LookAtActor != hitResult.GetActor())
 		{
 			LookAtActor = hitResult.GetActor();	// 대상이 같지 않으면 새로 삽입 후 실행
-
-			FText test = FText::FromString(LookAtActor->GetName());
-
+			
 			bool bImpl = LookAtActor->Implements<UIInteract>();
 			if (bImpl)
-			{						
+			{				
+				FText message;
 				IIInteract* interfaceActor = Cast<IIInteract>(LookAtActor);
 				if (!!interfaceActor)
-					interfaceActor->Execute_LookAt(LookAtActor, LookAtActor, test);	// Implementation 사용시 바로 그 함수가 호출됨.
+				{
+					message = interfaceActor->Execute_LookAt(LookAtActor, LookAtActor);	// Implementation 사용시 바로 그 함수가 호출됨.
+					int32 itemQuantity = Cast<ACItemBase>(LookAtActor)->GetItemData()->Quantity;
+					DisplayMessage->ShowMessage(itemQuantity, message);
+				}
 			}
 			// 객체가 블루프린트 단에서 Interface가 설치되면 작동하지 않음 (Cpp 이라면 컴파일 타임에 이미 들어있어야 하는 듯: CItem 만들때 상속하여 해결하기)
 			// https://forums.unrealengine.com/t/c-uinterface-cast-failing-and-other-problems/95673/2
@@ -181,13 +187,9 @@ bool UCInventoryComponent::CreateNewStack(FName& InItemID, int32 InQuantity, boo
 }
 
 
-bool UCInventoryComponent::LookAt_Implementation(AActor* InActor, FText& OutMessage)
+FText UCInventoryComponent::LookAt_Implementation(AActor* InActor)
 {	
-	if (!!InActor)
-		CLog::Print(InActor->GetName());
-	else
-		CLog::Print(*OutMessage.ToString());
-	return true;
+	return FText();
 }
 
 bool UCInventoryComponent::InteractWith_Implementation(class ACharacter* playerCharacter)
@@ -298,11 +300,11 @@ void UCInventoryComponent::Server_DropItem_Implementation(FName InItemID, int32 
 	{
 		transform.SetLocation(GetOwner()->GetActorLocation());
 	}
-	for (int32 i = 0; i < InQuantity; ++i)
-	{
-		ACItemBase* itemActor = GetWorld()->SpawnActor<ACItemBase>(item->ItemClass, transform);	// 재대로 생성이 될까?		
-	}
-	// Todo: 아이템 떨구기를 어떻게 할 지 확실하게 하기
+	// 그냥 갯수를 주는 걸로 변경
+
+	ACItemBase* itemActor = GetWorld()->SpawnActor<ACItemBase>(item->ItemClass, transform);	// 재대로 생성이 될까?	
+	itemActor->GetItemData()->Quantity = InQuantity;
+	// Todo: 여러개 소환 X, 그냥 n개짜리 소환 ㄱ
 }
 
 void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

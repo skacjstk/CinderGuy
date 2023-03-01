@@ -17,9 +17,9 @@ void ACItemBase::BeginPlay()
 }
 
 
-bool ACItemBase::LookAt_Implementation(AActor* InActor, FText& OutMessage)
+FText ACItemBase::LookAt_Implementation(AActor* InActor)
 {
-	return false;
+	return FText();
 }
 
 bool ACItemBase::InteractWith_Implementation(ACharacter* playerCharacter)

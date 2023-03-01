@@ -98,11 +98,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// IInteract 상속
-	virtual bool LookAt_Implementation(AActor* InActor, FText& OutMessage) override;
+	virtual FText LookAt_Implementation(AActor* InActor) override;
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
 public:
@@ -120,5 +119,6 @@ private:
 private:
 	class AActor* LookAtActor;
 	bool bActive = false;
+	class UCWidget_DisplayMessage DisplayMessage;
 
 };

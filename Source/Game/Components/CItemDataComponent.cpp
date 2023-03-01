@@ -19,12 +19,9 @@ void UCItemDataComponent::BeginPlay()
 	GetOwner()->SetReplicates(true);	
 }
 
-bool UCItemDataComponent::LookAt_Implementation(AActor* InActor, FText& OutMessage)
+FText UCItemDataComponent::LookAt_Implementation(AActor* InActor)
 {
-	CLog::Print("CitemDataComponent: LookAt");
-	CLog::Print(InActor->GetName());
-	CLog::Print(OutMessage.ToString());
-	return true;
+	return FText();
 }
 
 bool UCItemDataComponent::InteractWith_Implementation(class ACharacter* InPlayerCharacter)
