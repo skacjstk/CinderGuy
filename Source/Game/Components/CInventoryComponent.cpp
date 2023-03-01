@@ -33,6 +33,7 @@ void UCInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	InteractionTrace();
 }
 
+
 void UCInventoryComponent::InteractionTrace()
 {
 	FHitResult hitResult;
@@ -72,10 +73,6 @@ void UCInventoryComponent::InteractionTrace()
 	{
 		LookAtActor = nullptr;
 	}
-}
-
-void UCInventoryComponent::RemoveFromInventory()
-{
 }
 
 bool UCInventoryComponent::AddToInventory(FName InitemID, int32 InQuantity, int32& OutQuantityRemaining)
@@ -131,8 +128,8 @@ int32 UCInventoryComponent::FindSlot(FName& InItemID, bool& OutFoundSlot)
 
 int32 UCInventoryComponent::GetMaxStackSize(FName& InItemID)
 {
-	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");	// ContextString은 에러 메시지
-	if (!!item)
+	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
+	if(!!item)
 		return item->StckSize;
 	else
 		return -1;
@@ -241,6 +238,71 @@ void UCInventoryComponent::MC_Update_Implementation()
 {
 	if (OnInventoryUpdated.IsBound())
 		OnInventoryUpdated.Broadcast();
+}
+
+void UCInventoryComponent::RemoveFromInventory(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed)
+{
+	FName selectedItem = Content[InSourceIndex].ItemID;
+	int32 selectedQuantity = Content[InSourceIndex].Quantity;
+
+	// 하나만 버리기 버리기
+	if (!IsRemoveWhole || (selectedQuantity == 1))
+	{
+		Content[InSourceIndex].Quantity -= 1;	// 1 깎기
+		if (!IsConsumed)
+		{
+			Server_DropItem(selectedItem, 1);	// 아이템 1개 떨구기
+		}
+	}
+	else // 전체 버리기
+	{	// Slot 없애버리기
+		Content[InSourceIndex].ItemID = "";
+		Content[InSourceIndex].Quantity = 0;
+		if (!IsConsumed)	// 아이템을 사용해서 없애버린게 아니라면
+		{
+			Server_DropItem(selectedItem, selectedQuantity);
+		}
+	}
+	MC_Update();
+}
+
+void UCInventoryComponent::Server_RemoveItem_Implementation(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed)
+{
+	RemoveFromInventory(InSourceIndex, IsRemoveWhole, IsConsumed);
+}
+
+void UCInventoryComponent::Server_DropItem_Implementation(FName InItemID, int32 InQuantity)
+{
+	FItem * item = ItemTable->FindRow<FItem>(InItemID, "");	// ContextString은 에러 메시지
+	if (item == nullptr) return;
+
+	FTransform transform;
+
+	FHitResult hitResult;
+	TArray<AActor*> ignoreActor;
+	ignoreActor.Add(GetOwner());
+	FVector start;	// 1인칭 기본에 있던 거
+	APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	FRotator CamRot;
+	controller->GetPlayerViewPoint(start, CamRot);
+	FVector ShootDir = CamRot.Vector();
+
+	start = start + ShootDir * ((GetOwner()->GetActorLocation() - start) | ShootDir);
+	FVector end = start + ShootDir * 500;
+		
+	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), start, end, ETraceTypeQuery::TraceTypeQuery1, false, ignoreActor, EDrawDebugTrace::None, hitResult, true))
+	{
+		transform.SetLocation(hitResult.Location);
+	}
+	else
+	{
+		transform.SetLocation(GetOwner()->GetActorLocation());
+	}
+	for (int32 i = 0; i < InQuantity; ++i)
+	{
+		ACItemBase* itemActor = GetWorld()->SpawnActor<ACItemBase>(item->ItemClass, transform);	// 재대로 생성이 될까?		
+	}
+	// Todo: 아이템 떨구기를 어떻게 할 지 확실하게 하기
 }
 
 void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

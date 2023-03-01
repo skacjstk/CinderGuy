@@ -21,12 +21,17 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
+//	// Called every frame
+//	virtual void Tick(float DeltaTime) override;
 	// IInteract 상속
 	virtual bool LookAt_Implementation(AActor* InActor, FText& OutMessage) override;
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
+	class UStaticMeshComponent* GetMesh() { return ItemMesh; }
+	class UCItemDataComponent* GetItemData() { return CItemData; }
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		class UStaticMeshComponent* ItemMesh;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		class UCItemDataComponent* CItemData;
 };

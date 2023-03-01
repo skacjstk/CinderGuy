@@ -6,6 +6,7 @@
 #include "Engine/Texture2D.h"
 #include "Interfaces/IInteract.h"
 #include "Engine/DataTable.h"
+#include "Items/CItemBase.h"
 #include "CInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
@@ -33,7 +34,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UTexture2D* Thumbnail;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TSubclassOf<AActor> ItemClass;
+		TSubclassOf<class AActor> ItemClass;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		int32 StckSize;
 };
@@ -46,12 +47,12 @@ public:
 	// Sets default values for this component's properties
 	UCInventoryComponent();
 
-	void RemoveFromInventory();
 	void InteractionTrace();
 	bool AddToInventory(FName InitemID, int32 InQuantity, int32& OutQuantityRemaining);	// 인벤토리에 아이템 추가
 	int32 FindSlot(FName& itemID, bool& OutFoundSlot);		// 이미 있는 슬롯인지 검사
 	UFUNCTION(BlueprintPure)
 		int32 GetMaxStackSize(FName& itemID);		// 해당 아이템의 최대 갯수 구하기
+
 	void AddToStack(int32 index, int32 quantity);	// 정해진 갯수만큼 index에 해당하는 Slot에 아이템 추가
 	UFUNCTION(BlueprintCallable)	
 		bool AnyEmptySlotsAvailable(int32& OutEmptyIndex);	// 아무데나 빈 칸이 있는지?
@@ -83,6 +84,15 @@ public:
 	UFUNCTION(Reliable, NetMulticast)
 		void MC_Update();	// 델리게이트 호출
 	void MC_Update_Implementation();	// 델리게이트 호출
+
+	void RemoveFromInventory(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed);
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
+		void Server_RemoveItem(int32 InSourceIndex,  bool IsRemoveWhole, bool IsConsumed);
+	void Server_RemoveItem_Implementation(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed);
+
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
+		void Server_DropItem(FName InItemID, int32 InQuantity);
+	void Server_DropItem_Implementation(FName InItemID, int32 InQuantity);
 
 public:
 	// Called every frame
