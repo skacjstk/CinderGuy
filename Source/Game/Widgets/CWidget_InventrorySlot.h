@@ -14,6 +14,11 @@ public:
 public:
 	void InitItem(FName InItemID, int32 InQuantity, class UCInventoryComponent* InInventoryComponent, int32 InIndex);
 	virtual bool Initialize() override;
+
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		FText GetDescription();
+
 protected:
 //	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;	// DragDrop 마우스이벤트
 	virtual void NativePreConstruct() override;
@@ -43,5 +48,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UDataTable* ItemTable;
 	TSubclassOf<class UCWidget_DragPreview> PreviewClass;
+
+	UPROPERTY(BlueprintReadOnly)
+		FText itemDescription;
 
 };

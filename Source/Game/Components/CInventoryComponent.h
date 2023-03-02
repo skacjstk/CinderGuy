@@ -7,6 +7,7 @@
 #include "Interfaces/IInteract.h"
 #include "Engine/DataTable.h"
 #include "Items/CItemBase.h"
+#include "Items/CItemEffectBase.h"
 #include "CInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
@@ -34,9 +35,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UTexture2D* Thumbnail;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TSubclassOf<class AActor> ItemClass;
+		TSubclassOf<ACItemBase> ItemClass;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		int32 StckSize;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		TSubclassOf<ACItemEffectBase> ItemEffectClass;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -93,6 +96,14 @@ public:
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
 		void Server_DropItem(FName InItemID, int32 InQuantity);
 	void Server_DropItem_Implementation(FName InItemID, int32 InQuantity);
+
+	// 아이템 소비하기
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
+		void Server_ConsumeItem(FName InItemID);
+	void Server_ConsumeItem_Implementation(FName InItemID);
+
+	UFUNCTION(BlueprintCallable, Category = "Slot")
+		void ConsumeItem(int32 index);	// Action Widget에서 호출
 
 public:
 	// Called every frame

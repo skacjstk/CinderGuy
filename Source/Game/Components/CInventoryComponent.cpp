@@ -318,6 +318,27 @@ void UCInventoryComponent::Server_DropItem_Implementation(FName InItemID, int32 
 	// Todo: 여러개 소환 X, 그냥 n개짜리 소환 ㄱ
 }
 
+void UCInventoryComponent::Server_ConsumeItem_Implementation(FName InItemID)
+{
+	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
+	if (item == nullptr) return;
+	if (item->ItemEffectClass == nullptr) return;
+	FTransform transform;
+
+	ACItemEffectBase* itemEffectActor = GetWorld()->SpawnActorDeferred<ACItemEffectBase>(item->ItemEffectClass, transform, GetOwner());
+	transform.SetLocation(GetOwner()->GetActorLocation());
+
+	UGameplayStatics::FinishSpawningActor(itemEffectActor, transform);	// 여기가 진짜위치
+}
+
+void UCInventoryComponent::ConsumeItem(int32 index)
+{
+	FName& id = Content[index].ItemID;
+	int32& quantity = Content[index].Quantity;	
+	Server_ConsumeItem(id);
+	Server_RemoveItem(index, false, true);	// 아이템 소모함.
+}
+
 void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

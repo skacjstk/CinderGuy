@@ -35,6 +35,21 @@ bool UCWidget_InventrorySlot::Initialize()
 	return false;
 }
 
+FText UCWidget_InventrorySlot::GetDescription()
+{
+	if (!itemDescription.IsEmpty())
+		return itemDescription;
+	else
+	{
+		FItem* item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
+		if (!!item)
+		{
+			itemDescription = item->Description;
+		}
+	}
+	return itemDescription;
+}
+
 void UCWidget_InventrorySlot::InitItem(FName InItemID, int32 InQuantity, UCInventoryComponent* InInventoryComponent, int32 InIndex)
 {
 	ItemID = InItemID;
@@ -75,8 +90,8 @@ void UCWidget_InventrorySlot::NativePreConstruct()
 
 		if (item != nullptr)
 		{
+			itemDescription = item->Description;
 			ItemImage->SetBrushFromTexture(item->Thumbnail, false);
-
 			if (Quantity <= 0)
 			{
 				ItemImage->SetVisibility(ESlateVisibility::Hidden);
