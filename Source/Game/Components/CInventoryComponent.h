@@ -130,5 +130,6 @@ private:
 	class AActor* LookAtActor;
 	bool bActive = false;
 	class UCWidget_DisplayMessage* DisplayMessage;
+	bool IsPlayer = false;
 
 };

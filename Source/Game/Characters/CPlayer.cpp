@@ -33,7 +33,6 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
-
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));

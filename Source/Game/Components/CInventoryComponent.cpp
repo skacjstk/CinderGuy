@@ -13,7 +13,17 @@
 
 UCInventoryComponent::UCInventoryComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true; 
+	// 플레이어가 아닐 경우 Tick 꺼버리기 
+	if (!!Cast<ACPlayer>(GetOwner()))
+	{
+		IsPlayer = true;
+		PrimaryComponentTick.bCanEverTick = true;
+	}
+	else
+	{
+		IsPlayer = false;
+		PrimaryComponentTick.bCanEverTick = false;
+	}
 
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
@@ -22,7 +32,6 @@ UCInventoryComponent::UCInventoryComponent()
 	ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
 	if (defaultDisplay.Succeeded())	
 		DisplayMessage = CreateWidget<UCWidget_DisplayMessage>(GetWorld(), defaultDisplay.Class);	
-
 }
 
 
@@ -30,7 +39,7 @@ void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();	
 	Content.SetNumZeroed(InventorySize);// 인벤토리 사이즈 초기화
-	if (!!DisplayMessage)
+	if (!!DisplayMessage && IsPlayer)
 	{
 		DisplayMessage->SetOwningPlayer(Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)));
 		DisplayMessage->AddToViewport();
@@ -351,7 +360,7 @@ void UCInventoryComponent::ToggleInventroy()
 	bActive = !bActive;
 	// Client 만 
 }
-// Drop에서 호출해서 DestComp는 필요가없다
+// Drop에서 호출해서 DestComp는 필요가없다. 아이템을 교체하는 함수
 void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
 {
 	if (InSourceIndex < 0) return;	// Index 검사
@@ -380,7 +389,7 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 		InSourceInventory->Content[InSourceIndex] = this->Content[InDestinationIndex];
 		this->Content[InDestinationIndex] = sourceSlot;
 	}
-
+	// Todo: Source, Destination(나 자신), 의 인벤토리의 소유자가 Attachment 일 때, 그리고 아이템 Type이 Rune 일때, Equip, UnEquip 을 호출해준다. 
 	MC_Update();
 	InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
 }

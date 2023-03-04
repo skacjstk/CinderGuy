@@ -13,4 +13,6 @@ public:
 		void DisplayPlayerMenu();
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "HUD")
 		void ShowContainer(UCInventoryComponent* ContainerInventoryComp);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "HUD")
+		void ShowAnvilMenu();
 };
