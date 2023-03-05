@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CAttachmentStatusComponent.h"
+#include "Actions/CActionObjectContainer.h"
 
 // Sets default values
 ACAttachment::ACAttachment()

@@ -28,6 +28,11 @@ UCInventoryComponent::UCInventoryComponent()
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
+	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
+	if (defaultRuneTable.Succeeded())
+		RuneTable = defaultRuneTable.Object;
+	
+
 
 	ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
 	if (defaultDisplay.Succeeded())	
@@ -105,7 +110,7 @@ void UCInventoryComponent::InteractionTrace()
 			DisplayMessage->HiddenMessage();
 	}
 }
-
+	// ItemDataComponent 에서 호출, 상호작용한 아이템을 Inventory에 삽입
 bool UCInventoryComponent::AddToInventory(FName InitemID, int32 InQuantity, int32& OutQuantityRemaining)
 {
 	int32 quantityRemaining = InQuantity;
@@ -239,13 +244,12 @@ void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
 		}
 		else
-		{	// Container 일 때의 기능 추가
+		{	// Container 일 때의 기능 추가: BP 상속 구현
 			ACPlayer* player = Cast<ACPlayer>(GetOwner());
 			if (player == nullptr) return;
 			LookAtActor->SetOwner(player);// Todo: 만약 HUD를 Controller에 넣을 경우 얘도 바뀌어야 한다.
 			OnLocalInteract(LookAtActor, player);
 		}
-		// 추가: Container 일 때에 대한 기능 추가
 	}
 }
 

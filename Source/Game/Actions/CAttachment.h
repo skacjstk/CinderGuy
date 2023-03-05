@@ -23,7 +23,7 @@ public:
 	FORCEINLINE class UCAttachmentStatusComponent* GetAttachmentStatusComponent() { return AttachmentStatus; }
 	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }	
 	UFUNCTION(BlueprintPure)
-		FORCEINLINE class UCInventoryComponent* GetAttachmentInventoryComponent() { return Cast<UCInventoryComponent>(InventoryComponent); }
+		FORCEINLINE class UCInventoryComponent* GetAttachmentInventoryComponent() { return Cast<class UCInventoryComponent>(InventoryComponent); }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,6 +60,7 @@ public:
 	//AttachmentStatus
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "AttachmentStatus")
 		FAttachmentStatusData AttachmentStatusData;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USceneComponent* Scene;

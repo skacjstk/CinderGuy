@@ -130,13 +130,15 @@ public:
 		FInventoryUpdated OnInventoryUpdated;		// 델리게이트
 	UPROPERTY(BlueprintReadWrite, Replicated)
 		TArray<FSlot> Content;
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly)
 		int32 InventorySize;
 	UPROPERTY(EditDefaultsOnly)
 		float InteractionRange = 20.f;
 	UPROPERTY(EditDefaultsOnly)
 		class UDataTable* ItemTable;
+	UPROPERTY(EditDefaultsOnly)
+		class UDataTable* RuneTable;
 private:
 	class AActor* LookAtActor;
 	bool bActive = false;
