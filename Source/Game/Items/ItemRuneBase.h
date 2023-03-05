@@ -36,7 +36,12 @@ public:
 		void UnequipRune();
 	virtual void UnequipRune_Implementation();
 	UFUNCTION(BlueprintImplementableEvent, Category = "RuneEffect")
-		void SideEffect();	// 부가 효과 ex) 공격시, 회피 시 등등을 바운딩
+		void AddSideEffect();	// 부가 효과 ex) 공격시, 회피 시 등등을 바운딩
+	UFUNCTION(BlueprintImplementableEvent, Category = "RuneEffect")
+		void RemoveSideEffect();	// 부가 효과 제거
+public:
+	void SetBonusSpeed(float InBonusSpeed) { BonusSpeed = InBonusSpeed; }
+	void SetBonusPower(float InBonusPower) { BonusPower = InBonusPower; }
 
 public:
 	class UCAttachmentStatusComponent* AttachmentStatus;	// SpawnActorDefferd 로 할당 후 호출

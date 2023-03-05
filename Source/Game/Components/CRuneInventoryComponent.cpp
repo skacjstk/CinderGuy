@@ -43,6 +43,8 @@ AItemRuneBase* UCRuneInventoryComponent::SpawnRune(ACAttachment* attachment, int
 		//		transform.SetLocation();	// Attachment->DataObjects->ActionComponent->CPlayer 로 가야 함
 		runeActor = GetWorld()->SpawnActorDeferred<AItemRuneBase>(sourceRune->RuneClass, transform, GetOwner());
 		runeActor->AttachmentStatus = attachment->GetAttachmentStatusComponent();
+		runeActor->SetBonusSpeed(sourceRune->BonusSpeed);
+		runeActor->SetBonusPower(sourceRune->BonusPower);	// 스탯 설정
 		UGameplayStatics::FinishSpawningActor(runeActor, transform);	// 여기가 진짜위치
 
 	}
