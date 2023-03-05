@@ -44,6 +44,7 @@ void ACDoAction::PlayAttackAnimMontage(UAnimMontage* AnimMontage, float InPlayRa
 
 void ACDoAction::SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker,  AActor* InCauser, ACharacter* InOtherCharacter)
 {
+	// 무기스탯 계산 전
 	float finalPower = 1.0f;
 	finalPower *= (GetCurrentStatus()->CurrentPower * Damage);
 	InOtherCharacter->TakeDamage(finalPower, E, InAttacker->GetController(), InCauser);

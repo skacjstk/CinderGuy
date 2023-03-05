@@ -5,8 +5,6 @@
 void AItemRuneBase::EquipRune_Implementation()
 {
 	CLog::Print("Call Equip");
-	CLog::Print(BonusSpeed);
-	CLog::Print(BonusPower);
 	AttachmentStatus->IncreaseAtkSpeed(BonusSpeed);
 	AttachmentStatus->IncreasePower(BonusPower);
 	AddSideEffect();

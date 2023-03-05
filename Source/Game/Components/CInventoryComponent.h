@@ -125,6 +125,8 @@ protected:
 	// IInteract 상속
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
+	class AItemRuneBase* SpawnRune(class ACAttachment* attachment, int32 InIndex, UCInventoryComponent* InInventory);
+
 public:
 	UPROPERTY(BlueprintAssignable, Replicated)
 		FInventoryUpdated OnInventoryUpdated;		// 델리게이트

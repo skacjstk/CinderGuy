@@ -10,6 +10,8 @@
 #include "Engine/DataTable.h"
 #include "Characters/CPlayer.h"
 #include "Widgets/CWidget_DisplayMessage.h"
+#include "Actions/CAttachment.h"
+#include "Items/ItemRuneBase.h"
 
 UCInventoryComponent::UCInventoryComponent()
 {
@@ -378,6 +380,7 @@ void UCInventoryComponent::ToggleInventroy()
 void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
 {
 	if (InSourceIndex < 0) return;	// Index 검사
+
 	FSlot sourceSlot = InSourceInventory->Content[InSourceIndex];	// 기존 아이템
 
 	// 같으면 아이템 합치기, 다르면 Swap
@@ -404,6 +407,25 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 		this->Content[InDestinationIndex] = sourceSlot;
 	}
 	// Todo: Source, Destination(나 자신), 의 인벤토리의 소유자가 Attachment 일 때, 그리고 아이템 Type이 Rune 일때, Equip, UnEquip 을 호출해준다. 
+
+	// Rune 쪽 코드 복붙, Unequip을 수행한다.
+	EItemType sourceType = GetItemType(Content[InDestinationIndex].ItemID);	// 내가 받아온게 Rune이었다면, 해제를 해 줘야지
+	if (sourceType == EItemType::Rune)
+	{
+		ACAttachment* ownerAttachment = Cast<ACAttachment>(InSourceInventory->GetOwner());
+		if (!!ownerAttachment)
+		{
+			// 어차피 인벤토리 빠져나갈 땐 부모 Transfer 라서 쓸모가 없다.
+			AItemRuneBase* runeActor = SpawnRune(ownerAttachment, InDestinationIndex, this);
+			if (!!runeActor)
+			{
+				runeActor->UnequipRune();
+				runeActor->Destroy();	// 바로 부순다. 계산용이니까.
+			}
+		}
+	} // endif
+
+
 	MC_Update();
 	InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
 }
@@ -412,4 +434,22 @@ void UCInventoryComponent::Server_TransferSlots_Implementation(int32 InSourceInd
 {
 	TransferSlots(InSourceIndex, InSourceInventory, InDestinationIndex);
 
+}
+AItemRuneBase* UCInventoryComponent::SpawnRune(ACAttachment* attachment, int32 InIndex, UCInventoryComponent* InInventory)
+{
+	AItemRuneBase* runeActor = nullptr;
+
+	FRune* sourceRune = RuneTable->FindRow<FRune>(InInventory->Content[InIndex].ItemID, "Source is Not Rune");
+	if (!!sourceRune)
+	{
+		FTransform transform;
+		//		transform.SetLocation();	// Attachment->DataObjects->ActionComponent->CPlayer 로 가야 함
+		runeActor = GetWorld()->SpawnActorDeferred<AItemRuneBase>(sourceRune->RuneClass, transform, GetOwner());
+		runeActor->AttachmentStatus = attachment->GetAttachmentStatusComponent();
+		runeActor->SetBonusSpeed(sourceRune->BonusSpeed);
+		runeActor->SetBonusPower(sourceRune->BonusPower);	// 스탯 설정
+		UGameplayStatics::FinishSpawningActor(runeActor, transform);	// 여기가 진짜위치
+
+	}
+	return runeActor;
 }
