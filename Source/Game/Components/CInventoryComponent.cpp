@@ -167,6 +167,16 @@ int32 UCInventoryComponent::GetMaxStackSize(FName& InItemID)
 		return -1;
 }
 
+EItemType UCInventoryComponent::GetItemType(FName& InItemID)
+{
+	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
+	if (!!item)	
+		return item->Type;	
+	else	
+		return EItemType::None;	
+
+}
+
 void UCInventoryComponent::AddToStack(int32 InIndex, int32 InQuantity)
 {
 	Content[InIndex].Quantity += InQuantity;

@@ -5,12 +5,11 @@
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CAttachmentStatusComponent.h"
-#include "Components/CInventoryComponent.h"
 
 // Sets default values
 ACAttachment::ACAttachment()
 {
-	CHelpers::CreateActorComponent(this, &InventoryComponent, "Inventory");
+	CHelpers::CreateActorComponent(this, &InventoryComponent, "RuneInventory");
 	if (!!InventoryComponent)
 		InventoryComponent->SetInventorySize(8);
 

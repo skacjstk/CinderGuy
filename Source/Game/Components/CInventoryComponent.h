@@ -12,6 +12,15 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
 
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	None,
+	Normal,
+	Rune,
+	Max
+};
+
 USTRUCT(BlueprintType)
 struct FSlot
 {
@@ -30,6 +39,8 @@ struct FItem : public FTableRowBase	// Editor에서 인식하게 하기 위해
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		FText Name;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		EItemType Type = EItemType::Normal;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		FText Description;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -54,7 +65,8 @@ public:
 	bool AddToInventory(FName InitemID, int32 InQuantity, int32& OutQuantityRemaining);	// 인벤토리에 아이템 추가
 	int32 FindSlot(FName& itemID, bool& OutFoundSlot);		// 이미 있는 슬롯인지 검사
 	UFUNCTION(BlueprintPure)
-		int32 GetMaxStackSize(FName& itemID);		// 해당 아이템의 최대 갯수 구하기
+		int32 GetMaxStackSize(FName& itemID);	// 해당 아이템의 최대 갯수 구하기
+	EItemType GetItemType(FName& InItemID);		// 해당 아이템의 Type 구하기 ( Rune 장착 용 )
 
 	void AddToStack(int32 index, int32 quantity);	// 정해진 갯수만큼 index에 해당하는 Slot에 아이템 추가
 	UFUNCTION(BlueprintCallable)	
@@ -64,11 +76,10 @@ public:
 
 	FORCEINLINE int32 GetInventorySize() { return InventorySize; }
 	FORCEINLINE void SetInventorySize(int32 newSize) { InventorySize = newSize; }
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void ToggleInventroy();
-	void TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+	virtual void TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
 
 public:
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")

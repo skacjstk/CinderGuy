@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Actions/CActionObjectContainer.h"
+#include "Components/CRuneInventoryComponent.h"
 #include "CAttachment.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlp, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
@@ -22,7 +23,7 @@ public:
 	FORCEINLINE class UCAttachmentStatusComponent* GetAttachmentStatusComponent() { return AttachmentStatus; }
 	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }	
 	UFUNCTION(BlueprintPure)
-		FORCEINLINE class UCInventoryComponent* GetAttachmentInventoryComponent() { return InventoryComponent; }
+		FORCEINLINE class UCInventoryComponent* GetAttachmentInventoryComponent() { return Cast<UCInventoryComponent>(InventoryComponent); }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -77,5 +78,5 @@ protected:
 protected:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
 	class UCAttachmentStatusComponent* AttachmentStatus;	// 무기의 기본 피해량 등을 담은 클래스
-	class UCInventoryComponent* InventoryComponent;
+	class UCRuneInventoryComponent* InventoryComponent;
 };
