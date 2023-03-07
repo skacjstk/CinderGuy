@@ -10,13 +10,14 @@
 UCActionComponent::UCActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
+	SetIsReplicated(true);
 }
 
 
 void UCActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
 	for (int i = 0; i < (int32)EActionType::Max; ++i)
 	{

@@ -77,6 +77,8 @@ void ACEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	//Widget Property Settings
+
+	CheckFalse(HasAuthority());
 	NameWidget->InitWidget();
 	UCUserWidget_Name* nameWidgetObject = Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)	
@@ -160,6 +162,7 @@ void ACEnemy::Hitted()
 	direction.Normalize();
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
 
+	// 바로 색 바꾸기
 	ChangeColor(FLinearColor::Red * 100.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
 }
@@ -203,6 +206,9 @@ void ACEnemy::End_Dead()
 
 void ACEnemy::RestoreLogoColor()
 {
+	if (IsPendingKill()) return;
+	CheckTrue(State->IsDeadMode());
+
 	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
 	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
 	LogoMaterial->SetScalarParameterValue("IsHitted", 0);

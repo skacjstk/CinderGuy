@@ -4,6 +4,7 @@
 
 UCAttachmentStatusComponent::UCAttachmentStatusComponent()
 {
+	SetIsReplicated(true);
 }
 
 void UCAttachmentStatusComponent::BeginPlay()
@@ -14,7 +15,7 @@ void UCAttachmentStatusComponent::BeginPlay()
 void UCAttachmentStatusComponent::InitStatus(FAttachmentStatusData AttachmentStatusData)
 {
 	CurrentPower = BasePower = AttachmentStatusData.BasePower;
-	CurrentAtkSpeed = BaseAtkSpeed = AttachmentStatusData.BaseAtkSpeed;	// 기본스탯 초기화 
+	CurrentAtkSpeed = BaseAtkSpeed = AttachmentStatusData.BaseAtkSpeed;	// 기본스탯 초기화
 }
 
 void UCAttachmentStatusComponent::IncreasePower(float Percent)

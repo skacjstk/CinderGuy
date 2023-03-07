@@ -63,6 +63,7 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetStrongData(StrongData);
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
+	
 
 		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
 		if(!!Equipment)
@@ -81,7 +82,7 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 
 	}//end if
 	// 최종적으로 UCActionData의 BeginPlay를 호출한 곳의 OutObject에 완성된 결과를 반환. 현재는 CActionComponent::BeginPlay() 에서 호출한다.
-	*OutObject = NewObject<UCActionObjectContainer>();
+	*OutObject = NewObject<UCActionObjectContainer>(InOwnerCharacter);	// 시도: ActionData 의 Owner는 Character
 	(*OutObject)->Attachment = Attachment;
 	(*OutObject)->Equipment = Equipment;
 	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 

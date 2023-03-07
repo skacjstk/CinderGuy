@@ -5,12 +5,20 @@
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CAttachmentStatusComponent.h"
+#include "Actions/CActionObjectContainer.h"
 
 // Sets default values
 ACAttachment::ACAttachment()
 {
-	CHelpers:: CreateSceneComponent(this, &Scene, "Scene");
+	CHelpers::CreateActorComponent(this, &InventoryComponent, "RuneInventory");
+	if (!!InventoryComponent)
+	{
+		InventoryComponent->SetInventorySize(8);
+		AttachmentRunes.SetNumZeroed(InventoryComponent->GetInventorySize());
+	}
 
+
+	CHelpers::CreateSceneComponent(this, &Scene, "Scene");
 }
 
 // Called when the game starts or when spawned
@@ -27,9 +35,11 @@ void ACAttachment::BeginPlay()
 		shape->OnComponentBeginOverlap.AddDynamic(this, &ACAttachment::OnComponentBeginOverlap);
 		shape->OnComponentEndOverlap.AddDynamic(this, &ACAttachment::OnComponentEndOverlap);
 	}
-
 	OffCollisions();
-	Super::BeginPlay();	
+
+	Super::BeginPlay();
+	if (InventoryComponent == nullptr)
+		CLog::Print("Null Inventory");
 }
 
 void ACAttachment::AttachTo(FName InSocketName)

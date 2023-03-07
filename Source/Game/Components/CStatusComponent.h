@@ -18,9 +18,10 @@ class GAME_API UCStatusComponent : public UActorComponent
 
 public:	
 	UCStatusComponent();
-
-	void IncreaseHealth(float InAmount);
-	void DecreaseHealth(float InAmount);
+	UFUNCTION(BlueprintCallable, Category = "Status")
+		void IncreaseHealth(float InAmount);
+	UFUNCTION(BlueprintCallable, Category = "Status")
+		void DecreaseHealth(float InAmount);
 
 protected:
 	// Called when the game starts

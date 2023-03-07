@@ -93,13 +93,17 @@ public:
 	friend class UCAttachmentStatusComponent;
 public:
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
-	FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }
+	UFUNCTION(BlueprintPure)
+		FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }	// Attachment 클래스 가져오기: 이 Attachment 속 Inventory 가져오면 성공
 	FORCEINLINE class ACDoAction* GetDoAction() { return DoAction; }
 	FORCEINLINE FLinearColor GetEquipmentColor() { return EquipmentColor; }
+	FORCEINLINE class ACharacter* GetOwnerCharacter() { return character; }
+	FORCEINLINE void SetOwnerCharacter(class ACharacter* InCharacter) { this->character = InCharacter; }
 
 private:	// 실제 객체
 	class ACAttachment* Attachment;
 	class ACEquipment* Equipment;
 	class ACDoAction* DoAction;
 	FLinearColor EquipmentColor;
+	class ACharacter* character;
 };

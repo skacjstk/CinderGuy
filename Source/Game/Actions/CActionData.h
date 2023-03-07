@@ -39,5 +39,7 @@ public:
 	// DoStrongAction
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoStrongAction")
 		FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
+
+//	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoSubAction")
 		
 };

@@ -33,10 +33,14 @@ private:
 	class UCMontagesComponent* Montages;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCInventoryComponent* Inventory;
 
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+	class UCWidget_PlayerHUD* PlayerHUD;
 
+	TSubclassOf<class UUserWidget> DefaultHUDClass;	// 왜인지 subclass 위젯은 죄다 
 	// 강공격을 구현하기 위한 
 	APlayerController* Controller;
 	FKey ActionMapKey;	// "Action" 과 연결된 키 구하기
@@ -51,6 +55,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	FGenericTeamId GetGenericTeamId() const override;	// Interface 재정의 
 
+	// Todo: 이걸 Controller에 넣을까 고민중
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		class UCWidget_PlayerHUD* GetPlayerHUD() { return PlayerHUD; }
 private:
 	//Axis Mapping
 	void OnMoveForward(float InAxis);
@@ -77,6 +84,10 @@ private:
 
 	void OnAim();	// 우클릭
 	void OffAim();
+
+	// Interact
+	void OnInteract();
+	void OnTestInventory();
 private:
 	void Begin_Roll();
 	void Begin_BackStep();

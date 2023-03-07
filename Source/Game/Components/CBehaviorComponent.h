@@ -25,6 +25,7 @@ public:	//Is 함수
 	UFUNCTION(BlueprintPure) bool IsAvoidMode();
 
 public:
+	UCBehaviorComponent();
 	void SetWaitMode();
 	void SetApproachMode();
 	void SetActionMode();

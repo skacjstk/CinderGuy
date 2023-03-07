@@ -6,6 +6,7 @@
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Components/CInventoryComponent.h"
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -13,6 +14,8 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameFramework/PlayerInput.h"
 #include "Components/CapsuleComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "Widgets/CWidget_PlayerHUD.h"
 
 ACPlayer::ACPlayer()
 {
@@ -28,11 +31,13 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
+	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
+	// Get Subclass
 	USkeletalMesh* meshAsset;
 	CHelpers::GetAsset<USkeletalMesh>(&meshAsset, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
 	GetMesh()->SetSkeletalMesh(meshAsset);
@@ -40,7 +45,8 @@ ACPlayer::ACPlayer()
 	TSubclassOf<UAnimInstance> animInstanceClass;
 	CHelpers::GetClass<UAnimInstance>(&animInstanceClass, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstanceClass);
-	
+
+	CHelpers::GetClass<UUserWidget>(&DefaultHUDClass, "/Game/Widgets/WB_PlayerHUD");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
@@ -62,7 +68,6 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	//Create Dynamic 
 	UMaterialInstanceConstant* bodyMaterial;
 	UMaterialInstanceConstant* logoMaterial;
@@ -81,7 +86,7 @@ void ACPlayer::BeginPlay()
 	Action->SetUnarmedMode();
 	Controller = Cast<APlayerController>(GetController());
 	// "Action" 매핑된 키 값 가져오기
-	if (!!Controller)
+	if (!!Controller)	// CHelpers 에 등록했음
 	{
 		const TArray<FInputActionKeyMapping>& mapping = Controller->PlayerInput->GetKeysForAction("Action");
 		for (const FInputActionKeyMapping map : mapping) {		
@@ -91,18 +96,26 @@ void ACPlayer::BeginPlay()
 		}
 	}
 
+	// Player 기본 UI 생성
+
+
+	if (GetController()->IsLocalPlayerController())
+	{
+		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
+		PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
+	}
+
 }
 
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// 있는 것들 전부 가져오기
-
 
 	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
 	{
 		OnDoStrongAction();
 	}
+	
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -134,8 +147,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ACPlayer::OnInteract);
+	PlayerInputComponent->BindAction("Inventory", EInputEvent::IE_Pressed, this, &ACPlayer::OnTestInventory);
 }
-
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {
 	return FGenericTeamId(TeamID);
@@ -263,6 +277,16 @@ void ACPlayer::OffAim()
 	Action->DoOffAim();
 }
 
+void ACPlayer::OnTestInventory()
+{
+	PlayerHUD->DisplayPlayerMenu();
+}
+
+void ACPlayer::OnInteract()
+{
+	Inventory->Server_Interact_Implementation(nullptr);
+}
+
 void ACPlayer::Begin_Roll()
 {
 	bUseControllerRotationYaw = false;
@@ -286,6 +310,7 @@ void ACPlayer::Begin_BackStep()
 void ACPlayer::End_Roll()
 {
 	State->SetIdleMode();
+	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
 	bUseControllerRotationYaw = lookForward;
@@ -295,6 +320,7 @@ void ACPlayer::End_Roll()
 void ACPlayer::End_BackStep()
 {
 	State->SetIdleMode();
+	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
 	bUseControllerRotationYaw = lookForward;

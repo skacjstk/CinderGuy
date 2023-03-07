@@ -19,11 +19,12 @@ public:
 
 	void InitStatus(FAttachmentStatusData AttachmentStatusData);
 
-	void IncreasePower(float Percent);	// 1이면 100% 증가임
-	void DecreasePower(float Percent);	// 1이면 100% 감소임
+	
+	UFUNCTION(BlueprintCallable) void IncreasePower(float Percent);	// 1이면 100% 증가임
+	UFUNCTION(BlueprintCallable) void DecreasePower(float Percent);	// 1이면 100% 감소임
 
-	void IncreaseAtkSpeed(float Percent);	// 1이면 100% 증가임
-	void DecreaseAtkSpeed(float Percent);	// 1이면 100% 감소임
+	UFUNCTION(BlueprintCallable) void IncreaseAtkSpeed(float Percent);	// 1이면 100% 증가임
+	UFUNCTION(BlueprintCallable) void DecreaseAtkSpeed(float Percent);	// 1이면 100% 감소임
 
 protected:
 	// Called when the game starts

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/World.h"
+#include "InputCoreTypes.h"
 
 #define CheckNull(p){ if(p == nullptr) return ; }
 #define CheckNullResult(p, result){ if(p == nullptr) return result;}
@@ -64,6 +65,20 @@ public:
 	static T* GetComponent(AActor *InActor)
 	{
 		return Cast<T>(InActor->GetComponentByClass(T::StaticClass()));
+	}
+	template<typename T>
+	static FKey GetKeyName(APlayerController* Controller, FName& ActionName)
+	{
+		if (!!Controller)
+		{
+			const TArray<T>& mapping = Controller->PlayerInput->GetKeysForAction(ActionName);
+			for (const T map : mapping) {
+				if (map.ActionName.IsEqual(ActionName)) {
+					return map.Key;
+				}
+			}
+		}
+		return FKey();
 	}
 };
 
