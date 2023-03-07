@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Actions/CActionObjectContainer.h"
 #include "Components/CRuneInventoryComponent.h"
+#include "Items/ItemRuneBase.h"
 #include "CAttachment.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlp, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
@@ -24,6 +25,11 @@ public:
 	void SetAttachmentStatusComponent(class UCAttachmentStatusComponent* attachmentStatus) { this->AttachmentStatus = attachmentStatus; }	
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE class UCInventoryComponent* GetAttachmentInventoryComponent() { return Cast<class UCInventoryComponent>(InventoryComponent); }
+
+	// 룬 저장, 해제
+	void SetAttachmentRune(int32 index, class AItemRuneBase* newRune) { AttachmentRunes[index] = newRune; }
+	AItemRuneBase* GetAttachmentRune(int32 index) { return AttachmentRunes[index]; }
+	void RemoveAttachmentRune(int32 index) {AttachmentRunes[index]->Destroy(); AttachmentRunes[index]= nullptr;	}
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -80,4 +86,5 @@ protected:
 	TArray<class UShapeComponent*> ShapeComponents;	// 무기 충돌체 들
 	class UCAttachmentStatusComponent* AttachmentStatus;	// 무기의 기본 피해량 등을 담은 클래스
 	class UCRuneInventoryComponent* InventoryComponent;
+	TArray<class AItemRuneBase*> AttachmentRunes;	// 장착된 룬들의 효과? 를 저장할 변수
 };

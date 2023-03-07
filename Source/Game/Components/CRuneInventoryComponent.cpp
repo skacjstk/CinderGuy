@@ -17,17 +17,13 @@ void UCRuneInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCom
 	if (!!ownerAttachment)
 	{
 		// 어차피 인벤토리 빠져나갈 땐 부모 Transfer 라서 쓸모가 없다.
-//		AItemRuneBase* runeActor = SpawnRune(ownerAttachment, InSourceIndex, InSourceInventory);
-//		if (!!runeActor)
-//		{
-//			runeActor->UnequipRune();
-//			runeActor->Destroy();	// 바로 부순다. 계산용이니까.
-//		}
-		AItemRuneBase* runeActor2 = SpawnRune(ownerAttachment, InDestinationIndex, this);
-		if (!!runeActor2)
+		AItemRuneBase* runeActor = SpawnRune(ownerAttachment, InDestinationIndex, this);
+		if (!!runeActor)
 		{
-			runeActor2->EquipRune();
-			runeActor2->Destroy();	// 바로 부순다. 계산용이니까.
+			runeActor->EquipRune();
+			ownerAttachment->SetAttachmentRune(InDestinationIndex, runeActor);
+			// 장착시에는 부수지 말고, Attachment 에 저장해두자 ( 자신의 효과를 저장해두는 셈)
+
 		}
 	}
 }

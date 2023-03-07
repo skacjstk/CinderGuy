@@ -47,6 +47,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UDataTable* ItemTable;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		class UDataTable* RuneTable;
 	TSubclassOf<class UCWidget_DragPreview> PreviewClass;
 
 	UPROPERTY(BlueprintReadOnly)

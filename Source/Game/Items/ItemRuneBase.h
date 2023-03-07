@@ -44,7 +44,10 @@ public:
 	void SetBonusPower(float InBonusPower) { BonusPower = InBonusPower; }
 
 public:
-	class UCAttachmentStatusComponent* AttachmentStatus;	// SpawnActorDefferd 로 할당 후 호출
+	UPROPERTY(BlueprintReadOnly)
+		class UCAttachmentStatusComponent* AttachmentStatus;	// SpawnActorDefferd 로 할당 후 호출
+	UPROPERTY(BlueprintReadWrite)
+		class UCStateComponent* OwnerAttachmentState;	// BP 에서 찾아서 등록
 
 private:
 	float BonusSpeed;

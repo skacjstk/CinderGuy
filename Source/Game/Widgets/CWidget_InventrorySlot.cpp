@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/SizeBox.h"
+#include "Items/ItemRuneBase.h"
 #include "Blueprint/WidgetTree.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -19,10 +20,13 @@ UCWidget_InventrorySlot::UCWidget_InventrorySlot(const FObjectInitializer& Objec
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
 
+	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
+	if (defaultRuneTable.Succeeded())
+		RuneTable = defaultRuneTable.Object;
+
 	ConstructorHelpers::FClassFinder<UUserWidget> defaultDragPreview(TEXT("WidgetBlueprint'/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview_C'"));
 	if (defaultDragPreview.Succeeded())
 		PreviewClass = defaultDragPreview.Class;
-
 }
 
 bool UCWidget_InventrorySlot::Initialize()
@@ -44,7 +48,18 @@ FText UCWidget_InventrorySlot::GetDescription()
 		FItem* item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
 		if (!!item)
 		{
-			itemDescription = item->Description;
+			itemDescription = item->Description;	
+			FRune* rune = RuneTable->FindRow<FRune>(ItemID, "Rune Find Fail");	// 룬 테이블에서 찾아
+			if (!!rune)
+			{
+				// Todo: FText 에 대한 이해 부족, 임시로 ItemData에 모두 떄려박기
+	//			FFormatNamedArguments Args;
+	//			Args.Add(TEXT("Desc"), itemDescription);
+	//			Args.Add(TEXT("Side"), rune->SideEffectDesc);
+	//			Args.Add(TEXT("Power"), rune->BonusPower);
+	//			itemDescription = FText::Format(LOCTEXT("aa", "{Desc} {Side} {Power}"), Args);
+			}
+			return itemDescription;
 		}
 	}
 	return itemDescription;

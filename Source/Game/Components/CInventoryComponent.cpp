@@ -416,11 +416,15 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 		if (!!ownerAttachment)
 		{
 			// 어차피 인벤토리 빠져나갈 땐 부모 Transfer 라서 쓸모가 없다.
-			AItemRuneBase* runeActor = SpawnRune(ownerAttachment, InDestinationIndex, this);
+			AItemRuneBase* runeActor = ownerAttachment->GetAttachmentRune(InSourceIndex);
 			if (!!runeActor)
 			{
 				runeActor->UnequipRune();
-				runeActor->Destroy();	// 바로 부순다. 계산용이니까.
+				ownerAttachment->RemoveAttachmentRune(InSourceIndex);
+			}
+			else
+			{
+				CLog::Print("Why not?");
 			}
 		}
 	} // endif

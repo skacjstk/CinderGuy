@@ -12,7 +12,11 @@ ACAttachment::ACAttachment()
 {
 	CHelpers::CreateActorComponent(this, &InventoryComponent, "RuneInventory");
 	if (!!InventoryComponent)
+	{
 		InventoryComponent->SetInventorySize(8);
+		AttachmentRunes.SetNumZeroed(InventoryComponent->GetInventorySize());
+	}
+
 
 	CHelpers::CreateSceneComponent(this, &Scene, "Scene");
 }
