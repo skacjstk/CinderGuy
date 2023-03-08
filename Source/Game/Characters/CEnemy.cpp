@@ -192,7 +192,7 @@ void ACEnemy::Dead()
 	if (Causer->IsA<ACThrow>())
 		DeadLaunchValue *= 0.075f;
 
-//	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 넉백때매 공격이 안맞아
+//	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 너무 멀리 날아가
 	
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
 }

@@ -58,7 +58,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		float DeadLaunchValue = 10000.f;
 	UPROPERTY(EditAnywhere)
-		float LaunchValue = 25.f;	// 밀려나는 고유값
+		float LaunchValue = 5.f;	// 밀려나는 고유값
 	float DamageValue;
 	AActor* Causer;
 	ACharacter* Attacker;

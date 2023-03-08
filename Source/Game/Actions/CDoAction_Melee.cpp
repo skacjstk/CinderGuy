@@ -98,6 +98,25 @@ void ACDoAction_Melee::End_DoAction()
 	Status->SetMove();
 }
 
+void ACDoAction_Melee::OnAim()
+{
+	if(State->IsIdleMode())	// IDle 모드일때만 가드하기
+	{ 
+		Status->SetSpeed(EWalkSpeedType::Walk);
+		
+		State->SetGuardMode();
+	}
+}
+
+void ACDoAction_Melee::OffAim()
+{
+	if (State->IsGuardMode())
+	{
+		Status->SetSpeed(EWalkSpeedType::Run);
+		State->SetIdleMode();	// 가드모드일때만 가드풀기
+	}
+}
+
 void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
 {
 	Super::OnAttachmentBeginOverlap(InAttacker, InCauser, InOtherCharacter);

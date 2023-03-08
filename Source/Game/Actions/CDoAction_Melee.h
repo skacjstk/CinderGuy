@@ -20,7 +20,8 @@ public:
 	virtual void CheckEndDoStrongAction() override;		// 노티파이 호출
 	virtual void EndDoStrongActionWait()	override;
 	virtual void End_DoAction()			override;
-
+	virtual void OnAim()		override;
+	virtual void OffAim()		override;
 	// 부모에서 UFUNCTION() 이면, 자식은 빠져도 됨.
 	virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter)override;
 	virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) override;

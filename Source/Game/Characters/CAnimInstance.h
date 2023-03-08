@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Components/CStateComponent.h"
 #include "Components/CActionComponent.h"
 #include "CAnimInstance.generated.h"
 
@@ -19,6 +20,8 @@ protected:
 		float Direction;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		EActionType ActionType;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		EStateType StateType;
 
 public:
 	virtual void NativeBeginPlay() override;
@@ -26,4 +29,6 @@ public:
 private:
 	UFUNCTION()
 		void OnActionTypeChanged(EActionType InPrevType, EActionType InNewType);
+	UFUNCTION()
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
 };

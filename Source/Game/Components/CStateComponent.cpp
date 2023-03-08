@@ -44,6 +44,11 @@ void UCStateComponent::SetActionMode()
 	ChangeType(EStateType::Action);
 }
 
+void UCStateComponent::SetGuardMode()
+{
+	ChangeType(EStateType::Guard);
+}
+
 void UCStateComponent::SetStrongActionMode()
 {
 	ChangeType(EStateType::StrongAction);	

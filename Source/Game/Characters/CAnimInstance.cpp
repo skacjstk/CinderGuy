@@ -13,6 +13,10 @@ void UCAnimInstance::NativeBeginPlay()
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(character);
 	CheckNull(action);
 	action->OnActionTypeChanged.AddDynamic(this, &UCAnimInstance::OnActionTypeChanged);
+	
+	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(character);
+	CheckNull(state);
+	state->OnStateTypeChanged.AddDynamic(this, &UCAnimInstance::OnStateTypeChanged);
 
 }
 
@@ -32,4 +36,9 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UCAnimInstance::OnActionTypeChanged(EActionType InPrevType, EActionType InNewType)
 {
 	ActionType = InNewType;
+}
+
+void UCAnimInstance::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+	StateType = InNewType;
 }
