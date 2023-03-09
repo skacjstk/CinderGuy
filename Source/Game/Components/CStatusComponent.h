@@ -48,11 +48,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float Speed[(int32)EWalkSpeedType::Max] = { 200,400,600 };
 
-
+	UPROPERTY(EditAnywhere, Category = "Invincible")
+		float IFGuard = 0.15f;	// I-Frame Guard 라는 뜻, Parry Alpha 값
+	UPROPERTY(EditAnywhere, Category = "Invincible")
+		float IFEvade = 0.2f;	// I-Frame Evade, Evade 무적시간 이라는 뜻
 
 private:
 	float Health;
-
+	float IFGuardAlpha = 0.0f;	// 가드 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
+	float IFEvadeAlpha = 0.0f;	// 구르기 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
 	bool bCanMove = true;
+
+//	FTimeline GuardTimeline;
+//	FTimeline EvadeTimeline;	// Todo: 타임라인을 쓰려면 Tick 이 필요해, 과연 이게 맞을까?
 
 };

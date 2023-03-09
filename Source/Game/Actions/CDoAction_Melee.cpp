@@ -102,9 +102,9 @@ void ACDoAction_Melee::OnAim()
 {
 	if(State->IsIdleMode())	// IDle 모드일때만 가드하기
 	{ 
-		Status->SetSpeed(EWalkSpeedType::Walk);
-		
+		Status->SetSpeed(EWalkSpeedType::Walk);		
 		State->SetGuardMode();
+		//Todo: 어떤 가드 상태에 대한 ParryCheck Timeline Start
 	}
 }
 

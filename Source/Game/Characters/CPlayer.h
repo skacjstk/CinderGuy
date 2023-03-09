@@ -99,7 +99,7 @@ public:
 	virtual void Hitted() override;
 	virtual void Dead() override;
 	virtual void End_Dead() override;
-
+	virtual bool CheckInvincible() override;
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 private:

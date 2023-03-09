@@ -204,6 +204,11 @@ void ACEnemy::End_Dead()
 	Destroy();
 }
 
+bool ACEnemy::CheckInvincible()
+{
+	return false;
+}
+
 void ACEnemy::RestoreLogoColor()
 {
 	if (IsPendingKill()) return;

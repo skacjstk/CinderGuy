@@ -28,6 +28,8 @@ private:
 	virtual void Dead() override;
 	UFUNCTION()
 		void End_Dead() override;
+	virtual bool CheckInvincible() override;
+
 	UFUNCTION()
 		void RestoreLogoColor();
 protected:

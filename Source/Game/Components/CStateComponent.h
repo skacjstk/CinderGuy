@@ -9,7 +9,7 @@
 UENUM(BlueprintType)
 enum class EStateType : uint8
 {
-	Idle, Roll, BackStep, Equip, Action, Guard, StrongAction, EndingStrongAction, Hitted, Dead, Max
+	Idle, Roll, BackStep, Equip, Action, Guard, GuardBack, Parry, StrongAction, EndingStrongAction, Hitted, Dead, Max
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);

@@ -196,7 +196,7 @@ void ACPlayer::OnZoom(float InAxis)
 
 void ACPlayer::OnEvade() {
 
-	CheckFalse(State->IsIdleMode());
+	CheckFalse(State->IsIdleMode() || State->IsGuardMode());
 	CheckFalse(Status->IsCanMove());
 
 	if (InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
@@ -333,6 +333,11 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
+	if (CheckInvincible())
+	{
+		// 무적상태인게 맞으면 어떤 조치 이후 return;
+	}
+
 	CLog::Print(DamageValue, -1, 1);
 
 	Action->AbortByDamaged();
@@ -368,6 +373,10 @@ void ACPlayer::End_Dead()	// End_Dead는 노티파이 재생
 {
 	Action->End_Dead();
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "Quit");	// 콘솔 명령어로 강제종료
+}
+
+void ACPlayer::CheckInvincible()
+{
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
