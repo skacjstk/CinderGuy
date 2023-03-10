@@ -16,5 +16,4 @@ void UCAnimNotify_BackStepped::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 	CheckNull(player);
 
 	player->End_BackStep();
-
 }

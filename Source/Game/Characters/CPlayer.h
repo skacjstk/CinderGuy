@@ -5,6 +5,7 @@
 #include "Components/CStateComponent.h"
 #include "ICharacter.h"
 #include "GenericTeamAgentInterface.h"
+#include "Components/TimelineComponent.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
@@ -44,6 +45,7 @@ private:
 	// 강공격을 구현하기 위한 
 	APlayerController* Controller;
 	FKey ActionMapKey;	// "Action" 과 연결된 키 구하기
+	FKey AimMapKey;	// "Aim" 과 연결된 키 구하기(우클릭)
 
 	UPROPERTY(EditDefaultsOnly)
 		uint8 TeamID = 0;
@@ -85,6 +87,8 @@ private:
 	void OnAim();	// 우클릭
 	void OffAim();
 
+	void OnGuard();	// StateTypeChanged 에 
+
 	// Interact
 	void OnInteract();
 	void OnTestInventory();
@@ -94,6 +98,7 @@ private:
 public:
 	void End_Roll();
 	void End_BackStep();	// 거의 notify 호출 
+	void End_Parry();	// notify 호출
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Hitted() override;
@@ -106,9 +111,16 @@ private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
 	// CStateComponent에 OnStateTypeChanged에 바인딩
+	UFUNCTION()
+		void GuardAlpha(float Output);
 
 private:
 	float DamageValue;
 	AActor* Causer;
 	ACharacter* Attacker;
+
+	// 가드에 필요한 거
+	class UCurveFloat* Curve;
+	FOnTimelineFloat TimelineFloat;
+	FTimeline GuardTimeline;
 };

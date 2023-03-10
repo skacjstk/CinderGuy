@@ -40,6 +40,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoStrongAction")
 		FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
 
-//	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoSubAction")
-		
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Guard")
+		FGuardData BlockData;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Guard")
+		TArray<FGuardData> ParryData;	//패리 모션은 랜덤으로 여러개 
 };

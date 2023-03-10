@@ -33,6 +33,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
+	CHelpers::GetAsset<UCurveFloat>(&Curve, "CurveFloat'/Game/Player/Curve_Base.Curve_Base'");
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
@@ -94,23 +95,32 @@ void ACPlayer::BeginPlay()
 				ActionMapKey = map.Key;
 			}
 		}
+		const TArray<FInputActionKeyMapping>& aimMapping = Controller->PlayerInput->GetKeysForAction("Aim");
+		for (const FInputActionKeyMapping map : aimMapping) {
+			if (map.ActionName.IsEqual("Aim")) {
+				AimMapKey = map.Key;	// 기본 우클릭 키
+			}
+		}
 	}
 
+
 	// Player 기본 UI 생성
-
-
 	if (GetController()->IsLocalPlayerController())
 	{
 		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
 		PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
 	}
 
+	// Guard Timeline 매핑
+	TimelineFloat.BindUFunction(this, "GuardAlpha");
+	GuardTimeline.AddInterpFloat(Curve, TimelineFloat);
+	GuardTimeline.SetPlayRate(1.0f);
 }
 
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	GuardTimeline.TickTimeline(DeltaTime);
 	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
 	{
 		OnDoStrongAction();
@@ -196,7 +206,7 @@ void ACPlayer::OnZoom(float InAxis)
 
 void ACPlayer::OnEvade() {
 
-	CheckFalse(State->IsIdleMode() || State->IsGuardMode());
+	CheckFalse((State->IsIdleMode() || State->IsGuardMode()));
 	CheckFalse(Status->IsCanMove());
 
 	if (InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
@@ -277,6 +287,11 @@ void ACPlayer::OffAim()
 	Action->DoOffAim();
 }
 
+void ACPlayer::OnGuard()
+{
+	GuardTimeline.PlayFromStart();
+}
+
 void ACPlayer::OnTestInventory()
 {
 	PlayerHUD->DisplayPlayerMenu();
@@ -327,17 +342,41 @@ void ACPlayer::End_BackStep()
 	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
+void ACPlayer::End_Parry()
+{
+	if (Controller->GetInputKeyTimeDown(FKey(AimMapKey)))	// 우클릭 누르고있으면, Guard로, 아니면 Idle 로
+		State->SetGuardMode();		
+	else
+		State->SetIdleMode();
+
+	Status->SetMove();
+}
+
 float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
-	if (CheckInvincible())
+	if (State->IsGuardMode() || State->IsBlockMode() || State->IsParryMode())
 	{
-		// 무적상태인게 맞으면 어떤 조치 이후 return;
-	}
+		// GuardAlpha 를 비교해서 Parry 등의 상태 변환
 
+		if (State->GetGuardAlpha() + State->GetGuardFrame() >= 1.0f)
+		{
+			CLog::Print("Parry");
+			// Parry 에 대한 특수처리 수행
+			Action->DoParry();
+			return 0.0f;
+		}
+		else
+		{
+			CLog::Print("Guard");
+			// GuardBack 몽타주 재생
+			Action->DoBlock();
+			return 0.0f;
+		}
+	}
 	CLog::Print(DamageValue, -1, 1);
 
 	Action->AbortByDamaged();
@@ -375,8 +414,9 @@ void ACPlayer::End_Dead()	// End_Dead는 노티파이 재생
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "Quit");	// 콘솔 명령어로 강제종료
 }
 
-void ACPlayer::CheckInvincible()
+bool ACPlayer::CheckInvincible()
 {
+	return true;
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -387,9 +427,15 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	case EStateType::BackStep:		Begin_BackStep();		break;
 	case EStateType::Hitted:		Hitted();				break;
 	case EStateType::Dead:			Dead();					break;
+	case EStateType::Guard:			OnGuard();				break;
 	default:
 		break;
 	}
+}
+
+void ACPlayer::GuardAlpha(float Output)
+{
+	State->SetGuardAlpha(Output);	// 가드 알파를 세팅
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)

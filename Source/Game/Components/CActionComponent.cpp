@@ -13,7 +13,6 @@ UCActionComponent::UCActionComponent()
 	SetIsReplicated(true);
 }
 
-
 void UCActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -127,6 +126,28 @@ void UCActionComponent::DoOffAim()
 
 		if (!!doAction)
 			doAction->OffAim();
+	}
+}
+
+void UCActionComponent::DoParry()
+{
+	if (!!DataObjects[(int32)Type])
+	{
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->OnParry();
+	}
+}
+
+void UCActionComponent::DoBlock()
+{
+	if (!!DataObjects[(int32)Type])
+	{
+		ACDoAction* doAction = DataObjects[(int32)Type]->GetDoAction();
+
+		if (!!doAction)
+			doAction->OnBlock();
 	}
 }
 

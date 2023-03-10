@@ -61,6 +61,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetDatas(DoActionDatas);
 		// StrongData 넣기 ( DoAction 하위개념이라 Subclass가 필요 없음
 		DoAction->SetStrongData(StrongData);
+		//ParryData 와 GuardData 넣기
+		DoAction->SetGuardData(BlockData);
+		DoAction->SetParryData(ParryData);
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 	
