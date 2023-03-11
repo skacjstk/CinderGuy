@@ -16,6 +16,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CWidget_PlayerHUD.h"
+// 테스트
+#include "Actions/CActionObjectContainer.h"
+#include "Actions/CDoAction.h"
+#include "DamageType/KatanaParryDamageType.h"
 
 ACPlayer::ACPlayer()
 {
@@ -367,6 +371,14 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 			CLog::Print("Parry");
 			// Parry 에 대한 특수처리 수행
 			Action->DoParry();
+			// 테스트
+			if (!!EventInstigator)
+			{
+				// 현재 무기의 DamageTypeClass를 가져오기
+				TSubclassOf<UDamageType> test = Action->GetCurrent()->GetDoAction()->GetParryDamageType();
+				if (!!test)
+					EventInstigator->GetPawn()->TakeDamage(Damage, FDamageEvent(test), GetController(), this);	// 여기에 ParryDamageType을 가져오기
+			}
 			return 0.0f;
 		}
 		else

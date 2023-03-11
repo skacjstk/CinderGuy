@@ -44,4 +44,6 @@ public:
 		FGuardData BlockData;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Guard")
 		TArray<FGuardData> ParryData;	//패리 모션은 랜덤으로 여러개 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Guard")
+		TSubclassOf<UDamageType> ParryDamageType;	//패리 데미지 타입
 };

@@ -64,9 +64,10 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		//ParryData 와 GuardData 넣기
 		DoAction->SetGuardData(BlockData);
 		DoAction->SetParryData(ParryData);
+		//ParryDamageType 생성해서 넣기
+		DoAction->SetParryDamageType(ParryDamageType);
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
-	
 
 		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
 		if(!!Equipment)

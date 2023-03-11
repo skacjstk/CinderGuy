@@ -22,6 +22,8 @@ public:
 
 	FORCEINLINE void SetGuardData(FGuardData InData) { GuardData = InData; }
 	FORCEINLINE void SetParryData(TArray<FGuardData> InData) { ParryData = InData; }
+	void SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass);
+	TSubclassOf<UDamageType> GetParryDamageType() { return ParryDamageTypeClass; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -68,5 +70,6 @@ protected:
 	FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
 	FGuardData GuardData;
 	TArray<FGuardData> ParryData;
+	TSubclassOf<UDamageType> ParryDamageTypeClass;
 	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };

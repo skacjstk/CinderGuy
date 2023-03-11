@@ -13,6 +13,10 @@
 #include "Actions/CActionData.h"
 #include "Actions/CThrow.h"
 #include "GameFramework/CharacterMovementComponent.h"
+// 테스트
+#include "Actions/CActionObjectContainer.h"
+#include "Actions/CDoAction.h"
+#include "DamageType/KatanaParryDamageType.h"
 
 ACEnemy::ACEnemy()
 {
@@ -121,6 +125,12 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+
+	UKatanaParryDamageType* test = Cast<UKatanaParryDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+	if (!!test)
+	{
+		CLog::Print("Enemy Hitted by Parry");
+	}
 
 	CLog::Print(DamageValue, -1, 1);
 
