@@ -53,6 +53,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCDamageEffectComponent* DamageEffect;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;

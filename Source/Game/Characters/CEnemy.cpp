@@ -14,6 +14,7 @@
 #include "Actions/CThrow.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // 테스트
+#include "Components/CDamageEffectComponent.h"
 #include "Actions/CActionObjectContainer.h"
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
@@ -28,7 +29,7 @@ ACEnemy::ACEnemy()
 	CHelpers::CreateActorComponent(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &State, "State");
-
+	CHelpers::CreateActorComponent(this, &DamageEffect, "DamageEffect");
 	//Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
@@ -126,11 +127,15 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
-	UKatanaParryDamageType* test = Cast<UKatanaParryDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
-	if (!!test)
+	if (!!DamageEvent.DamageTypeClass)
 	{
-		CLog::Print("Enemy Hitted by Parry");
+		IIDamageType* test = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+		if (!!test)
+		{
+			test->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+		}
 	}
+
 
 	CLog::Print(DamageValue, -1, 1);
 

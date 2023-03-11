@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/DamageType.h"
 #include "Interfaces/IDamageType.h"
-#include "KatanaParryDamageType.generated.h"
+#include "DamageTypeBase.generated.h"
 
 UCLASS()
-class GAME_API UKatanaParryDamageType : public UDamageType , public IIDamageType
+class GAME_API UDamageTypeBase : public UDamageType , public IIDamageType
 {
 	GENERATED_BODY()
 public:
