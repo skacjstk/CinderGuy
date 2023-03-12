@@ -4,11 +4,6 @@
 #include "UObject/Interface.h"
 #include "Components/CDamageEffectComponent.h"
 #include "IDamageType.generated.h"
-UENUM(BlueprintType)
-enum class EDamageType : uint8
-{
-	None, Slash, Magic, MAX
-};
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)

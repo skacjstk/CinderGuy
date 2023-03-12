@@ -129,14 +129,18 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 	if (!!DamageEvent.DamageTypeClass)
 	{
-		IIDamageType* test = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
-		if (!!test)
+		IIDamageType* damageType = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+		if (!!damageType)
 		{
-			test->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+			// 공격의 부가효과 재생
+			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
 		}
 	}
-
-
+	IIDamageState* stateEffect = Cast<IIDamageState>(DamageCauser);
+	if (!!stateEffect)
+	{
+		stateEffect->Execute_Damaged(DamageCauser);	// 이 DamageCauser 가 성공적으로 데미지를 주었음.
+	}
 	CLog::Print(DamageValue, -1, 1);
 
 	Status->DecreaseHealth(this->DamageValue);

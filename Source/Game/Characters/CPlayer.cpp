@@ -20,6 +20,7 @@
 #include "Actions/CActionObjectContainer.h"
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
+#include "Interfaces/IDamageState.h"
 
 ACPlayer::ACPlayer()
 {
@@ -364,32 +365,50 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 
 	if (State->IsGuardMode() || State->IsBlockMode() || State->IsParryMode())
 	{
-		// GuardAlpha 를 비교해서 Parry 등의 상태 변환
-
-		if (State->GetGuardAlpha() + State->GetGuardFrame() >= 1.0f)
+		if (State->GetGuardAlpha() + State->GetGuardFrame() >= 1.0f)	// 가드를 타이밍 맞게 눌렀다면
 		{
-			CLog::Print("Parry");
-			// Parry 에 대한 특수처리 수행
-			Action->DoParry();
-			// 테스트
+			Action->DoParry();	// 패리 액션 (몽타주) 재생
 			if (!!EventInstigator)
 			{
-				// 현재 무기의 DamageTypeClass를 가져오기
-				TSubclassOf<UDamageType> test = Action->GetCurrent()->GetDoAction()->GetParryDamageType();
-				if (!!test)
-					EventInstigator->GetPawn()->TakeDamage(Damage, FDamageEvent(test), GetController(), this);	// 여기에 ParryDamageType을 가져오기
+				if (!!DamageCauser)
+				{
+					IIDamageState* damageState = Cast<IIDamageState>(DamageCauser);
+					if (!!damageState)
+					{
+						damageState->Execute_Reflected(DamageCauser, Damage, GetController(), EventInstigator, DamageCauser);
+					}
+					else
+					{
+						// 현재 무기의 DamageTypeClass를 가져오기, 반격피해 주기
+						TSubclassOf<UDamageType> damageType = Action->GetCurrent()->GetDoAction()->GetParryDamageType();
+						if (!!damageType)
+							EventInstigator->GetPawn()->TakeDamage(Damage, FDamageEvent(damageType), GetController(), this);
+						// Todo: 반격 고유 피해 가져오기
+					}
+				}
 			}
 			return 0.0f;
-		}
+		} // end if Parry
 		else
 		{
-			CLog::Print("Guard");
-			// GuardBack 몽타주 재생
 			Action->DoBlock();
+			IIDamageState* test = Cast<IIDamageState>(DamageCauser);
+			if (!!test)
+			{
+				test->Execute_Damaged(DamageCauser);
+			}
 			return 0.0f;
-		}
-	}
+		} // end if Block
+	}// end GuardMode
+
+	// 피해를 입음
 	CLog::Print(DamageValue, -1, 1);
+
+	IIDamageState* DamageState = Cast<IIDamageState>(DamageCauser);
+	if (!!DamageState)
+	{
+		DamageState->Execute_Damaged(DamageCauser);
+	}
 
 	Action->AbortByDamaged();
 

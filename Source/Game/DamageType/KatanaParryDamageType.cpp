@@ -5,6 +5,6 @@ void UKatanaParryDamageType::DamageTrigger_Implementation(UCDamageEffectComponen
 {
 	CLog::Print("Called Katana");
 	if (!!DamageEffectComp)
-		DamageEffectComp->DamageEffect();
+		DamageEffectComp->DamageEffect(EDamageType::Slash, EDamageEffectType::Parry);
 
 }
