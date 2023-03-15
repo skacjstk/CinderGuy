@@ -49,6 +49,16 @@ void UCStateComponent::SetGuardMode()
 	ChangeType(EStateType::Guard);
 }
 
+void UCStateComponent::SetBlockMode()
+{
+	ChangeType(EStateType::GuardBack);
+}
+
+void UCStateComponent::SetParryMode()
+{
+	ChangeType(EStateType::Parry);
+}
+
 void UCStateComponent::SetStrongActionMode()
 {
 	ChangeType(EStateType::StrongAction);	

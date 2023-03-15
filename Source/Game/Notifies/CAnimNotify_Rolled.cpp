@@ -19,5 +19,4 @@ void UCAnimNotify_Rolled::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	CheckNull(player);
 
 	player->End_Roll();
-
 }

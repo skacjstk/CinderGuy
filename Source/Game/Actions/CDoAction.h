@@ -19,6 +19,11 @@ public:
 	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
 	FORCEINLINE void SetStrongData(FDoStrongActionData InData) { StrongData = InData; }
 	FORCEINLINE void SetEquipped(const bool* InEquipped) { bEquipped = InEquipped; }
+
+	FORCEINLINE void SetGuardData(FGuardData InData) { GuardData = InData; }
+	FORCEINLINE void SetParryData(TArray<FGuardData> InData) { ParryData = InData; }
+	void SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass);
+	TSubclassOf<UDamageType> GetParryDamageType() { return ParryDamageTypeClass; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -40,6 +45,9 @@ public:
 	virtual void OffAim() {};
 	virtual void Abort() {};
 
+	virtual void OnParry() {};
+	virtual void OnBlock() {};
+
 	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
 	UFUNCTION()
@@ -60,5 +68,8 @@ protected:
 
 	TArray<FDoActionData> Datas;	// CActionData에서 생성한 값이 저장되는 곳
 	FDoStrongActionData StrongData;	// Melee 는 강공격이 추가되었음
+	FGuardData GuardData;
+	TArray<FGuardData> ParryData;
+	TSubclassOf<UDamageType> ParryDamageTypeClass;
 	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };

@@ -10,6 +10,11 @@ enum class EStrongActionEndType : uint8
 	Once, Doing, MAX
 };
 
+UENUM(BlueprintType)
+enum class EGuardActionType : uint8
+{
+	Block, Parry, MAX
+};
 /*
 @ struct Equipment
 */
@@ -30,9 +35,20 @@ public:
 		bool bPawnControl = true;	// LookForward: true라면, 정면 고정, orientRotation을 사용하지 않을 것
 };
 /*
+@ struct DoStrongAction
+*/
+USTRUCT(BlueprintType)
+struct FGuardData : public FEquipmentData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		EGuardActionType GuardType;	// 패리액션, 가드백 액션 용
+};
+
+/*
 @ struct DoAction
 */
-
 USTRUCT(BlueprintType)
 struct FDoActionData : public FEquipmentData	// 상속받았기에, DataAsset에선 아래쪽에 얘가 보임
 {
@@ -66,6 +82,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		FName EndSection = L"End";
 };
+
 
 /*
 @ struct FAttachmentStatus

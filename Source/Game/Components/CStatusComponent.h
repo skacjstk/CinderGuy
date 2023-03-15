@@ -38,7 +38,7 @@ public:
 
 	void SetMove();
 	void SetStop();
-
+		
 	// Task 접근용 함수
 	void SetSpeed(EWalkSpeedType InType);
 private:
@@ -47,12 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float Speed[(int32)EWalkSpeedType::Max] = { 200,400,600 };
-
-
-
 private:
 	float Health;
-
 	bool bCanMove = true;
-
 };

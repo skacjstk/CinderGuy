@@ -16,6 +16,11 @@ ACDoAction::ACDoAction()
 
 }
 
+void ACDoAction::SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass)
+{
+	ParryDamageTypeClass = InDamageTypeClass;
+}
+
 // Called when the game starts or when spawned
 void ACDoAction::BeginPlay()
 {
@@ -23,15 +28,13 @@ void ACDoAction::BeginPlay()
 	State = CHelpers::GetComponent<UCStateComponent>(OwnerCharacter);
 	Status = CHelpers::GetComponent<UCStatusComponent>(OwnerCharacter);
 	// 데이터 가져오는 것을 먼저 해야 함 BP의 호출순서
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 // Called every frame
 void ACDoAction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ACDoAction::PlayAttackAnimMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)

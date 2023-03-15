@@ -13,6 +13,11 @@
 #include "Actions/CActionData.h"
 #include "Actions/CThrow.h"
 #include "GameFramework/CharacterMovementComponent.h"
+// 테스트
+#include "Components/CDamageEffectComponent.h"
+#include "Actions/CActionObjectContainer.h"
+#include "Actions/CDoAction.h"
+#include "DamageType/KatanaParryDamageType.h"
 
 ACEnemy::ACEnemy()
 {
@@ -24,7 +29,7 @@ ACEnemy::ACEnemy()
 	CHelpers::CreateActorComponent(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &State, "State");
-
+	CHelpers::CreateActorComponent(this, &DamageEffect, "DamageEffect");
 	//Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
@@ -119,10 +124,31 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
+	if(!!DamageCauser)
 	Causer = DamageCauser;
-	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
-	CLog::Print(DamageValue, -1, 1);
+	if(!!EventInstigator)
+		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+
+	if (!!DamageEvent.DamageTypeClass && EventInstigator != nullptr)
+	{
+		IIDamageType* damageType = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+		if (!!damageType)
+		{
+			// 공격의 부가효과 재생
+			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+		}
+	}
+	if (!!DamageCauser)
+	{
+		IIDamageState* stateEffect = Cast<IIDamageState>(DamageCauser);
+		if (!!stateEffect)
+		{
+			stateEffect->Execute_Damaged(DamageCauser);	// 이 DamageCauser 가 성공적으로 데미지를 주었음.
+		}
+		CLog::Print(DamageValue, -1, 1);
+	}
+
 
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
@@ -202,6 +228,11 @@ void ACEnemy::End_Dead()
 	// 다른애들은 직속 컴포넌트라 알아서 지워짐
 	Action->End_Dead();
 	Destroy();
+}
+
+bool ACEnemy::CheckInvincible()
+{
+	return false;
 }
 
 void ACEnemy::RestoreLogoColor()

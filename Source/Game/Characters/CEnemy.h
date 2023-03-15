@@ -28,6 +28,8 @@ private:
 	virtual void Dead() override;
 	UFUNCTION()
 		void End_Dead() override;
+	virtual bool CheckInvincible() override;
+
 	UFUNCTION()
 		void RestoreLogoColor();
 protected:
@@ -50,6 +52,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCDamageEffectComponent* DamageEffect;
 
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;

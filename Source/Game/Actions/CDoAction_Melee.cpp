@@ -102,9 +102,9 @@ void ACDoAction_Melee::OnAim()
 {
 	if(State->IsIdleMode())	// IDle 모드일때만 가드하기
 	{ 
-		Status->SetSpeed(EWalkSpeedType::Walk);
-		
+		Status->SetSpeed(EWalkSpeedType::Walk);		
 		State->SetGuardMode();
+		//Todo: 어떤 가드 상태에 대한 ParryCheck Timeline Start 를 Player에 Binding 해놓음
 	}
 }
 
@@ -115,6 +115,23 @@ void ACDoAction_Melee::OffAim()
 		Status->SetSpeed(EWalkSpeedType::Run);
 		State->SetIdleMode();	// 가드모드일때만 가드풀기
 	}
+}
+
+void ACDoAction_Melee::OnParry()
+{
+	Super::OnParry();	
+	int32 random = UKismetMathLibrary::RandomIntegerInRange(0, ParryData.Num() -1);
+
+	PlayAttackAnimMontage(ParryData[random].AnimMontage, ParryData[random].PlayRate, ParryData[random].StartSection);
+	ParryData[random].bCanMove ? Status->SetMove() : Status->SetStop();
+}
+
+void ACDoAction_Melee::OnBlock()
+{
+	Super::OnBlock();
+
+	PlayAttackAnimMontage(GuardData.AnimMontage, GuardData.PlayRate, GuardData.StartSection);
+	GuardData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
 void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)

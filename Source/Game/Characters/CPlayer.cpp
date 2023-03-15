@@ -16,6 +16,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CWidget_PlayerHUD.h"
+// 테스트
+#include "Actions/CActionObjectContainer.h"
+#include "Actions/CDoAction.h"
+#include "DamageType/KatanaParryDamageType.h"
+#include "Interfaces/IDamageState.h"
 
 ACPlayer::ACPlayer()
 {
@@ -33,6 +38,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
 
+	CHelpers::GetAsset<UCurveFloat>(&Curve, "CurveFloat'/Game/Player/Curve_Base.Curve_Base'");
 	// Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
@@ -94,23 +100,32 @@ void ACPlayer::BeginPlay()
 				ActionMapKey = map.Key;
 			}
 		}
+		const TArray<FInputActionKeyMapping>& aimMapping = Controller->PlayerInput->GetKeysForAction("Aim");
+		for (const FInputActionKeyMapping map : aimMapping) {
+			if (map.ActionName.IsEqual("Aim")) {
+				AimMapKey = map.Key;	// 기본 우클릭 키
+			}
+		}
 	}
 
+
 	// Player 기본 UI 생성
-
-
 	if (GetController()->IsLocalPlayerController())
 	{
 		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
 		PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
 	}
 
+	// Guard Timeline 매핑
+	TimelineFloat.BindUFunction(this, "GuardAlpha");
+	GuardTimeline.AddInterpFloat(Curve, TimelineFloat);
+	GuardTimeline.SetPlayRate(1.0f);
 }
 
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	GuardTimeline.TickTimeline(DeltaTime);
 	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
 	{
 		OnDoStrongAction();
@@ -196,7 +211,7 @@ void ACPlayer::OnZoom(float InAxis)
 
 void ACPlayer::OnEvade() {
 
-	CheckFalse(State->IsIdleMode());
+	CheckFalse((State->IsIdleMode() || State->IsGuardMode()));
 	CheckFalse(Status->IsCanMove());
 
 	if (InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
@@ -277,6 +292,11 @@ void ACPlayer::OffAim()
 	Action->DoOffAim();
 }
 
+void ACPlayer::OnGuard()
+{
+	GuardTimeline.PlayFromStart();
+}
+
 void ACPlayer::OnTestInventory()
 {
 	PlayerHUD->DisplayPlayerMenu();
@@ -327,13 +347,68 @@ void ACPlayer::End_BackStep()
 	GetCharacterMovement()->bOrientRotationToMovement = !lookForward;
 }
 
+void ACPlayer::End_Parry()
+{
+	if (Controller->GetInputKeyTimeDown(FKey(AimMapKey)))	// 우클릭 누르고있으면, Guard로, 아니면 Idle 로
+		State->SetGuardMode();		
+	else
+		State->SetIdleMode();
+
+	Status->SetMove();
+}
+
 float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	Causer = DamageCauser;
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
+	if (State->IsGuardMode() || State->IsBlockMode() || State->IsParryMode())
+	{
+		if (State->GetGuardAlpha() + State->GetGuardFrame() >= 1.0f)	// 가드를 타이밍 맞게 눌렀다면
+		{
+			Action->DoParry();	// 패리 액션 (몽타주) 재생
+			if (!!EventInstigator)
+			{
+				if (!!DamageCauser)
+				{
+					IIDamageState* damageState = Cast<IIDamageState>(DamageCauser);
+					if (!!damageState)
+					{
+						damageState->Execute_Reflected(DamageCauser, Damage, GetController(), EventInstigator, DamageCauser);
+					}
+					else
+					{
+						// 현재 무기의 DamageTypeClass를 가져오기, 반격피해 주기
+						TSubclassOf<UDamageType> damageType = Action->GetCurrent()->GetDoAction()->GetParryDamageType();
+						if (!!damageType)
+							EventInstigator->GetPawn()->TakeDamage(Damage, FDamageEvent(damageType), GetController(), this);
+						// Todo: 반격 고유 피해 가져오기
+					}
+				}
+			}
+			return 0.0f;
+		} // end if Parry
+		else
+		{
+			Action->DoBlock();
+			IIDamageState* test = Cast<IIDamageState>(DamageCauser);
+			if (!!test)
+			{
+				test->Execute_Damaged(DamageCauser);
+			}
+			return 0.0f;
+		} // end if Block
+	}// end GuardMode
+
+	// 피해를 입음
 	CLog::Print(DamageValue, -1, 1);
+
+	IIDamageState* DamageState = Cast<IIDamageState>(DamageCauser);
+	if (!!DamageState)
+	{
+		DamageState->Execute_Damaged(DamageCauser);
+	}
 
 	Action->AbortByDamaged();
 
@@ -370,6 +445,11 @@ void ACPlayer::End_Dead()	// End_Dead는 노티파이 재생
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), "Quit");	// 콘솔 명령어로 강제종료
 }
 
+bool ACPlayer::CheckInvincible()
+{
+	return true;
+}
+
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 {
 	switch (InNewType)
@@ -378,9 +458,15 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	case EStateType::BackStep:		Begin_BackStep();		break;
 	case EStateType::Hitted:		Hitted();				break;
 	case EStateType::Dead:			Dead();					break;
+	case EStateType::Guard:			OnGuard();				break;
 	default:
 		break;
 	}
+}
+
+void ACPlayer::GuardAlpha(float Output)
+{
+	State->SetGuardAlpha(Output);	// 가드 알파를 세팅
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)
