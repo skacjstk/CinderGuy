@@ -36,6 +36,8 @@ private:
 		class UCActionComponent* Action;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCInventoryComponent* Inventory;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCDamageEffectComponent* DamageEffect;
 
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;

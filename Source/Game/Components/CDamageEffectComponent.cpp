@@ -1,9 +1,12 @@
 #include "CDamageEffectComponent.h"
 #include "Global.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 
 UCDamageEffectComponent::UCDamageEffectComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = false;	
+	CHelpers::GetAsset(&emberParticle, TEXT("/Game/M5VFXVOL2/Particles/Fire/Fire_03"));
 }
 
 
@@ -16,8 +19,6 @@ void UCDamageEffectComponent::BeginPlay()
 
 bool UCDamageEffectComponent::DamageEffect(EDamageType InType, EDamageEffectType InEffectType)
 {
-	//Todo: 여기서 받아야 할 Enum, 그 Enum 간의 처리를 구현하기
-	CLog::Print("DamageEffect Call");
 	switch (InType)
 	{
 	case EDamageType::None:
@@ -35,9 +36,8 @@ bool UCDamageEffectComponent::DamageEffect(EDamageType InType, EDamageEffectType
 	{
 	case EDamageEffectType::Fire:	// 1초마다 5의 피해를 3번 주는 FireDamage 만들기
 		if (!FireDamageHandle.IsValid()) {
-			CLog::Print("FireDamage Call");
-			FireDamageHandle = UKismetSystemLibrary::K2_SetTimer(this, "FireDamage", 1.0f, true, 1.0f);
-			// Todo: 상태이상 Component 만들기 
+			SetEmberFire();
+			FireDamageHandle = UKismetSystemLibrary::K2_SetTimer(this, "FireDamage", 1.0f, true);
 		}
 		break;
 	default:
@@ -49,7 +49,6 @@ bool UCDamageEffectComponent::DamageEffect(EDamageType InType, EDamageEffectType
 void UCDamageEffectComponent::FireDamage()
 {
 	static int index = 0;
-	CLog::Print("FireDamage");
 	++index;
 	GetOwner()->TakeDamage(5.0f, FDamageEvent(), nullptr, nullptr);
 
@@ -58,5 +57,21 @@ void UCDamageEffectComponent::FireDamage()
 		index = 0;
 		GetWorld()->GetTimerManager().ClearTimer(FireDamageHandle);
 		FireDamageHandle.Invalidate();	// 단순히 값을 0으로 바꿈
+		RemoveEmberFire();
 	}
+}
+
+void UCDamageEffectComponent::SetEmberFire()
+{
+	if (!!emberParticle)
+	{
+		FTransform transform;
+		transform.SetLocation(GetOwner()->GetActorLocation());
+		emberParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), emberParticle, transform);
+	}
+}
+
+void UCDamageEffectComponent::RemoveEmberFire()
+{
+	emberParticleComp->Deactivate();
 }

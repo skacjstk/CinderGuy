@@ -36,5 +36,14 @@ public:
 private:
 	UFUNCTION()
 		void FireDamage();
+	UFUNCTION()	// 디버그용 UFUNCTION
+		void SetEmberFire();
+	UFUNCTION()
+		void RemoveEmberFire();
+
 	FTimerHandle FireDamageHandle;
+	
+	UPROPERTY(EditAnywhere, Category = "DamageEffectParticle")
+		UParticleSystem* emberParticle;
+	UParticleSystemComponent* emberParticleComp;
 };

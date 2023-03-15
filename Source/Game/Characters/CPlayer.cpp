@@ -21,6 +21,7 @@
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
 #include "Interfaces/IDamageState.h"
+#include "Components/CDamageEffectComponent.h"
 
 ACPlayer::ACPlayer()
 {
@@ -37,6 +38,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent(this, &Option, "Option");
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &Inventory, "Inventory");
+	CHelpers::CreateActorComponent(this, &DamageEffect, "DamageEffect");
 
 	CHelpers::GetAsset<UCurveFloat>(&Curve, "CurveFloat'/Game/Player/Curve_Base.Curve_Base'");
 	// Component Settings
@@ -402,6 +404,15 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 	}// end GuardMode
 
 	// 피해를 입음
+	if (!!DamageEvent.DamageTypeClass && EventInstigator != nullptr)
+	{
+		IIDamageType* damageType = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+		if (!!damageType)
+		{
+			// 공격의 부가효과 재생
+			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+		}
+	}
 	CLog::Print(DamageValue, -1, 1);
 
 	IIDamageState* DamageState = Cast<IIDamageState>(DamageCauser);
