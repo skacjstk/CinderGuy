@@ -124,10 +124,13 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
+	if(!!DamageCauser)
 	Causer = DamageCauser;
-	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
-	if (!!DamageEvent.DamageTypeClass)
+	if(!!EventInstigator)
+		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+
+	if (!!DamageEvent.DamageTypeClass && EventInstigator != nullptr)
 	{
 		IIDamageType* damageType = Cast<IIDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
 		if (!!damageType)
@@ -136,12 +139,16 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
 		}
 	}
-	IIDamageState* stateEffect = Cast<IIDamageState>(DamageCauser);
-	if (!!stateEffect)
+	if (!!DamageCauser)
 	{
-		stateEffect->Execute_Damaged(DamageCauser);	// 이 DamageCauser 가 성공적으로 데미지를 주었음.
+		IIDamageState* stateEffect = Cast<IIDamageState>(DamageCauser);
+		if (!!stateEffect)
+		{
+			stateEffect->Execute_Damaged(DamageCauser);	// 이 DamageCauser 가 성공적으로 데미지를 주었음.
+		}
+		CLog::Print(DamageValue, -1, 1);
 	}
-	CLog::Print(DamageValue, -1, 1);
+
 
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {

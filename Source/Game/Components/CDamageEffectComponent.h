@@ -9,9 +9,11 @@ enum class EDamageType : uint8
 {
 	None, Slash, Magic, MAX
 };
+
+UENUM(BlueprintType)
 enum class EDamageEffectType : uint8
 {
-	Normal,Parry, MAX
+	Normal, Parry, Fire, Firing, MAX
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -28,6 +30,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	bool DamageEffect(EDamageType InType, EDamageEffectType InEffectType = EDamageEffectType::Normal);
+	UFUNCTION(BlueprintCallable, Category = "DamageEffectComponent")
+		bool DamageEffect(EDamageType InType, EDamageEffectType InEffectType = EDamageEffectType::Normal);
 		
+private:
+	UFUNCTION()
+		void FireDamage();
+	FTimerHandle FireDamageHandle;
 };
