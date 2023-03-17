@@ -29,6 +29,7 @@ class GAME_API AItemRuneBase : public ACItemBase
 	GENERATED_BODY()
 	
 public:
+	AItemRuneBase();
 	UFUNCTION(BlueprintNativeEvent, Category = "RuneEffect")
 		void EquipRune();
 	virtual	void EquipRune_Implementation();
