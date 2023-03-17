@@ -29,6 +29,7 @@ public:
 	// 룬 저장, 해제
 	void SetAttachmentRune(int32 index, class AItemRuneBase* newRune) { AttachmentRunes[index] = newRune; }
 	AItemRuneBase* GetAttachmentRune(int32 index) { return AttachmentRunes[index]; }
+	const TArray<AItemRuneBase*> GetAttachmentRunes() { return AttachmentRunes; }
 	void RemoveAttachmentRune(int32 index) {AttachmentRunes[index]->Destroy(); AttachmentRunes[index]= nullptr;	}
 protected:
 	// Called when the game starts or when spawned

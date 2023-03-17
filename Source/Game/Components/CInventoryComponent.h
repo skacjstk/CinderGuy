@@ -127,7 +127,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Slot")
 		void ConsumeItem(int32 index);	// Action Widget에서 호출
-
+public:
+	//Getter
+	TArray<FSlot>& GetContents() { return Content; }
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
