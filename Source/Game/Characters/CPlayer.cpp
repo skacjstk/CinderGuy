@@ -362,8 +362,11 @@ void ACPlayer::End_Parry()
 float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (State->IsDeadMode()) return 0.0f;	// 데드모드면 아예 처리안해
 	Causer = DamageCauser;
-	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	if(!!EventInstigator)
+		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
 	if (State->IsGuardMode() || State->IsBlockMode() || State->IsParryMode())
 	{

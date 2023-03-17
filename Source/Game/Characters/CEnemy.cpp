@@ -18,6 +18,7 @@
 #include "Actions/CActionObjectContainer.h"
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
+#include "CDamageText.h"
 
 ACEnemy::ACEnemy()
 {
@@ -188,6 +189,14 @@ void ACEnemy::Hitted()
 	direction.Normalize();
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
 
+	// 데미지 띄우기
+	FTransform transform;
+	ACDamageText* text = GetWorld()->SpawnActorDeferred<ACDamageText>(ACDamageText::StaticClass(), transform, this);
+	transform.SetLocation(this->GetActorLocation());
+	transform.SetRotation(FRotator(0, UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation().Yaw, 0).Quaternion());
+	UGameplayStatics::FinishSpawningActor(text, transform);
+	text->SetDamage(DamageValue);
+		
 	// 바로 색 바꾸기
 	ChangeColor(FLinearColor::Red * 100.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
