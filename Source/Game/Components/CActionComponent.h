@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/DataTable.h"
+#include "Components/CInventoryComponent.h"
 #include "CActionComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -11,6 +13,20 @@ enum class EActionType : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActionTypeChanged, EActionType, InPrevType, EActionType, InNewType);
+
+/*
+@ struct FSaveActionData
+*/
+USTRUCT(BlueprintType)
+struct FSaveActionData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		EActionType ActionType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TArray<FSlot> AttachmentInventroySlot;	// Todo: attachment Data도 저장하기
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAME_API UCActionComponent : public UActorComponent

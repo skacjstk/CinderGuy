@@ -32,13 +32,14 @@ private:
 		class UCStateComponent* State;
 	UPROPERTY(VisibleDefaultsOnly)
 	class UCMontagesComponent* Montages;
-	UPROPERTY(VisibleDefaultsOnly)
+protected:
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 		class UCActionComponent* Action;
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 		class UCInventoryComponent* Inventory;
+private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCDamageEffectComponent* DamageEffect;
-
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 	class UCWidget_PlayerHUD* PlayerHUD;
