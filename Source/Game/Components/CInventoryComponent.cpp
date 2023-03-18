@@ -246,10 +246,10 @@ void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
 		}
 		else
-		{	// Container 일 때의 기능 추가: BP 상속 구현
+		{	// 인벤토리임
 			ACPlayer* player = Cast<ACPlayer>(GetOwner());
 			if (player == nullptr) return;
-			LookAtActor->SetOwner(player);// Todo: 만약 HUD를 Controller에 넣을 경우 얘도 바뀌어야 한다.
+	//		LookAtActor->SetOwner(player);// Todo: 만약 HUD를 Controller에 넣을 경우 얘도 바뀌어야 한다.
 			OnLocalInteract(LookAtActor, player);
 		}
 	}
