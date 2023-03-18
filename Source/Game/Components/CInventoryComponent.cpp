@@ -76,7 +76,7 @@ void UCInventoryComponent::InteractionTrace()
 	// 그래도 대략 맞는것 같다
 
 	// 새로운 채널 3번
-	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 45, ETraceTypeQuery::TraceTypeQuery3, false, ignoreActor, EDrawDebugTrace::None, hitResult, true))
+	if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 45, ETraceTypeQuery::TraceTypeQuery3, false, ignoreActor, EDrawDebugTrace::ForOneFrame, hitResult, true))
 	{
 		if (LookAtActor != hitResult.GetActor())
 		{
