@@ -62,7 +62,10 @@ public:
 
 	// Todo: 이걸 Controller에 넣을까 고민중
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		class UCWidget_PlayerHUD* GetPlayerHUD() { return PlayerHUD; }
+		class UCWidget_PlayerHUD* GetPlayerHUD();
+	void CreatePlayerHUD();
+	UFUNCTION(BlueprintCallable)
+		void DestoryPlayerHUD();
 private:
 	//Axis Mapping
 	void OnMoveForward(float InAxis);
