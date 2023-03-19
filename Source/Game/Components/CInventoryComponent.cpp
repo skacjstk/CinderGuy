@@ -280,6 +280,7 @@ void UCInventoryComponent::MC_Update_Implementation()
 
 void UCInventoryComponent::RemoveFromInventory(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed)
 {
+	CLog::Print(InSourceIndex);
 	FName selectedItem = Content[InSourceIndex].ItemID;
 	int32 selectedQuantity = Content[InSourceIndex].Quantity;
 
@@ -349,19 +350,22 @@ void UCInventoryComponent::Server_ConsumeItem_Implementation(FName InItemID)
 	if (item == nullptr) return;
 	if (item->ItemEffectClass == nullptr) return;
 	FTransform transform;
-
+	
 	ACItemEffectBase* itemEffectActor = GetWorld()->SpawnActorDeferred<ACItemEffectBase>(item->ItemEffectClass, transform, GetOwner());
 	transform.SetLocation(GetOwner()->GetActorLocation());
 
 	UGameplayStatics::FinishSpawningActor(itemEffectActor, transform);	// 여기가 진짜위치
+	CanConsume = true;
 }
 
 void UCInventoryComponent::ConsumeItem(int32 index)
 {
 	FName& id = Content[index].ItemID;
 	int32& quantity = Content[index].Quantity;	
+	CanConsume = false;
 	Server_ConsumeItem(id);
-	Server_RemoveItem(index, false, true);	// 아이템 소모함.
+	if(CanConsume == true)
+		Server_RemoveItem(index, false, true);	// 아이템 소모함.
 }
 
 void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

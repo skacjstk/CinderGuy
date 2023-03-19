@@ -124,7 +124,6 @@ public:
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
 		void Server_ConsumeItem(FName InItemID);
 	void Server_ConsumeItem_Implementation(FName InItemID);
-
 	UFUNCTION(BlueprintCallable, Category = "Slot")
 		void ConsumeItem(int32 index);	// Action Widget에서 호출
 public:
@@ -160,5 +159,6 @@ private:
 	bool bActive = false;
 	class UCWidget_DisplayMessage* DisplayMessage;
 	bool IsPlayer = false;
+	bool CanConsume = false;	// Replicate 라 외부 변수로 빼둠
 
 };
