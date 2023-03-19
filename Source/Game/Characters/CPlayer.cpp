@@ -110,14 +110,6 @@ void ACPlayer::BeginPlay()
 		}
 	}
 
-
-	// Player 기본 UI 생성
-	if (GetController()->IsLocalPlayerController())
-	{
-		PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
-		PlayerHUD->SetOwningPlayer( Cast<APlayerController>(GetController()) );
-	}
-
 	// Guard Timeline 매핑
 	TimelineFloat.BindUFunction(this, "GuardAlpha");
 	GuardTimeline.AddInterpFloat(Curve, TimelineFloat);
@@ -170,6 +162,27 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {
 	return FGenericTeamId(TeamID);
+}
+
+UCWidget_PlayerHUD* ACPlayer::GetPlayerHUD()
+{
+	if (PlayerHUD == nullptr)
+	{
+		CreatePlayerHUD();
+	}
+	return PlayerHUD;
+}
+
+void ACPlayer::CreatePlayerHUD()
+{
+	PlayerHUD = CreateWidget<UCWidget_PlayerHUD>(GetWorld(), DefaultHUDClass, "PlayerHUD");
+	PlayerHUD->SetOwningPlayer(Cast<APlayerController>(GetController()));
+}
+
+void ACPlayer::DestoryPlayerHUD()
+{
+	PlayerHUD->Destruct();	// 소멸까지
+	PlayerHUD = nullptr;
 }
 
 void ACPlayer::OnMoveForward(float InAxis)
@@ -301,7 +314,21 @@ void ACPlayer::OnGuard()
 
 void ACPlayer::OnTestInventory()
 {
-	PlayerHUD->DisplayPlayerMenu();
+	// Player 기본 UI 생성
+	if (GetController()->IsLocalPlayerController())
+	{
+		if (!!PlayerHUD)
+		{
+//			PlayerHUD->RemoveFromParent();
+			DestoryPlayerHUD();
+		}
+		else
+		{
+			CreatePlayerHUD();
+			PlayerHUD->DisplayPlayerMenu();
+		}
+	}
+
 }
 
 void ACPlayer::OnInteract()
@@ -362,8 +389,11 @@ void ACPlayer::End_Parry()
 float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (State->IsDeadMode()) return 0.0f;	// 데드모드면 아예 처리안해
 	Causer = DamageCauser;
-	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	if(!!EventInstigator)
+		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 
 	if (State->IsGuardMode() || State->IsBlockMode() || State->IsParryMode())
 	{

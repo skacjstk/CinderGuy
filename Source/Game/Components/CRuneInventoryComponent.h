@@ -10,4 +10,7 @@ class GAME_API UCRuneInventoryComponent : public UCInventoryComponent
 	GENERATED_BODY()
 public:
 	virtual void TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex) override;
+	virtual void MC_Update_Blueprint() override;
+	UFUNCTION(BlueprintCallable)
+		void AllRuneUnequip();
 };

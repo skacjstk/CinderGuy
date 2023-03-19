@@ -33,6 +33,15 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FSaveInventory : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		TArray<FSlot> PlayerInventorySlots;
+};
+
+USTRUCT(BlueprintType)
 struct FItem : public FTableRowBase	// Editor에서 인식하게 하기 위해
 {
 	GENERATED_BODY()
@@ -95,9 +104,12 @@ public:
 	void OnLocalInteract_Implementation(AActor* Target, AActor* Interactor);
 
 	void DEBUG_PrintContents();
-	UFUNCTION(Reliable, NetMulticast)
+	UFUNCTION(NetMulticast, Reliable)
 		void MC_Update();	// 델리게이트 호출
 	void MC_Update_Implementation();	// 델리게이트 호출
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MC_Update"))
+		virtual void MC_Update_Blueprint() { MC_Update(); }	// 블루프린트 호출
 
 	void RemoveFromInventory(int32 InSourceIndex, bool IsRemoveWhole, bool IsConsumed);
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
@@ -115,7 +127,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Slot")
 		void ConsumeItem(int32 index);	// Action Widget에서 호출
-
+public:
+	//Getter
+	TArray<FSlot>& GetContents() { return Content; }
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

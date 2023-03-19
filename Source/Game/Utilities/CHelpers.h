@@ -67,6 +67,23 @@ public:
 		return Cast<T>(InActor->GetComponentByClass(T::StaticClass()));
 	}
 	template<typename T>
+	static FKey GetKeyName(APlayerController* Controller, FName ActionName)
+	{
+		if (!!Controller)
+		{
+			const TArray<T>& mapping = Controller->PlayerInput->GetKeysForAction(ActionName);
+			for (const T& map : mapping) {
+				if (map.ActionName.IsEqual(ActionName)) {
+					return map.Key;
+				}
+			}
+		}
+		return FKey();
+	}
+};
+
+
+/*
 	static FKey GetKeyName(APlayerController* Controller, FName& ActionName)
 	{
 		if (!!Controller)
@@ -80,5 +97,4 @@ public:
 		}
 		return FKey();
 	}
-};
-
+*/

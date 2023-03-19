@@ -50,6 +50,7 @@ void UCDamageEffectComponent::FireDamage()
 {
 	static int index = 0;
 	++index;
+	if (GetOwner() == nullptr) return;
 	GetOwner()->TakeDamage(5.0f, FDamageEvent(), nullptr, nullptr);
 
 	if (index >= 3)
