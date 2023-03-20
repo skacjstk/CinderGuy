@@ -157,7 +157,8 @@ protected:
 private:
 	class AActor* LookAtActor;
 	bool bActive = false;
-	class UCWidget_DisplayMessage* DisplayMessage;
+	UPROPERTY()
+		class UCWidget_DisplayMessage* DisplayMessage;
 	bool IsPlayer = false;
 	bool CanConsume = false;	// Replicate 라 외부 변수로 빼둠
 

@@ -41,8 +41,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCDamageEffectComponent* DamageEffect;
 	class UMaterialInstanceDynamic* BodyMaterial;
-	class UMaterialInstanceDynamic* LogoMaterial;
-	class UCWidget_PlayerHUD* PlayerHUD;
+	class UMaterialInstanceDynamic* LogoMaterial;	
+	UPROPERTY()
+		class UCWidget_PlayerHUD* PlayerHUD;
 
 	TSubclassOf<class UUserWidget> DefaultHUDClass;	// 왜인지 subclass 위젯은 죄다 
 	// 강공격을 구현하기 위한 

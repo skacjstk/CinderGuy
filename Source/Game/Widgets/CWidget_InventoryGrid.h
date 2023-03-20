@@ -23,7 +23,8 @@ private:
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		class UCInventoryComponent* InventoryComponent;
-	TSubclassOf<class UUserWidget> SlotClass;
+	UPROPERTY()
+		TSubclassOf<class UUserWidget> SlotClass;
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* ItemGrid;
 };
