@@ -66,7 +66,7 @@ public:
 	{
 		return Cast<T>(InActor->GetComponentByClass(T::StaticClass()));
 	}
-	template<typename T>
+	template<typename T>	// 보통 FInputActionKeyMapping 
 	static FKey GetKeyName(APlayerController* Controller, FName ActionName)
 	{
 		if (!!Controller)
