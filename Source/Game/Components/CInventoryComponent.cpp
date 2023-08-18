@@ -20,6 +20,12 @@ UCInventoryComponent::UCInventoryComponent()
 	{
 		IsPlayer = true;
 		PrimaryComponentTick.bCanEverTick = true;
+
+		ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
+		if (defaultDisplay.Succeeded())
+			DefaultDisplayWidget = defaultDisplay.Class;
+		else
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, "Fail To Find DisplayMessage Widget");
 	}
 	else
 	{
@@ -32,13 +38,7 @@ UCInventoryComponent::UCInventoryComponent()
 		ItemTable = defaultTable.Object;
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
 	if (defaultRuneTable.Succeeded())
-		RuneTable = defaultRuneTable.Object;
-	
-
-
-	ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
-	if (defaultDisplay.Succeeded())	
-		DisplayMessage = CreateWidget<UCWidget_DisplayMessage>(GetWorld(), defaultDisplay.Class);	
+		RuneTable = defaultRuneTable.Object;	
 }
 
 
@@ -46,8 +46,9 @@ void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();	
 	Content.SetNumZeroed(InventorySize);// 인벤토리 사이즈 초기화
-	if (!!DisplayMessage && IsPlayer)
+	if (!!DefaultDisplayWidget && IsPlayer)
 	{
+		DisplayMessage = CreateWidget<UCWidget_DisplayMessage>(GetWorld(), DefaultDisplayWidget);
 		DisplayMessage->SetOwningPlayer(Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)));
 		DisplayMessage->AddToViewport();
 	}

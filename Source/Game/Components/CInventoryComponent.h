@@ -159,6 +159,8 @@ private:
 	bool bActive = false;
 	UPROPERTY()
 		class UCWidget_DisplayMessage* DisplayMessage;
+	UPROPERTY()
+		TSubclassOf<UCWidget_DisplayMessage> DefaultDisplayWidget;
 	bool IsPlayer = false;
 	bool CanConsume = false;	// Replicate 라 외부 변수로 빼둠
 
