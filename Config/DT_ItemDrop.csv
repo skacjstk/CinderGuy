@@ -1,0 +1,4 @@
+,ItemCode,Amount,DropChance,SuccessJumpIndex,
+1,80001,2,0.5,1,
+2,80001,1,1,0,
+3,80002,1,0.5,0, 
