@@ -285,6 +285,9 @@ void UCInventoryComponent::RemoveFromInventory(int32 InSourceIndex, bool IsRemov
 	FName selectedItem = Content[InSourceIndex].ItemID;
 	int32 selectedQuantity = Content[InSourceIndex].Quantity;
 
+	if (selectedQuantity <= 0)
+		return;
+
 	// 하나만 버리기 버리기
 	if (!IsRemoveWhole || (selectedQuantity == 1))
 	{
@@ -362,10 +365,13 @@ void UCInventoryComponent::Server_ConsumeItem_Implementation(FName InItemID)
 void UCInventoryComponent::ConsumeItem(int32 index)
 {
 	FName& id = Content[index].ItemID;
-	int32& quantity = Content[index].Quantity;	
+	int32& quantity = Content[index].Quantity;
+	if (quantity <= 0)
+		return;
 	CanConsume = false;
 	Server_ConsumeItem(id);
-	if(CanConsume == true)
+
+	if (CanConsume == true)
 		Server_RemoveItem(index, false, true);	// 아이템 소모함.
 }
 
