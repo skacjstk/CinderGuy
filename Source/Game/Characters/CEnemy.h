@@ -56,6 +56,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCDamageEffectComponent* DamageEffect;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCItemDropComponent* ItemDrop;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;

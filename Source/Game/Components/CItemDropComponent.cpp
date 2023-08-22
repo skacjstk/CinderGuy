@@ -2,15 +2,14 @@
 
 
 #include "CItemDropComponent.h"
+#include "Utilities/CLog.h"
 
 // Sets default values for this component's properties
 UCItemDropComponent::UCItemDropComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemDropCSV"));
+	if (defaultTable.Succeeded())
+		ItemDataTable = defaultTable.Object;
 }
 
 
@@ -32,3 +31,26 @@ void UCItemDropComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
+void UCItemDropComponent::PostEditChangeProperty(FPropertyChangedEvent& e)
+{
+	if (ItemDataTable == nullptr)
+		return;
+
+	TArray<FItemDrop_CSV*> AllRows;
+	FString ContextString = "NO Item Found";
+	ItemDataTable->GetAllRows(ContextString , AllRows);	// ContextString은 에러 메시지
+
+	DropTable.DropItemSet.Empty();
+	for (FItemDrop_CSV* row : AllRows)
+	{
+		if (row->DropTableID == DropTable.DropTableID)
+		{
+			FDropItem AddingItem;
+			AddingItem.ItemCode = row->ItemCode;
+			AddingItem.Amount = row->Amount;
+			AddingItem.DropChance = row->DropChance;
+			DropTable.DropItemSet.Add(AddingItem);
+			CLog::Log("Item Found");
+		}
+	}
+}

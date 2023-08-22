@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Structs/CommonStructs.h"
 #include "Components/ActorComponent.h"
 #include "CItemDropComponent.generated.h"
 
@@ -23,6 +24,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
+protected:
+	UPROPERTY(EditDefaultsOnly)
+		FItemDropTable DropTable;
+	UPROPERTY(BlueprintReadOnly)
+		UDataTable* ItemDataTable;
 };

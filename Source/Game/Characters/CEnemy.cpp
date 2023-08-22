@@ -6,6 +6,7 @@
 #include "Components/CActionComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/CItemDropComponent.h"
 #include "Widgets/CUserWidget_Name.h"
 #include "Widgets/CUserWidget_Health.h"
 #include "Materials/MaterialInstanceConstant.h"
@@ -31,6 +32,8 @@ ACEnemy::ACEnemy()
 	CHelpers::CreateActorComponent(this, &Status, "Status");
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &DamageEffect, "DamageEffect");
+	CHelpers::CreateActorComponent(this, &ItemDrop, "ItemDrop");
+
 	//Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
