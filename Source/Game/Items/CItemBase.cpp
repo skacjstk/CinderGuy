@@ -1,7 +1,6 @@
 #include "CItemBase.h"
 #include "Global.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/CItemDataComponent.h"
 
 ACItemBase::ACItemBase()
 {

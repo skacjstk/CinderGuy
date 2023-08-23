@@ -63,6 +63,9 @@ ACEnemy::ACEnemy()
 	//Movment Settings
 	GetCharacterMovement()->MaxWalkSpeed = Status->GetRunSpeed();
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
+
+	//ItemDropComponent Settings
+	ItemDrop->DropTable.DropTableID = 100;
 }
 
 void ACEnemy::BeginPlay()
@@ -230,6 +233,7 @@ void ACEnemy::Dead()
 	if (Causer->IsA<ACThrow>())
 		DeadLaunchValue *= 0.075f;
 
+	ItemDrop->DropItem(start);
 //	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 너무 멀리 날아가
 	
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);

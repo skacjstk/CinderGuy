@@ -25,9 +25,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
-protected:
-	UPROPERTY(EditDefaultsOnly)
+
+	void DropItem(FVector DropLocation);
+
+	UPROPERTY(EditAnyWhere)
 		FItemDropTable DropTable;
-	UPROPERTY(BlueprintReadOnly)
+protected:
+	UPROPERTY(EditAnyWhere)
 		UDataTable* ItemDataTable;
+
+	UPROPERTY(BlueprintReadWrite, EditAnyWhere)
+		class UDataTable* ItemTable;
+
+private:
+	void SettingValue();
 };

@@ -7,6 +7,15 @@
 #include "Engine/DataTable.h"
 #include "CommonStructs.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	None,
+	Normal,
+	Rune,
+	Max
+};
+
 USTRUCT(BlueprintType)
 struct FItemDrop_CSV : public FTableRowBase
 {
@@ -44,6 +53,27 @@ public:
 		int32 DropTableID;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		TArray<FDropItem> DropItemSet;
+};
+
+USTRUCT(BlueprintType)
+struct FItem : public FTableRowBase	// Editor���� �ν��ϰ� �ϱ� ����
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		FText Name;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		EItemType Type = EItemType::Normal;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		FText Description;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		class UTexture2D* Thumbnail;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		TSubclassOf<class ACItemBase> ItemClass;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		int32 StckSize;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+		TSubclassOf<class ACItemEffectBase> ItemEffectClass;
 };
 
 UCLASS()

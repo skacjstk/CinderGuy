@@ -41,7 +41,7 @@ bool UCWidget_InventrorySlot::Initialize()
 
 FText UCWidget_InventrorySlot::GetDescription()
 {
-	if (!itemDescription.IsEmpty())
+	if (!itemDescription.IsEmpty() || ItemTable == nullptr)
 		return itemDescription;
 	else
 	{

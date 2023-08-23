@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/IInteract.h"
+#include "Components/CItemDataComponent.h"
 #include "CItemBase.generated.h"
 
 UCLASS()

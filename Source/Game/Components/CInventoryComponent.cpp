@@ -168,6 +168,8 @@ int32 UCInventoryComponent::FindSlot(FName& InItemID, bool& OutFoundSlot)
 
 int32 UCInventoryComponent::GetMaxStackSize(FName& InItemID)
 {
+	if (ItemTable == nullptr)
+		return -1;
 	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
 	if(!!item)
 		return item->StckSize;
@@ -177,6 +179,8 @@ int32 UCInventoryComponent::GetMaxStackSize(FName& InItemID)
 
 EItemType UCInventoryComponent::GetItemType(FName& InItemID)
 {
+	if (ItemTable == nullptr)
+		return EItemType::None;
 	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
 	if (!!item)	
 		return item->Type;	
@@ -316,6 +320,7 @@ void UCInventoryComponent::Server_RemoveItem_Implementation(int32 InSourceIndex,
 
 void UCInventoryComponent::Server_DropItem_Implementation(FName InItemID, int32 InQuantity)
 {
+	if (ItemTable == nullptr) return;
 	FItem * item = ItemTable->FindRow<FItem>(InItemID, "");	// ContextString은 에러 메시지
 	if (item == nullptr) return;
 
@@ -350,6 +355,7 @@ void UCInventoryComponent::Server_DropItem_Implementation(FName InItemID, int32 
 
 void UCInventoryComponent::Server_ConsumeItem_Implementation(FName InItemID)
 {
+	if (ItemTable == nullptr) return;
 	FItem* item = ItemTable->FindRow<FItem>(InItemID, "");
 	if (item == nullptr) return;
 	if (item->ItemEffectClass == nullptr) return;

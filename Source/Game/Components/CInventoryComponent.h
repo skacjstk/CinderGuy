@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Structs/CommonStructs.h"
 #include "Components/ActorComponent.h"
 #include "Engine/EngineBaseTypes.h"
 #include "Engine/Texture2D.h"
@@ -11,15 +12,6 @@
 #include "CInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdated);
-
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-	None,
-	Normal,
-	Rune,
-	Max
-};
 
 USTRUCT(BlueprintType)
 struct FSlot
@@ -32,6 +24,8 @@ public:
 		int32 Quantity;
 };
 
+
+
 USTRUCT(BlueprintType)
 struct FSaveInventory : public FTableRowBase
 {
@@ -39,27 +33,6 @@ struct FSaveInventory : public FTableRowBase
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		TArray<FSlot> PlayerInventorySlots;
-};
-
-USTRUCT(BlueprintType)
-struct FItem : public FTableRowBase	// Editor에서 인식하게 하기 위해
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		FText Name;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		EItemType Type = EItemType::Normal;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		FText Description;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		class UTexture2D* Thumbnail;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TSubclassOf<ACItemBase> ItemClass;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		int32 StckSize;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TSubclassOf<ACItemEffectBase> ItemEffectClass;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
