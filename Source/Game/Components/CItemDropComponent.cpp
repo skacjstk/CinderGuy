@@ -92,7 +92,7 @@ void UCItemDropComponent::DropItem(FVector DropLocation)
 					float Direction2 = FMath::RandRange(-1.f, 1.f);
 					itemActor->SetActorLocation(DropLocation);
 					itemActor->GetItemData()->Quantity = item.Amount;
-					FVector Force = FVector(Direction1 * 100000.0f, Direction2 * 100000.0f, 1000000.0f);
+					FVector Force = FVector(Direction1 * 10000000.0f, Direction2 * 10000000.0f, 1000000.0f);
 						//FVector(Dice - 0.5f * 100000.f, Dice - 0.5f * 100.f, Dice * 100.0f);
 					itemActor->GetMesh()->AddForce(Force);
 				}
