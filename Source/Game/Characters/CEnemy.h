@@ -59,6 +59,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCItemDropComponent* ItemDrop;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCDismembermentComponent* SliceBodyEffect;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;

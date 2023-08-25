@@ -7,6 +7,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CItemDropComponent.h"
+#include "Components/CDismembermentComponent.h"
 #include "Widgets/CUserWidget_Name.h"
 #include "Widgets/CUserWidget_Health.h"
 #include "Materials/MaterialInstanceConstant.h"
@@ -33,6 +34,7 @@ ACEnemy::ACEnemy()
 	CHelpers::CreateActorComponent(this, &State, "State");
 	CHelpers::CreateActorComponent(this, &DamageEffect, "DamageEffect");
 	CHelpers::CreateActorComponent(this, &ItemDrop, "ItemDrop");
+	CHelpers::CreateActorComponent(this, &SliceBodyEffect, "SliceBodyEffect");
 
 	//Component Settings
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
@@ -160,6 +162,8 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		State->SetDeadMode();
+		// Need Event Call
+		SliceBodyEffect->OnSlice(this, DamageCauser);
 		return this->DamageValue;
 	}
 	State->SetHittedMode();
@@ -219,10 +223,12 @@ void ACEnemy::Dead()
 	Action->Dead();
 
 	// Ragdoll
+
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->GlobalAnimRateScale = 0.f;
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();
 	FVector target = Causer->GetActorLocation();
@@ -233,6 +239,7 @@ void ACEnemy::Dead()
 	if (Causer->IsA<ACThrow>())
 		DeadLaunchValue *= 0.075f;
 
+	// Need Event
 	ItemDrop->DropItem(start);
 //	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 너무 멀리 날아가
 	
