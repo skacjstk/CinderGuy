@@ -3,6 +3,7 @@
 #include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "DamageType/DamageTypeBase.h"
 #include "Rendering/SkeletalMeshRenderData.h"
 
 UCDismembermentComponent::UCDismembermentComponent()
@@ -12,7 +13,7 @@ UCDismembermentComponent::UCDismembermentComponent()
 	ProcMesh->SetSimulatePhysics(false);
 }
 
-void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* DamageCauser)
+void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* DamageCauser, FDamageEvent const& DamageEvent)
 {
 	if (SlicedCharacter == nullptr || ProcMesh == nullptr)
 		return;
@@ -27,8 +28,28 @@ void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* Dama
 	ProcMesh->SetMaterial(0, CharSkel->GetMaterial(0));
 		
 	// 3. 방향에 맞춰 절단
-	DamageCauser->GetVelocity();
-	// 내일하기: HitResult 에 충돌지점을 가져와야 함.
+	
+	UShapeComponent* Test = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
+	if (Test)
+	{
+		CLog::Log(Test->GetPhysicsAngularVelocity());			
+	}
+	
+
+	if (DamageEvent.DamageTypeClass != nullptr)
+	{
+		UDamageTypeBase* DamageType = Cast<UDamageTypeBase>(DamageEvent.DamageTypeClass.GetDefaultObject());
+		if (DamageType != nullptr)
+		{
+			FHitResult* SweepResult;
+			DamageType->GetHitResult(&SweepResult);
+			if (SweepResult != nullptr)
+			{				
+				CLog::Log(SweepResult->ImpactPoint);
+			}
+		}
+	}
+
 
 
 	// 4. 물리 반영(난항)

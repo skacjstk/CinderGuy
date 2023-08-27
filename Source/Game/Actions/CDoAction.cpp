@@ -21,6 +21,11 @@ void ACDoAction::SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass)
 	ParryDamageTypeClass = InDamageTypeClass;
 }
 
+void ACDoAction::SetActionDamageType(TSubclassOf<UDamageType> InDamageTypeClass)
+{
+	ActionDamageTypeClass = InDamageTypeClass;
+}
+
 // Called when the game starts or when spawned
 void ACDoAction::BeginPlay()
 {

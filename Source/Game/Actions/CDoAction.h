@@ -23,6 +23,7 @@ public:
 	FORCEINLINE void SetGuardData(FGuardData InData) { GuardData = InData; }
 	FORCEINLINE void SetParryData(TArray<FGuardData> InData) { ParryData = InData; }
 	void SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass);
+	void SetActionDamageType(TSubclassOf<UDamageType> InDamageTypeClass);
 	TSubclassOf<UDamageType> GetParryDamageType() { return ParryDamageTypeClass; }
 protected:
 	// Called when the game starts or when spawned
@@ -51,7 +52,7 @@ public:
 	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
 	UFUNCTION()
-		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
+		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter, const FHitResult& SweepResult) {};
 	UFUNCTION()
 		virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
 private:
@@ -71,5 +72,6 @@ protected:
 	FGuardData GuardData;
 	TArray<FGuardData> ParryData;
 	TSubclassOf<UDamageType> ParryDamageTypeClass;
+	TSubclassOf<UDamageType> ActionDamageTypeClass;
 	const bool* bEquipped;	//CEquipment 에서 받아올 것
 };

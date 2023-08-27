@@ -20,4 +20,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "DamageType")
 		void DamageTrigger(UCDamageEffectComponent* DamageEffectComp);
 	virtual void DamageTrigger_Implementation(UCDamageEffectComponent* DamageEffectComp);
+//	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "DamageType")
+//		void GetHitResult(FHitResult** OutHitResult);
+//	virtual
+	virtual void GetHitResult(FHitResult** OutHitResult);
+
+	void SetHitResult(const FHitResult& InHitResult);
+private:
+	FHitResult* SweepResult;
 };

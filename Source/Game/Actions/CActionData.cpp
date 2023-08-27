@@ -5,6 +5,7 @@
 #include "CDoAction.h"
 #include "CThrow.h"
 #include "GameFramework/Character.h"
+#include "DamageType/DamageTypeBase.h"
 #include "Components/CAttachmentStatusComponent.h"
 
 void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject)	// CActionComponent 에서 호출
@@ -66,6 +67,12 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetParryData(ParryData);
 		//ParryDamageType 생성해서 넣기
 		DoAction->SetParryDamageType(ParryDamageType);
+
+		SetDefaultActionDamageClass();
+		if (ActionDamageType == nullptr)
+			CLog::Log("Nullptr ActioNDamageType!!!!!!");
+		DoAction->SetActionDamageType(ActionDamageType);		
+
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
@@ -97,6 +104,11 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 
 }
 
+void UCActionData::PostEditChangeProperty(FPropertyChangedEvent& e)
+{
+	SetDefaultActionDamageClass();
+}
+
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)
 {
 	FString name;
@@ -107,4 +119,12 @@ FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString I
 	name.Append(GetName().Replace(L"DA_",L""));
 
 	return name;
+}
+
+void UCActionData::SetDefaultActionDamageClass()
+{
+	if (ActionDamageType == nullptr)
+	{
+		ActionDamageType = UDamageTypeBase::StaticClass();
+	}
 }

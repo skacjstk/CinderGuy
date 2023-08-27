@@ -16,7 +16,7 @@ class GAME_API UCDismembermentComponent : public UActorComponent
 	
 public:
 	UCDismembermentComponent();
-	void OnSlice(class ACharacter* SlicedCharacter, class AActor* DamageCauser);
+	void OnSlice(class ACharacter* SlicedCharacter, class AActor* DamageCauser, FDamageEvent const& DamageEvent);
 	//Skel, LODIndex, ProcMeshComp / 물체 velocity, 타점 Location
 
 private:

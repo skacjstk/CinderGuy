@@ -62,14 +62,15 @@ void ACAttachment::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	CheckTrue(OtherActor == OwnerCharacter);
 	CheckTrue(OtherActor->GetClass() == OwnerCharacter->GetClass());	// 같은 타입끼리 치고박기 금지: 라곤 해도...
 
-
 	if (OnAttachmentBeginOverlap.IsBound()) {
 		ACharacter* otherCharacter = Cast<ACharacter>(OtherActor);
 		CheckNull(otherCharacter);
 		
-		OnAttachmentBeginOverlap.Broadcast(OwnerCharacter, this, otherCharacter);
+		OnAttachmentBeginOverlap.Broadcast(OwnerCharacter, this, otherCharacter, SweepResult);
 	}
 }
+
+
 
 void ACAttachment::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -87,7 +88,7 @@ void ACAttachment::OnCollisions(FString InCollisionName)
 	{
 		for (UShapeComponent* shape : ShapeComponents)
 		{
-			shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);	// 적 밀려나는 효과랑 겹쳐서 잠시 QueryOnly 로 
+			shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);	// 적 밀려나는 효과랑 겹쳐서 잠시 QueryOnly 로 
 		}	// 전체 모양 켜기
 	}
 	else
@@ -95,7 +96,7 @@ void ACAttachment::OnCollisions(FString InCollisionName)
 		for (UShapeComponent* shape : ShapeComponents)
 		{
 			if(shape->GetName().Contains(InCollisionName))	// 콜리전 이름과 소켓이름을 일치시켜놨으니까 이렇게 되는거
-				shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+				shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
 	}
 
