@@ -67,12 +67,6 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetParryData(ParryData);
 		//ParryDamageType 생성해서 넣기
 		DoAction->SetParryDamageType(ParryDamageType);
-
-		SetDefaultActionDamageClass();
-		if (ActionDamageType == nullptr)
-			CLog::Log("Nullptr ActioNDamageType!!!!!!");
-		DoAction->SetActionDamageType(ActionDamageType);		
-
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
@@ -104,11 +98,6 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 
 }
 
-void UCActionData::PostEditChangeProperty(FPropertyChangedEvent& e)
-{
-	SetDefaultActionDamageClass();
-}
-
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)
 {
 	FString name;
@@ -119,12 +108,4 @@ FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString I
 	name.Append(GetName().Replace(L"DA_",L""));
 
 	return name;
-}
-
-void UCActionData::SetDefaultActionDamageClass()
-{
-	if (ActionDamageType == nullptr)
-	{
-		ActionDamageType = UDamageTypeBase::StaticClass();
-	}
 }

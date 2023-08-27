@@ -16,72 +16,18 @@ class GAME_API UCDismembermentComponent : public UActorComponent
 	
 public:
 	UCDismembermentComponent();
-	void OnSlice(class ACharacter* SlicedCharacter, class AActor* DamageCauser, FDamageEvent const& DamageEvent);
+	void OnSlice(class ACharacter* SlicedCharacter, class AActor* DamageCauser);
 	//Skel, LODIndex, ProcMeshComp / 물체 velocity, 타점 Location
+	bool GetDoSlice() { return bDoSlice; }
 
 private:
-	void CopySkeletalMeshToProcedural(class USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, class UProceduralMeshComponent* ProcMeshComponent);
+	void CopySkeletalMeshToProcedural(class USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, class UCapsuleComponent* Capsule, class UProceduralMeshComponent* ProcMeshComponent);
 
 
-
+public:
+	UPROPERTY(EditAnyWhere)
+		bool bDoSlice = true;
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnyWhere)
 		class UProceduralMeshComponent* ProcMesh = nullptr;
 };
-
-/*
-	//LineTrace
-	FVector start = GetPawn()->GetActorLocation();
-	FVector end = FVector(CursorLocation.X, CursorLocation.Y, start.Z);
-
-	TArray<AActor*> ignores;
-	ignores.Add(GetPawn());
-
-	FHitResult hitResult;
-	UKismetSystemLibrary::LineTraceSingle
-	(
-		GetWorld(),
-		start,
-		end,
-		UEngineTypes::ConvertToTraceType(ECC_Visibility),
-		false,
-		ignores,
-		EDrawDebugTrace::ForDuration,
-		hitResult,
-		true,
-		FLinearColor::Green,
-		FLinearColor::Red,
-		1.f
-	);
-	if (hitResult.IsValidBlockingHit() == false) return;
-
-	//Slice
-	UProceduralMeshComponent* otherProcMesh = Cast<UProceduralMeshComponent>(hitResult.Component);
-	if (otherProcMesh == nullptr) return;
-
-	UProceduralMeshComponent* outProcMesh = nullptr;
-	// 자르는 방향
-	FVector direction = end - start;
-	direction.Normalize();
-	FVector planeNormal = GetPawn()->GetActorUpVector() ^ direction;
-
-	// 자르는 단면도
-	UMaterialInstanceConstant* material =
-	Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(),
-		nullptr, TEXT("MaterialInstanceConstant'/Game/Materials/Mat_Plane_Inst.Mat_Plane_Inst'")));
-
-	// 진짜 자르기
-	UKismetProceduralMeshLibrary::SliceProceduralMesh
-	(
-		otherProcMesh,
-		hitResult.Location,
-		planeNormal,
-		true,
-		outProcMesh,
-		EProcMeshSliceCapOption::CreateNewSectionForCap,
-		material
-	);
-
-	outProcMesh->SetSimulatePhysics(true);
-	outProcMesh->AddImpulse(planeNormal * -50000.f);
-*/

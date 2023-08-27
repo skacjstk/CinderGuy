@@ -25,7 +25,7 @@ public:
 	virtual void OnParry()		override;
 	virtual void OnBlock()		override;
 	// 부모에서 UFUNCTION() 이면, 자식은 빠져도 됨.
-	virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter, const FHitResult& SweepResult)override;
+	virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter)override;
 	virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) override;
 
 private:

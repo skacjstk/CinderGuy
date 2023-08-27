@@ -161,9 +161,9 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
-		State->SetDeadMode();
 		// Need Event Call
-		SliceBodyEffect->OnSlice(this, DamageCauser, DamageEvent);
+		SliceBodyEffect->OnSlice(this, DamageCauser);
+		State->SetDeadMode();
 		return this->DamageValue;
 	}
 	State->SetHittedMode();
@@ -223,11 +223,19 @@ void ACEnemy::Dead()
 	Action->Dead();
 
 	// Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
+	if (SliceBodyEffect->GetDoSlice() == false)
+	{
+		GetMesh()->GlobalAnimRateScale = 0.f;
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	else
+	{
+		GetMesh()->SetVisibility(false);
+		Action->End_Dead();
+	}
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->GlobalAnimRateScale = 0.f;
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();

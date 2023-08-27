@@ -135,9 +135,9 @@ void ACDoAction_Melee::OnBlock()
 	GuardData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
-void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter, const FHitResult& SweepResult)
+void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
 {
-	Super::OnAttachmentBeginOverlap(InAttacker, InCauser, InOtherCharacter, SweepResult);
+	Super::OnAttachmentBeginOverlap(InAttacker, InCauser, InOtherCharacter);
 
 	int32 before = HittedCharacters.Num();
 	HittedCharacters.AddUnique(InOtherCharacter);
@@ -192,15 +192,6 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	if (before < HittedCharacters.Num())
 	{
 		FDamageEvent e;
-		if (ActionDamageTypeClass != nullptr)
-		{
-			TSubclassOf<UDamageTypeBase> DamageType = ActionDamageTypeClass;
-			if (DamageType.GetDefaultObject() != nullptr)
-			{				
-				DamageType.GetDefaultObject()->SetHitResult(SweepResult);
-			}
-			e.DamageTypeClass = DamageType;
-		}
 		if (IsStrongAction == true)	//StrongAction 피해 주기
 		{
 			SendDamage(StrongData.Power, e, InAttacker, InCauser, InOtherCharacter);

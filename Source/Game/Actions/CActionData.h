@@ -12,10 +12,8 @@ class GAME_API UCActionData : public UDataAsset
 		
 public:
 	void BeginPlay(class ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject);	// 얘는 BeginPlay가 없어서 직접 만듬
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 private:
 	FString GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName);
-	void SetDefaultActionDamageClass();
 public:
 	//Attachment
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment")
@@ -36,8 +34,6 @@ public:
 		TSubclassOf<class ACDoAction> DoActionClass;	// 무기 내부 공격 몽타주 및 데미지 담당
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoAction")
 		TArray<FDoActionData> DoActionDatas;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoAction")
-		TSubclassOf<UDamageType> ActionDamageType;		//기본 데미지 타입
 
 	// DoStrongAction
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DoStrongAction")

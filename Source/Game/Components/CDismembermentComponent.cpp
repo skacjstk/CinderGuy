@@ -5,61 +5,115 @@
 #include "Components/CapsuleComponent.h"
 #include "DamageType/DamageTypeBase.h"
 #include "Rendering/SkeletalMeshRenderData.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "KismetProceduralMeshLibrary.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UCDismembermentComponent::UCDismembermentComponent()
 {
 	ProcMesh = CreateDefaultSubobject<UProceduralMeshComponent>("ProcMesh");
 	ProcMesh->SetVisibility(false);
-	ProcMesh->SetSimulatePhysics(false);
+	ProcMesh->bUseComplexAsSimpleCollision = false;
+	ProcMesh->SetCollisionProfileName(TEXT("SlicedBody"));	// 임시, WorldDynamic을 블록하지 않아야 보기좋음
 }
 
-void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* DamageCauser, FDamageEvent const& DamageEvent)
+void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* DamageCauser)
 {
-	if (SlicedCharacter == nullptr || ProcMesh == nullptr)
+	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false)
 		return;
-	USkeletalMeshComponent* CharSkel = SlicedCharacter->GetMesh();;
 
-	ProcMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CopySkeletalMeshToProcedural(CharSkel, 0, ProcMesh);
-
+	USkeletalMeshComponent* CharSkel = SlicedCharacter->GetMesh();
+	CopySkeletalMeshToProcedural(CharSkel, 0, SlicedCharacter->GetCapsuleComponent(), ProcMesh);
 	// 1. 위치, 회전 반영
 	ProcMesh->SetWorldTransform(CharSkel->GetComponentTransform());
 	// 2. 머티리얼 반영
 	ProcMesh->SetMaterial(0, CharSkel->GetMaterial(0));
-		
 	// 3. 방향에 맞춰 절단
-	
 	UShapeComponent* Test = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
+
+	FVector start;
+	FVector end;
 	if (Test)
 	{
-		CLog::Log(Test->GetPhysicsAngularVelocity());			
-	}
-	
+		// Test->GetPhysicsAngularVelocity().Normalize()
+		end = start = Test->GetComponentLocation();	// 월드 공간
+		FRotator rotater = Test->GetComponentRotation();				// 월드 공간
 
-	if (DamageEvent.DamageTypeClass != nullptr)
+		// 나중에
+		FVector RotateVector = rotater.RotateVector(FVector(0, 0, 70.0f));
+		
+		start += RotateVector;
+		end -= RotateVector;
+	}
+
+	TArray<FHitResult> hitResults;
+	FHitResult UsedHitResult;
+	TArray<AActor*> ignoreActor;
+	ignoreActor.Add(DamageCauser);
+	ignoreActor.Add(DamageCauser->GetOwner());
+	// 같은 크기의 Trace 생성해서, 해당 Trace의 ImpactPoint 사용
+	// Overlap 은 ImpactPoint 전달 불가
+
+	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), start, end, 16, ETraceTypeQuery::TraceTypeQuery4, false, 
+		ignoreActor, EDrawDebugTrace::None, hitResults, false, FColor::Cyan, FColor::Green))
 	{
-		UDamageTypeBase* DamageType = Cast<UDamageTypeBase>(DamageEvent.DamageTypeClass.GetDefaultObject());
-		if (DamageType != nullptr)
+		for (FHitResult& hitResult : hitResults)
 		{
-			FHitResult* SweepResult;
-			DamageType->GetHitResult(&SweepResult);
-			if (SweepResult != nullptr)
-			{				
-				CLog::Log(SweepResult->ImpactPoint);
+			if (hitResult.GetActor() == SlicedCharacter)
+			{
+				UsedHitResult = hitResult;
+				break;
 			}
 		}
 	}
-
-
-
 	// 4. 물리 반영(난항)
 	// 4-1. 스켈레탈 메시 2개를 준비해놓고, 각각 분리된 ProcMesh 의 데이터를 넘겨줄까??
 	// 4-2. 아니면 잘려진 ProcMesh 2개를 그냥 날려버릴까? (복잡 물리학 적용하면서) 힌트로, 상용 유료에셋들이 스켈레탈 메시를 자르면 스태틱메시2개가 된다고 했음
-	ProcMesh->SetVisibility(true);	
-	CharSkel->SetVisibility(false);
+	//Slice
+
+	UProceduralMeshComponent* outProcMesh = nullptr;
+	// 자르는 방향
+	FVector planeNormal = Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal();	// 이거다
+//	FVector planeNormal = UKismetMathLibrary::Cross_VectorVector(Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal(), start.GetSafeNormal());
+//	FVector planeNormal = UKismetMathLibrary::Cross_VectorVector(start.GetSafeNormal(), Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal());
+
+	CLog::Log(planeNormal);
+	// 자르는 단면도
+	UMaterialInstanceConstant* material =
+		Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(),
+			nullptr, TEXT("MaterialInstanceConstant'/Game/Materials/Mat_Plane_Inst.Mat_Plane_Inst'")));
+
+	// 진짜 자르기
+	UKismetProceduralMeshLibrary::SliceProceduralMesh
+	(
+		ProcMesh,
+		UsedHitResult.Location,
+		planeNormal,
+		true,
+		outProcMesh,
+		EProcMeshSliceCapOption::CreateNewSectionForCap,
+		material
+	);
+
+	/*
+	 ProcMesh가 만드는 CreateSection 에 콜리전은, StaticMesh 전용( 즉, 스켈레탈 메시는 스태틱 메시의 그 콜리전이 없다! )
+
+	*/
+	ProcMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ProcMesh->SetVisibility(true);
+	ProcMesh->SetSimulatePhysics(true);
+	ProcMesh->AddImpulse(FVector(0.0f, 5000.f, 0.f) * planeNormal);
+	if (outProcMesh != nullptr)
+	{
+		outProcMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		outProcMesh->SetVisibility(true);
+		outProcMesh->SetSimulatePhysics(true);
+		outProcMesh->AddImpulse(FVector(0.0f, -1000.f, 0.f) * planeNormal);
+	}
 }
 
-void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, UProceduralMeshComponent* ProcMeshComponent)
+void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, UCapsuleComponent* Capsule, UProceduralMeshComponent* ProcMeshComponent)
 {
 	if (ProcMeshComponent == nullptr)
 		return;
@@ -74,7 +128,6 @@ void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshCompone
 	TArray<int32> Tris;
 	TArray<FColor> Colors;
 	TArray<FProcMeshTangent> Tangents;
-
 
 	//get num vertices
 	int32 NumSourceVertices = DataArray.RenderSections[0].NumVertices;
@@ -118,4 +171,49 @@ void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshCompone
 
 	//Create the procedural mesh
 	ProcMeshComponent->CreateMeshSection(0, VerticesArray, Tris, Normals, UV, Colors, Tangents, true);
+
+
+	// 발바닥 파인거 Z값 -1 대 아니면 죄다 양수였고 140까지 올라갔으니, 아마 HalfHeight 두배 해야할지도?
+	// 어쨋든, 커스텀 Octahedron(수정모양) 충돌체 Triangle 만들어주기
+	TArray<FVector> CollisionArray;
+
+	float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	float Radius = Capsule->GetScaledCapsuleRadius();
+
+	CollisionArray.Add(FVector(0.0f,0.0f, 0.0f));	// 1
+	CollisionArray.Add(FVector(-Radius,-Radius, HalfHeight));
+	CollisionArray.Add(FVector(Radius,-Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, 0.0f));	// 1
+	CollisionArray.Add(FVector(Radius, -Radius, HalfHeight));
+	CollisionArray.Add(FVector(Radius, Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, 0.0f));	// 1
+	CollisionArray.Add(FVector(Radius, Radius, HalfHeight));
+	CollisionArray.Add(FVector(-Radius, Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, 0.0f));	// 1
+	CollisionArray.Add(FVector(-Radius, Radius, HalfHeight));
+	CollisionArray.Add(FVector(-Radius, -Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, HalfHeight * 2.0f));	// 1
+	CollisionArray.Add(FVector(Radius, -Radius, HalfHeight));
+	CollisionArray.Add(FVector(-Radius, -Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, HalfHeight * 2.0f));	// 1
+	CollisionArray.Add(FVector(Radius, Radius, HalfHeight));
+	CollisionArray.Add(FVector(Radius, -Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, HalfHeight * 2.0f));	// 1
+	CollisionArray.Add(FVector(-Radius, Radius, HalfHeight));
+	CollisionArray.Add(FVector(Radius, Radius, HalfHeight));
+
+	CollisionArray.Add(FVector(0.0f, 0.0f, HalfHeight * 2.0f));	// 1
+	CollisionArray.Add(FVector(-Radius, -Radius, HalfHeight));
+	CollisionArray.Add(FVector(-Radius, Radius, HalfHeight));
+	if (Capsule != nullptr)
+		ProcMeshComponent->AddCollisionConvexMesh(CollisionArray);
+
+
+//	ProcMeshComponent->AddCollisionConvexMesh(VerticesArray);	// 너무 오래걸림
 }

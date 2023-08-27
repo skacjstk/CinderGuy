@@ -66,7 +66,7 @@ void ACAttachment::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		ACharacter* otherCharacter = Cast<ACharacter>(OtherActor);
 		CheckNull(otherCharacter);
 		
-		OnAttachmentBeginOverlap.Broadcast(OwnerCharacter, this, otherCharacter, SweepResult);
+		OnAttachmentBeginOverlap.Broadcast(OwnerCharacter, this, otherCharacter);
 	}
 }
 
