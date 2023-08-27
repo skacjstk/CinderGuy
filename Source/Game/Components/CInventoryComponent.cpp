@@ -460,17 +460,20 @@ AItemRuneBase* UCInventoryComponent::SpawnRune(ACAttachment* attachment, int32 I
 {
 	AItemRuneBase* runeActor = nullptr;
 
-	FRune* sourceRune = RuneTable->FindRow<FRune>(InInventory->Content[InIndex].ItemID, "Source is Not Rune");
-	if (!!sourceRune)
+	if (InInventory->Content[InIndex].ItemID.IsNone() == false)
 	{
-		FTransform transform;
-		//		transform.SetLocation();	// Attachment->DataObjects->ActionComponent->CPlayer 로 가야 함
-		runeActor = GetWorld()->SpawnActorDeferred<AItemRuneBase>(sourceRune->RuneClass, transform, GetOwner());
-		runeActor->AttachmentStatus = attachment->GetAttachmentStatusComponent();
-		runeActor->SetBonusSpeed(sourceRune->BonusSpeed);
-		runeActor->SetBonusPower(sourceRune->BonusPower);	// 스탯 설정
-		UGameplayStatics::FinishSpawningActor(runeActor, transform);	// 여기가 진짜위치
-
+		FRune* sourceRune = RuneTable->FindRow<FRune>(InInventory->Content[InIndex].ItemID, FString::Printf(TEXT("Source is Not Rune %s"), *InInventory->Content[InIndex].ItemID.ToString()));
+		if (!!sourceRune)
+		{
+			FTransform transform;
+			//		transform.SetLocation();	// Attachment->DataObjects->ActionComponent->CPlayer 로 가야 함
+			runeActor = GetWorld()->SpawnActorDeferred<AItemRuneBase>(sourceRune->RuneClass, transform, GetOwner());
+			runeActor->AttachmentStatus = attachment->GetAttachmentStatusComponent();
+			runeActor->SetBonusSpeed(sourceRune->BonusSpeed);
+			runeActor->SetBonusPower(sourceRune->BonusPower);	// 스탯 설정
+			UGameplayStatics::FinishSpawningActor(runeActor, transform);	// 여기가 진짜위치
+	
+		}
 	}
 	return runeActor;
 }

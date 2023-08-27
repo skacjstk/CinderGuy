@@ -77,6 +77,9 @@ void UCItemDropComponent::DropItem(FVector DropLocation)
 		FString IntFromString = FString::FromInt(item.ItemCode);
 		
 		FName ItemName = FName(IntFromString);
+
+		if (ItemName.IsNone())
+			continue;
 		FItem* SearchItem = ItemTable->FindRow<FItem>(ItemName, "Find Fail");
 
 		if (SearchItem != nullptr)

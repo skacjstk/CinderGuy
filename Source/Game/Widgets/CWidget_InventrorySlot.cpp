@@ -45,7 +45,10 @@ FText UCWidget_InventrorySlot::GetDescription()
 		return itemDescription;
 	else
 	{
-		FItem* item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
+		FItem* item = nullptr;
+
+		if (ItemID.IsNone() == false)
+			item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
 		if (!!item)
 		{
 			itemDescription = item->Description;	
@@ -101,7 +104,10 @@ void UCWidget_InventrorySlot::NativePreConstruct()
 	}
 	else
 	{
-		FItem* item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
+		FItem* item = nullptr;
+
+		if(ItemID.IsNone() == false)
+			item = ItemTable->FindRow<FItem>(ItemID, "Find Fail");
 
 		if (item != nullptr)
 		{
