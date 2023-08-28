@@ -30,15 +30,14 @@ void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* Dama
 	// 2. 머티리얼 반영
 	ProcMesh->SetMaterial(0, CharSkel->GetMaterial(0));
 	// 3. 방향에 맞춰 절단
-	UShapeComponent* Test = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
+	UShapeComponent* ShapeCauser = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
 
 	FVector start;
 	FVector end;
-	if (Test)
+	if (ShapeCauser)
 	{
-		// Test->GetPhysicsAngularVelocity().Normalize()
-		end = start = Test->GetComponentLocation();	// 월드 공간
-		FRotator rotater = Test->GetComponentRotation();				// 월드 공간
+		end = start = ShapeCauser->GetComponentLocation();	// 월드 공간
+		FRotator rotater = ShapeCauser->GetComponentRotation();				// 월드 공간
 
 		// 나중에
 		FVector RotateVector = rotater.RotateVector(FVector(0, 0, 70.0f));
@@ -67,18 +66,18 @@ void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* Dama
 			}
 		}
 	}
-	// 4. 물리 반영(난항)
-	// 4-1. 스켈레탈 메시 2개를 준비해놓고, 각각 분리된 ProcMesh 의 데이터를 넘겨줄까??
-	// 4-2. 아니면 잘려진 ProcMesh 2개를 그냥 날려버릴까? (복잡 물리학 적용하면서) 힌트로, 상용 유료에셋들이 스켈레탈 메시를 자르면 스태틱메시2개가 된다고 했음
+	if (UsedHitResult.GetActor() == nullptr)	
+		UsedHitResult.ImpactPoint = DamageCauser->GetActorLocation();	// 만약 못 찾으면	
+	else
+		CLog::Log(UsedHitResult.Actor->GetName());
+	// 4. 물리 반영
+	// 잘려진 ProcMesh 2개를 날려버리기
 	//Slice
 
 	UProceduralMeshComponent* outProcMesh = nullptr;
 	// 자르는 방향
-	FVector planeNormal = Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal();	// 이거다
-//	FVector planeNormal = UKismetMathLibrary::Cross_VectorVector(Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal(), start.GetSafeNormal());
-//	FVector planeNormal = UKismetMathLibrary::Cross_VectorVector(start.GetSafeNormal(), Test->GetPhysicsAngularVelocityInDegrees().GetSafeNormal());
+	FVector planeNormal = ShapeCauser->GetPhysicsAngularVelocityInDegrees().GetSafeNormal();
 
-	CLog::Log(planeNormal);
 	// 자르는 단면도
 	UMaterialInstanceConstant* material =
 		Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(),
@@ -88,7 +87,7 @@ void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* Dama
 	UKismetProceduralMeshLibrary::SliceProceduralMesh
 	(
 		ProcMesh,
-		UsedHitResult.Location,
+		UsedHitResult.ImpactPoint,
 		planeNormal,
 		true,
 		outProcMesh,
@@ -98,18 +97,17 @@ void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* Dama
 
 	/*
 	 ProcMesh가 만드는 CreateSection 에 콜리전은, StaticMesh 전용( 즉, 스켈레탈 메시는 스태틱 메시의 그 콜리전이 없다! )
-
 	*/
 	ProcMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ProcMesh->SetVisibility(true);
 	ProcMesh->SetSimulatePhysics(true);
-	ProcMesh->AddImpulse(FVector(0.0f, 5000.f, 0.f) * planeNormal);
+	ProcMesh->AddImpulse(10000.0f * planeNormal);
 	if (outProcMesh != nullptr)
 	{
 		outProcMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		outProcMesh->SetVisibility(true);
 		outProcMesh->SetSimulatePhysics(true);
-		outProcMesh->AddImpulse(FVector(0.0f, -1000.f, 0.f) * planeNormal);
+		outProcMesh->AddImpulse(-2000.f * planeNormal);
 	}
 }
 
