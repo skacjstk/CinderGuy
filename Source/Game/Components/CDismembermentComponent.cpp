@@ -170,7 +170,7 @@ void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshCompone
 	}
 
 	//Create the procedural mesh
-	ProcMeshComponent->CreateMeshSection(0, VerticesArray, Tris, Normals, UV, Colors, Tangents, true);
+	ProcMeshComponent->CreateMeshSection(0, VerticesArray, Tris, Normals, UV, Colors, Tangents, false);
 
 
 	// 발바닥 파인거 Z값 -1 대 아니면 죄다 양수였고 140까지 올라갔으니, 아마 HalfHeight 두배 해야할지도?
