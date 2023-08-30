@@ -22,7 +22,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	{
 		Attachment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACAttachment>(AttachmentClass, transform, InOwnerCharacter);
 		Attachment->Tags.Add(FName( *(GetLabelName(InOwnerCharacter, "Attachment")) ));
-
+#if WITH_EDITOR
+		Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
+#endif
 		UGameplayStatics::FinishSpawningActor(Attachment, transform);	// 얘는 상속받은 위치에서 AttachTo 함 
 	}
 
@@ -46,7 +48,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		Equipment->SetColor(EquipmentColor);
 
 		Equipment->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "Equipment"))));
-
+#if WITH_EDITOR	
+		Equipment->SetActorLabel(GetLabelName(InOwnerCharacter, "Equipment"));
+#endif
 		UGameplayStatics::FinishSpawningActor(Equipment, transform);	// 여기가 진짜위치
 		Equipment->AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 	}	
@@ -72,7 +76,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetParryDamageType(ParryDamageType); 
 
 		DoAction->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "DoAction"))));
-
+#if WITH_EDITOR
+		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
+#endif
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
 		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
@@ -97,15 +103,13 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	(*OutObject)->Attachment = Attachment;
 	(*OutObject)->Equipment = Equipment;
 	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 
-
-	
+		
 	(*OutObject)->EquipmentColor = EquipmentColor;
-
 }
 
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)
 {
-	FString name; 
+	FString name;
 	name.Append(InOwnerCharacter->GetName());
 	name.Append("_");
 	name.Append(InMiddleName);
