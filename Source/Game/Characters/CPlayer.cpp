@@ -16,7 +16,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CWidget_PlayerHUD.h"
-// 테스트
 #include "Actions/CActionObjectContainer.h"
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
@@ -46,16 +45,17 @@ ACPlayer::ACPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
 	// Get Subclass
-	USkeletalMesh* meshAsset;
+#if WITH_EDITOR
 	CHelpers::GetAsset<USkeletalMesh>(&meshAsset, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
 	GetMesh()->SetSkeletalMesh(meshAsset);
-
-	TSubclassOf<UAnimInstance> animInstanceClass;
+	
 	CHelpers::GetClass<UAnimInstance>(&animInstanceClass, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstanceClass);
 
-	CHelpers::GetClass<UUserWidget>(&DefaultHUDClass, "/Game/Widgets/WB_PlayerHUD");
-
+	ConstructorHelpers::FClassFinder<UCWidget_PlayerHUD> defaultHUD( TEXT("/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C") );
+	if (defaultHUD.Succeeded())
+		DefaultHUDClass = defaultHUD.Class;
+#endif
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
 	SpringArm->TargetArmLength = 200.0f;
@@ -76,6 +76,16 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+#if !WITH_EDITOR
+	meshAsset = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), this, L"SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'") );
+	GetMesh()->SetSkeletalMesh(meshAsset);
+
+	UClass* RuntimeAnimInstanceClass = StaticCast<UClass*>(StaticLoadObject(UClass::StaticClass(), this, TEXT("/Game/Player/ABP_CPlayer.ABP_CPlayer_C")));
+	GetMesh()->SetAnimInstanceClass(RuntimeAnimInstanceClass);
+	
+	UClass* defaultHUD = StaticCast<UClass*>(StaticLoadObject(UClass::StaticClass(), this, TEXT("/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C")));
+	DefaultHUDClass = defaultHUD;
+#endif
 	//Create Dynamic 
 	UMaterialInstanceConstant* bodyMaterial;
 	UMaterialInstanceConstant* logoMaterial;

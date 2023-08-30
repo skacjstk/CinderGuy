@@ -33,18 +33,27 @@ UCInventoryComponent::UCInventoryComponent()
 		PrimaryComponentTick.bCanEverTick = false;
 	}
 
+#if WITH_EDITOR
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemTable = defaultTable.Object;
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
 	if (defaultRuneTable.Succeeded())
 		RuneTable = defaultRuneTable.Object;	
+#endif
 }
 
 
 void UCInventoryComponent::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
+
+	if(ItemTable == nullptr)
+		ItemTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), this, TEXT("/Game/Inventory/DT_ItemData")));
+	if (RuneTable == nullptr)
+		RuneTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), this, TEXT("/Game/Inventory/DT_RuneData")));
+
+
 	Content.SetNumZeroed(InventorySize);// 인벤토리 사이즈 초기화
 	if (!!DefaultDisplayWidget && IsPlayer)
 	{

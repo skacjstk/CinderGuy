@@ -10,6 +10,7 @@
 // Sets default values for this component's properties
 UCItemDropComponent::UCItemDropComponent()
 {
+#if WITH_EDITOR
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemDropCSV"));
 	if (defaultTable.Succeeded())
 		ItemDataTable = defaultTable.Object;
@@ -17,6 +18,7 @@ UCItemDropComponent::UCItemDropComponent()
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultItemTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemTable = defaultItemTable.Object;
+#endif
 }
 
 
@@ -24,8 +26,10 @@ UCItemDropComponent::UCItemDropComponent()
 void UCItemDropComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	if(ItemTable == nullptr)
+		ItemTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), this, TEXT("/Game/Inventory/DT_ItemData")));
+	if(ItemDataTable == nullptr)
+		ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), this, TEXT("/Game/Inventory/DT_ItemDropCSV")));
 	
 }
 

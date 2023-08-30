@@ -10,15 +10,13 @@
 // Sets default values
 ACAttachment::ACAttachment()
 {
+	CHelpers::CreateSceneComponent(this, &Scene, "Scene");
 	CHelpers::CreateActorComponent(this, &InventoryComponent, "RuneInventory");
 	if (!!InventoryComponent)
 	{
 		InventoryComponent->SetInventorySize(8);
 		AttachmentRunes.SetNumZeroed(InventoryComponent->GetInventorySize());
 	}
-
-
-	CHelpers::CreateSceneComponent(this, &Scene, "Scene");
 }
 
 // Called when the game starts or when spawned
