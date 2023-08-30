@@ -21,7 +21,8 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	if (!!AttachmentClass)
 	{
 		Attachment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACAttachment>(AttachmentClass, transform, InOwnerCharacter);
-		Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
+		Attachment->Tags.Add(FName( *(GetLabelName(InOwnerCharacter, "Attachment")) ));
+
 		UGameplayStatics::FinishSpawningActor(Attachment, transform);	// 얘는 상속받은 위치에서 AttachTo 함 
 	}
 
@@ -43,7 +44,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		Equipment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACEquipment>(EquipmentClass, transform, InOwnerCharacter);
 		Equipment->SetData(EquipmentData);	// 얘를 호출하고 BeginPlay 가 나와야 해서
 		Equipment->SetColor(EquipmentColor);
-		Equipment->SetActorLabel(GetLabelName(InOwnerCharacter, "Equipment"));
+
+		Equipment->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "Equipment"))));
+
 		UGameplayStatics::FinishSpawningActor(Equipment, transform);	// 여기가 진짜위치
 		Equipment->AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 	}	
@@ -66,8 +69,10 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		DoAction->SetGuardData(BlockData);
 		DoAction->SetParryData(ParryData);
 		//ParryDamageType 생성해서 넣기
-		DoAction->SetParryDamageType(ParryDamageType);
-		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
+		DoAction->SetParryDamageType(ParryDamageType); 
+
+		DoAction->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "DoAction"))));
+
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
 
 		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
@@ -100,8 +105,8 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)
 {
-	FString name;
-	name.Append(InOwnerCharacter->GetActorLabel());
+	FString name; 
+	name.Append(InOwnerCharacter->GetName());
 	name.Append("_");
 	name.Append(InMiddleName);
 	name.Append("_");

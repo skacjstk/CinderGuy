@@ -5,7 +5,7 @@
 // Sets default values for this component's properties
 UCStatusComponent::UCStatusComponent()
 {
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 

@@ -38,10 +38,12 @@ void UCItemDropComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
+#if WITH_EDITOR
 void UCItemDropComponent::PostEditChangeProperty(FPropertyChangedEvent& e)
 {
 	SettingValue();
 }
+#endif
 
 void UCItemDropComponent::SettingValue()
 {

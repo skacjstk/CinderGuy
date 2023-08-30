@@ -4,7 +4,7 @@
 
 UCAttachmentStatusComponent::UCAttachmentStatusComponent()
 {
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UCAttachmentStatusComponent::BeginPlay()
