@@ -16,31 +16,9 @@
 
 UCWidget_InventrorySlot::UCWidget_InventrorySlot(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-#if WITH_EDITOR
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
-	if (defaultTable.Succeeded())
-		ItemTable = defaultTable.Object;
-
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
-	if (defaultRuneTable.Succeeded())
-		RuneTable = defaultRuneTable.Object;
-
-	ConstructorHelpers::FClassFinder<UUserWidget> defaultDragPreview(TEXT("WidgetBlueprint'/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview_C'"));
-	if (defaultDragPreview.Succeeded())
-		PreviewClass = defaultDragPreview.Class;
-#else
-	static ConstructorHelpers::FObjectFinder<UClass> defaultTable(TEXT("/Game/Inventory/DT_ItemData.DT_ItemData_C"));
-	if (defaultTable.Object)
-		ItemTable = Cast<UDataTable>(defaultTable.Object);
-
-	static ConstructorHelpers::FObjectFinder<UClass> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData.DT_RuneData_C"));
-	if (defaultRuneTable.Object)
-		RuneTable = Cast<UDataTable>(defaultRuneTable.Object);
-
-	static ConstructorHelpers::FClassFinder<UClass> defaultDragPreview(TEXT("/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview"));
-	if (defaultDragPreview.Succeeded())
-		PreviewClass = defaultDragPreview.Class;
-#endif
+	CHelpers::GetAsset<UDataTable>(&ItemTable, TEXT("DataTable'/Game/Inventory/DT_ItemData.DT_ItemData'"));
+	CHelpers::GetAsset<UDataTable>(&RuneTable, TEXT("DataTable'/Game/Inventory/DT_RuneData.DT_RuneData'"));
+	CHelpers::GetClass<UCWidget_DragPreview>(&PreviewClass, TEXT("/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview_C"));
 }
 
 bool UCWidget_InventrorySlot::Initialize()

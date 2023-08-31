@@ -8,20 +8,12 @@
 UCWidget_InventoryGrid::UCWidget_InventoryGrid(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 #if WITH_EDITOR
-	CHelpers::GetClass(&SlotClass, TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot"));
-#else
-//	ConstructorHelpers::FClassFinder<UClass> DefaultSlot(TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot.WB_InventorySlot_C"));
-//	if (DefaultSlot.Succeeded())
-//		SlotClass = DefaultSlot.Class;
+	CHelpers::GetClass(&SlotClass, TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot.WB_InventorySlot_C"));
 #endif
 }
 
 bool UCWidget_InventoryGrid::Initialize()
 {
-#if !WITH_EDITOR
-	SlotClass = StaticCast<UClass*>(StaticLoadClass(UClass::StaticClass(), this, TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot.WB_InventorySlot")));
-	
-#endif
 	return true;
 }
 void UCWidget_InventoryGrid::NativePreConstruct()

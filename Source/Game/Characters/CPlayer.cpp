@@ -45,17 +45,13 @@ ACPlayer::ACPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
 	// Get Subclass
-#if WITH_EDITOR
-	CHelpers::GetAsset<USkeletalMesh>(&meshAsset, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
-	GetMesh()->SetSkeletalMesh(meshAsset);
-	
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	GetMesh()->SetSkeletalMesh(meshAsset.Object);
+
+	TSubclassOf<UAnimInstance> animInstanceClass;
 	CHelpers::GetClass<UAnimInstance>(&animInstanceClass, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstanceClass);
 
-	ConstructorHelpers::FClassFinder<UCWidget_PlayerHUD> defaultHUD( TEXT("/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C") );
-	if (defaultHUD.Succeeded())
-		DefaultHUDClass = defaultHUD.Class;
-#endif
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
 	SpringArm->TargetArmLength = 200.0f;
@@ -76,16 +72,10 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-#if !WITH_EDITOR
-	meshAsset = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), this, L"SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'") );
-	GetMesh()->SetSkeletalMesh(meshAsset);
 
-	UClass* RuntimeAnimInstanceClass = StaticCast<UClass*>(StaticLoadObject(UClass::StaticClass(), this, TEXT("/Game/Player/ABP_CPlayer.ABP_CPlayer_C")));
-	GetMesh()->SetAnimInstanceClass(RuntimeAnimInstanceClass);
-	
-	UClass* defaultHUD = StaticCast<UClass*>(StaticLoadObject(UClass::StaticClass(), this, TEXT("/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C")));
-	DefaultHUDClass = defaultHUD;
-#endif
+	// 생성자 시점에서 가져오기 불가능
+	CHelpers::GetClassDynamic<UCWidget_PlayerHUD>(&DefaultHUDClass, TEXT("WidgetBlueprint'/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C'"));
+
 	//Create Dynamic 
 	UMaterialInstanceConstant* bodyMaterial;
 	UMaterialInstanceConstant* logoMaterial;

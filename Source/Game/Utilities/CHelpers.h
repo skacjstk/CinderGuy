@@ -43,6 +43,15 @@ public:
 		*OutClass = pawnClass.Class;
 	}
 
+	template<typename T>
+	static void GetClassDynamic(TSubclassOf<T>* OutClass, FString InPath)
+	{
+		UClass* obj = StaticCast<UClass*>(StaticLoadClass(T::StaticClass(), nullptr, *InPath));
+		verifyf(!!obj, L"Class Not Found(Dynamic)");
+
+		*OutClass = obj;
+	}
+
 
 	template<typename T>
 	static void CreateSceneComponent(AActor* InActor, T** OutComponent, FName InName, USceneComponent* InParent = nullptr)
