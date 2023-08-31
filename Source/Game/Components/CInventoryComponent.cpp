@@ -20,31 +20,22 @@ UCInventoryComponent::UCInventoryComponent()
 	{
 		IsPlayer = true;
 		PrimaryComponentTick.bCanEverTick = true;
-
-		ConstructorHelpers::FClassFinder<UCWidget_DisplayMessage> defaultDisplay(TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
-		if (defaultDisplay.Succeeded())
-			DefaultDisplayWidget = defaultDisplay.Class;
-		else
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan, "Fail To Find DisplayMessage Widget");
+		CHelpers::GetClass(&DefaultDisplayWidget, TEXT("/Game/Widgets/InventoryUI/WB_DisplayMessage"));
 	}
 	else
 	{
 		IsPlayer = false;
 		PrimaryComponentTick.bCanEverTick = false;
 	}
-
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
-	if (defaultTable.Succeeded())
-		ItemTable = defaultTable.Object;
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
-	if (defaultRuneTable.Succeeded())
-		RuneTable = defaultRuneTable.Object;	
+	CHelpers::GetAsset<UDataTable>(&ItemTable, TEXT("DataTable'/Game/Inventory/DT_ItemData.DT_ItemData'"));
+	CHelpers::GetAsset<UDataTable>(&RuneTable, TEXT("DataTable'/Game/Inventory/DT_RuneData.DT_RuneData'"));
 }
 
 
 void UCInventoryComponent::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
+
 	Content.SetNumZeroed(InventorySize);// 인벤토리 사이즈 초기화
 	if (!!DefaultDisplayWidget && IsPlayer)
 	{

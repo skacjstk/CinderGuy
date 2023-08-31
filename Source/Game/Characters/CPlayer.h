@@ -45,7 +45,8 @@ private:
 	UPROPERTY()
 		class UCWidget_PlayerHUD* PlayerHUD;
 
-	TSubclassOf<class UUserWidget> DefaultHUDClass;	// 왜인지 subclass 위젯은 죄다 
+	UPROPERTY()
+		TSubclassOf<class UCWidget_PlayerHUD> DefaultHUDClass;	// 왜인지 subclass 위젯은 죄다 
 	// 강공격을 구현하기 위한 
 	APlayerController* Controller;
 	FKey ActionMapKey;	// "Action" 과 연결된 키 구하기

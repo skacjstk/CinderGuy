@@ -200,12 +200,7 @@ void ACEnemy::Hitted()
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
 
 	// 데미지 띄우기
-	FTransform transform;
-	ACDamageText* text = GetWorld()->SpawnActorDeferred<ACDamageText>(ACDamageText::StaticClass(), transform, this);
-	transform.SetLocation(this->GetActorLocation());
-	transform.SetRotation(FRotator(0, UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation().Yaw, 0).Quaternion());
-	UGameplayStatics::FinishSpawningActor(text, transform);
-	text->SetDamage(DamageValue);
+	SpawnDamageText();
 		
 	// 바로 색 바꾸기
 	ChangeColor(FLinearColor::Red * 100.f);
@@ -220,6 +215,7 @@ void ACEnemy::Dead()
 	HealthWidget->SetVisibility(false);
 
 	// All Weapon Collision Disable
+	SpawnDamageText();
 	Action->Dead();
 
 	// Ragdoll
@@ -274,5 +270,15 @@ void ACEnemy::RestoreLogoColor()
 	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
 	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
 	LogoMaterial->SetScalarParameterValue("IsHitted", 0);
+}
+
+void ACEnemy::SpawnDamageText()
+{
+	FTransform transform;
+	ACDamageText* text = GetWorld()->SpawnActorDeferred<ACDamageText>(ACDamageText::StaticClass(), transform, this);
+	transform.SetLocation(this->GetActorLocation());
+	transform.SetRotation(FRotator(0, UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation().Yaw, 0).Quaternion());
+	UGameplayStatics::FinishSpawningActor(text, transform);
+	text->SetDamage(DamageValue);
 }
 

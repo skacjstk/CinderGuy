@@ -16,17 +16,9 @@
 
 UCWidget_InventrorySlot::UCWidget_InventrorySlot(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
-	if (defaultTable.Succeeded())
-		ItemTable = defaultTable.Object;
-
-	ConstructorHelpers::FObjectFinder<UDataTable> defaultRuneTable(TEXT("/Game/Inventory/DT_RuneData"));
-	if (defaultRuneTable.Succeeded())
-		RuneTable = defaultRuneTable.Object;
-
-	ConstructorHelpers::FClassFinder<UUserWidget> defaultDragPreview(TEXT("WidgetBlueprint'/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview_C'"));
-	if (defaultDragPreview.Succeeded())
-		PreviewClass = defaultDragPreview.Class;
+	CHelpers::GetAsset<UDataTable>(&ItemTable, TEXT("DataTable'/Game/Inventory/DT_ItemData.DT_ItemData'"));
+	CHelpers::GetAsset<UDataTable>(&RuneTable, TEXT("DataTable'/Game/Inventory/DT_RuneData.DT_RuneData'"));
+	CHelpers::GetClass<UCWidget_DragPreview>(&PreviewClass, TEXT("/Game/Widgets/InventoryUI/WB_DragPreview.WB_DragPreview_C"));
 }
 
 bool UCWidget_InventrorySlot::Initialize()
@@ -35,7 +27,6 @@ bool UCWidget_InventrorySlot::Initialize()
 	{
 		return true;
 	}
-//	ItemButton->OnClicked.AddDynamic(this, &UCWidget_InventrorySlot::OnItemClicked);	// DragDrop은 이렇게 반환하는게 아님
 	return false;
 }
 

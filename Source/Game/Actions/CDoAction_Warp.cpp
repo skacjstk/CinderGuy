@@ -20,12 +20,18 @@ void ACDoAction_Warp::BeginPlay()
 	// 자손 찾기 
 	for (AActor* actor : OwnerCharacter->Children)
 	{	// Attachment 면서 Warp 일 경우, 내가 찾는 그게 맞음 
-		if (actor->IsA<ACAttachment>() && actor->Tags.Contains("Warp"))
+		if (actor->IsA<ACAttachment>())
 		{
-			Decal = CHelpers::GetComponent<UDecalComponent>(actor);
-			SkelMesh = CHelpers::GetComponent<USkeletalMeshComponent>(actor);
-			StaticMesh = CHelpers::GetComponent<UStaticMeshComponent>(actor);
-			break;
+			for (FName& Tag : actor->Tags)
+			{
+				if (Tag.ToString().Contains("Warp"))
+				{
+					Decal = CHelpers::GetComponent<UDecalComponent>(actor);
+					SkelMesh = CHelpers::GetComponent<USkeletalMeshComponent>(actor);
+					StaticMesh = CHelpers::GetComponent<UStaticMeshComponent>(actor);
+					break;
+				}
+			}
 		}
 	}
 }

@@ -7,7 +7,9 @@
 
 UCWidget_InventoryGrid::UCWidget_InventoryGrid(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	CHelpers::GetClass(&SlotClass, TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot"));  
+#if WITH_EDITOR
+	CHelpers::GetClass(&SlotClass, TEXT("/Game/Widgets/InventoryUI/WB_InventorySlot.WB_InventorySlot_C"));
+#endif
 }
 
 bool UCWidget_InventoryGrid::Initialize()

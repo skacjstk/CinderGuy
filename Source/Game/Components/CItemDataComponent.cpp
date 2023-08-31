@@ -6,9 +6,11 @@
 
 UCItemDataComponent::UCItemDataComponent()
 {
+#if WITH_EDITOR
 	ConstructorHelpers::FObjectFinder<UDataTable> defaultTable(TEXT("/Game/Inventory/DT_ItemData"));
 	if (defaultTable.Succeeded())
 		ItemID.DataTable = defaultTable.Object;
+#endif
 }
 
 
@@ -16,7 +18,10 @@ UCItemDataComponent::UCItemDataComponent()
 void UCItemDataComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	GetOwner()->SetReplicates(true);	
+	GetOwner()->SetReplicates(true);
+
+	if(ItemID.DataTable == nullptr)
+		ItemID.DataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), this, TEXT("/Game/Inventory/DT_ItemData")) );
 }
 
 bool UCItemDataComponent::InteractWith_Implementation(class ACharacter* InPlayerCharacter)

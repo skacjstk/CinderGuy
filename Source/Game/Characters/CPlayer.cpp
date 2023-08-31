@@ -16,7 +16,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CWidget_PlayerHUD.h"
-// 테스트
 #include "Actions/CActionObjectContainer.h"
 #include "Actions/CDoAction.h"
 #include "DamageType/KatanaParryDamageType.h"
@@ -46,15 +45,12 @@ ACPlayer::ACPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
 	// Get Subclass
-	USkeletalMesh* meshAsset;
-	CHelpers::GetAsset<USkeletalMesh>(&meshAsset, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
-	GetMesh()->SetSkeletalMesh(meshAsset);
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	GetMesh()->SetSkeletalMesh(meshAsset.Object);
 
 	TSubclassOf<UAnimInstance> animInstanceClass;
 	CHelpers::GetClass<UAnimInstance>(&animInstanceClass, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstanceClass);
-
-	CHelpers::GetClass<UUserWidget>(&DefaultHUDClass, "/Game/Widgets/WB_PlayerHUD");
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
@@ -76,6 +72,10 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 생성자 시점에서 가져오기 불가능
+	CHelpers::GetClassDynamic<UCWidget_PlayerHUD>(&DefaultHUDClass, TEXT("WidgetBlueprint'/Game/Widgets/WB_PlayerHUD.WB_PlayerHUD_C'"));
+
 	//Create Dynamic 
 	UMaterialInstanceConstant* bodyMaterial;
 	UMaterialInstanceConstant* logoMaterial;

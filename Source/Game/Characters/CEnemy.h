@@ -32,6 +32,8 @@ private:
 
 	UFUNCTION()
 		void RestoreLogoColor();
+	UFUNCTION()
+		void SpawnDamageText();
 protected:
 	//	위젯
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
