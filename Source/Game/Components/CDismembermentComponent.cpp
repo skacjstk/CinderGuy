@@ -10,6 +10,7 @@
 #include "KismetProceduralMeshLibrary.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "DrawDebugHelpers.h"
 
 UCDismembermentComponent::UCDismembermentComponent()
 {
@@ -78,7 +79,7 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	// Overlap 은 ImpactPoint 전달 불가
 
 	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), start, end, 16, ETraceTypeQuery::TraceTypeQuery4, false, 
-		ignoreActor, EDrawDebugTrace::None, hitResults, false, FColor::Cyan, FColor::Green))
+		ignoreActor, EDrawDebugTrace::Persistent, hitResults, false, FColor::Cyan, FColor::Green))
 	{
 		for (FHitResult& hitResult : hitResults)
 		{
@@ -101,6 +102,9 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	// 자르는 방향
 	FVector planeNormal = ShapeCauser->GetPhysicsAngularVelocityInDegrees().GetSafeNormal();
 
+	if (planeNormal.X == 0.0f)	
+		planeNormal = FVector::CrossProduct(end, start).GetSafeNormal();
+	
 	// 자르는 단면도
 	UMaterialInstanceConstant* material =
 		Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(),
@@ -235,6 +239,6 @@ void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshCompone
 	if (Capsule != nullptr)
 		ProcMeshComponent->AddCollisionConvexMesh(CollisionArray);
 
-
+	// 사전에 분해된 몸 파츠를 자르면서 각 본에 어태치하는건 어떨가
 //	ProcMeshComponent->AddCollisionConvexMesh(VerticesArray);	// 너무 오래걸림
 }
