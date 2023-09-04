@@ -16,6 +16,12 @@ enum class EItemType : uint8
 	Max
 };
 
+UENUM(BlueprintType)
+enum class EStateType : uint8
+{
+	Idle, Roll, BackStep, Equip, Action, Guard, GuardBack, Parry, StrongAction, EndingStrongAction, Hitted, Dead, Max
+};
+
 USTRUCT(BlueprintType)
 struct FItemDrop_CSV : public FTableRowBase
 {

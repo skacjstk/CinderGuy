@@ -3,6 +3,7 @@
 #include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/CStateComponent.h"
 #include "DamageType/DamageTypeBase.h"
 #include "Rendering/SkeletalMeshRenderData.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -18,8 +19,30 @@ UCDismembermentComponent::UCDismembermentComponent()
 	ProcMesh->SetCollisionProfileName(TEXT("SlicedBody"));	// 임시, WorldDynamic을 블록하지 않아야 보기좋음
 }
 
-void UCDismembermentComponent::OnSlice(ACharacter* SlicedCharacter, AActor* DamageCauser)
+void UCDismembermentComponent::BeginPlay()
 {
+	Super::BeginPlay();
+	if (GetOwner() != nullptr)
+	{
+		UCStateComponent* Component = Cast<UCStateComponent>(GetOwner()->GetComponentByClass(UCStateComponent::StaticClass()));
+		if (Component != nullptr)		
+			Component->OnStateTypePreChanged.AddDynamic(this, &UCDismembermentComponent::OnStateTypeChanged);		
+	}
+}
+
+void UCDismembermentComponent::OnStateTypeChanged(EStateType PrevType, EStateType NewType, AActor* DamageCauser)
+{
+	switch (NewType)
+	{
+		case EStateType::Hitted: break;
+		case EStateType::Dead: OnSlice(DamageCauser); break;
+		default: break;
+	}
+}
+void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
+{
+	ACharacter* SlicedCharacter = nullptr;
+	SlicedCharacter = Cast<ACharacter>(GetOwner());
 	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false)
 		return;
 

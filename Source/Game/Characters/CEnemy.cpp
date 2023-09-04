@@ -162,8 +162,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		// Need Event Call
-		SliceBodyEffect->OnSlice(this, DamageCauser);
-		State->SetDeadMode();
+		State->SetDeadMode(DamageCauser);
 		return this->DamageValue;
 	}
 	State->SetHittedMode();

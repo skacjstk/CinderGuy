@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Structs/CommonStructs.h"
 #include "CDismembermentComponent.generated.h"
 
-/**
- * 
- */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class GAME_API UCDismembermentComponent : public UActorComponent
 {
@@ -16,11 +14,15 @@ class GAME_API UCDismembermentComponent : public UActorComponent
 	
 public:
 	UCDismembermentComponent();
-	void OnSlice(class ACharacter* SlicedCharacter, class AActor* DamageCauser);
-	//Skel, LODIndex, ProcMeshComp / 물체 velocity, 타점 Location
 	bool GetDoSlice() { return bDoSlice; }
 
+protected:
+	UFUNCTION()
+		void OnStateTypeChanged(EStateType PrevType, EStateType NewType, class AActor* DamageCauser = nullptr);
+	virtual void BeginPlay() override;
+
 private:
+	void OnSlice(class AActor* DamageCauser);
 	void CopySkeletalMeshToProcedural(class USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, class UCapsuleComponent* Capsule, class UProceduralMeshComponent* ProcMeshComponent);
 
 
