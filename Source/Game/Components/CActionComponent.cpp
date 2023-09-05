@@ -5,7 +5,14 @@
 #include "Actions/CActionData.h"
 #include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"
+#include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
+#include "Utilities/CHelpers.h"
+
+void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
 
 UCActionComponent::UCActionComponent()
 {
@@ -20,9 +27,28 @@ void UCActionComponent::BeginPlay()
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
 	for (int i = 0; i < (int32)EActionType::Max; ++i)
 	{
-		if(!!Datas[i])	// 바뀌면 안됨. 생성부분
-			Datas[i]->BeginPlay(charcater, &DataObjects[i]);	// 만든 결과를 DataObjects에 저장
+		if (!!Datas[i])	// 바뀌면 안됨. 생성부분
+		{
+			Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
+		}
 	}
+	FString Result;
+
+	Result += GetOwner()->GetName();
+	Result += " | ";
+	Result += CHelpers::GetRoleText(GetOwner()->GetLocalRole());
+
+	for (UCActionObjectContainer* DO : DataObjects)
+	{
+		if (DO != nullptr) {
+			FString Result2 = " | ";
+			Result2 += DO->GetName();
+			CLog::Log(Result + Result2);
+		}
+	}
+	
+	
+
 }
 
 void UCActionComponent::SetUnarmedMode()
@@ -70,7 +96,11 @@ void UCActionComponent::SetStormMode()
 	Server_SetMode(EActionType::Storm);
 }
 
-void UCActionComponent::DoAction()
+void UCActionComponent::Server_DoAction_Implementation()
+{
+	MC_DoAction();
+}
+void UCActionComponent::MC_DoAction_Implementation()
 {
 	CheckTrue(IsUnarmedMode());
 
@@ -80,6 +110,8 @@ void UCActionComponent::DoAction()
 
 		if (!!doAction)
 			doAction->DoAction();
+		else
+			CLog::Log("What");
 	}
 }
 

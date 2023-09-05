@@ -21,6 +21,15 @@
 #include "DamageType/KatanaParryDamageType.h"
 #include "Interfaces/IDamageState.h"
 #include "Components/CDamageEffectComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Utilities/CHelpers.h"
+
+void ACPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACPlayer, TimelineFloat);
+	DOREPLIFETIME(ACPlayer, GuardTimeline);
+}
 
 ACPlayer::ACPlayer()
 {
@@ -54,7 +63,7 @@ ACPlayer::ACPlayer()
 
 	SpringArm->SetRelativeLocation(FVector(0, 0, 140));
 	SpringArm->SetRelativeRotation(FRotator(0, 90, 0));
-	SpringArm->TargetArmLength = 200.0f;
+	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
@@ -88,7 +97,6 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
 	
-
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// StateComponent의 상태 변경 관련 델리게이트 등록
 
 	Action->SetUnarmedMode();
@@ -109,7 +117,6 @@ void ACPlayer::BeginPlay()
 			}
 		}
 	}
-
 	// Guard Timeline 매핑
 	TimelineFloat.BindUFunction(this, "GuardAlpha");
 	GuardTimeline.AddInterpFloat(Curve, TimelineFloat);
@@ -119,7 +126,12 @@ void ACPlayer::BeginPlay()
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	return;	// TODO:: Timeline 조정 이후
+
+
+	DrawDebugString(GetWorld(), FVector(0, 0, 120), "Local: " + CHelpers::GetRoleText(GetLocalRole()), this, FColor::Black, DeltaTime, false, 1.2f);
+	DrawDebugString(GetWorld(), FVector(0, 0, 180), "Remote: " + CHelpers::GetRoleText(GetRemoteRole()), this, FColor::Blue, DeltaTime, false, 1.2f);
+
+	return;	// TODO: 데이터 로딩문제 해결해야 함
 	GuardTimeline.TickTimeline(DeltaTime);
 	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
 	{
@@ -284,7 +296,7 @@ void ACPlayer::OnKatana()
 }
 void ACPlayer::OnDoAction()
 {
-	Action->DoAction();
+	Action->Server_DoAction();
 }
 void ACPlayer::OnDoStrongAction()
 {
@@ -463,13 +475,13 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 	return this->DamageValue;
 }
 
-void ACPlayer::Hitted()
+void ACPlayer::Hitted(AActor* DamageCauser)
 {
 	Montages->PlayHitted();
 //	Status->SetMove();	// Idle 쪽에 넣어버렸음 
 }
 
-void ACPlayer::Dead()
+void ACPlayer::Dead(AActor* DamageCauser)
 {
 	CheckFalse(State->IsDeadMode());
 	Action->Dead();
@@ -492,13 +504,13 @@ bool ACPlayer::CheckInvincible()
 	return true;
 }
 
-void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
 {
 	switch (InNewType)
 	{
 	case EStateType::Roll:			Begin_Roll();			break;
 	case EStateType::BackStep:		Begin_BackStep();		break;
-	case EStateType::Hitted:		Hitted();				break;
+	case EStateType::Hitted:		Hitted(DamageCauser);	break;
 	case EStateType::Dead:			Dead();					break;
 	case EStateType::Guard:			OnGuard();				break;
 	default:

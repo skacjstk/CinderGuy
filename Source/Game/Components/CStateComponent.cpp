@@ -96,5 +96,5 @@ void UCStateComponent::MC_ChangeType_Implementation(EStateType InNewType, AActor
 		OnStateTypePreChanged.Broadcast(prevType, Type, DamageCauser);
 
 	if (OnStateTypeChanged.IsBound())
-		OnStateTypeChanged.Broadcast(prevType, Type);
+		OnStateTypeChanged.Broadcast(prevType, Type, DamageCauser);
 }

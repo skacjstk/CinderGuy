@@ -18,12 +18,13 @@ public:
 
 	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
 	FORCEINLINE void SetStrongData(FDoStrongActionData InData) { StrongData = InData; }
-	FORCEINLINE void SetEquipped(const bool* InEquipped) { bEquipped = InEquipped; }
 
 	FORCEINLINE void SetGuardData(FGuardData InData) { GuardData = InData; }
 	FORCEINLINE void SetParryData(TArray<FGuardData> InData) { ParryData = InData; }
 	void SetParryDamageType(TSubclassOf<UDamageType> InDamageTypeClass);
 	TSubclassOf<UDamageType> GetParryDamageType() { return ParryDamageTypeClass; }
+	void SetMyIndex(int32 Index) { MyIndex = Index; }
+	bool GetEquippedFromEquipment();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,8 +48,13 @@ public:
 
 	virtual void OnParry() {};
 	virtual void OnBlock() {};
+	UFUNCTION(Reliable, Server)
+		void Server_PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void Server_PlayAttackAnimMontage_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void MC_PlayAttackAnimMontage_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
-	void PlayAttackAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 	void SendDamage(float Damage, FDamageEvent& E, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter);
 	UFUNCTION()
 		virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) {};
@@ -71,5 +77,7 @@ protected:
 	FGuardData GuardData;
 	TArray<FGuardData> ParryData;
 	TSubclassOf<UDamageType> ParryDamageTypeClass;
-	const bool* bEquipped;	//CEquipment 에서 받아올 것
+	
+//	bool bEquipped;	//CEquipment 에서 받아올 것
+	int32 MyIndex = -1;
 };

@@ -109,6 +109,7 @@ public:
 	friend class UCActionData;	// UCActionData에서 this를 모두 공개한다. 
 	friend class UCAttachmentStatusComponent;
 public:
+	UCActionObjectContainer();
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }	// Attachment 클래스 가져오기: 이 Attachment 속 Inventory 가져오면 성공

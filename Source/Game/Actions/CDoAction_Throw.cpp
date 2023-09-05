@@ -35,7 +35,7 @@ void ACDoAction_Throw::DoAction()
 
 	State->SetActionMode();
 
-	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 

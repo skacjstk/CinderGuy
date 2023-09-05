@@ -7,8 +7,7 @@
 #include "Structs/CommonStructs.h"
 #include "CStateComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FStateTypePreChanged, EStateType, InPrevType, EStateType, InNewType, class AActor*, DamageCauser);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType, class AActor*, DamageCauser);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAME_API UCStateComponent : public UActorComponent
@@ -65,7 +64,7 @@ private:
 	// Field
 public:
 	UPROPERTY(BlueprintAssignable)	// BP 이벤트 꽂을 수 있음
-		FStateTypePreChanged OnStateTypePreChanged;
+		FStateTypeChanged OnStateTypePreChanged;
 	UPROPERTY(BlueprintAssignable)	// BP 이벤트 꽂을 수 있음
 		FStateTypeChanged OnStateTypeChanged;
 private:

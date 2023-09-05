@@ -23,9 +23,9 @@ public:
 
 private:
 	UFUNCTION()
-		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
-	virtual void Hitted() override;
-	virtual void Dead() override;
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, class AActor* DamageCauser);
+	virtual void Hitted(class AActor* DamageCauser = nullptr) override;
+	virtual void Dead(class AActor* DamageCauser = nullptr) override;
 	UFUNCTION()
 		void End_Dead() override;
 	virtual bool CheckInvincible() override;
@@ -73,6 +73,6 @@ private:
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 5.f;	// 밀려나는 고유값
 	float DamageValue;
-	AActor* Causer;
+	//AActor* Causer;
 	ACharacter* Attacker;
 };

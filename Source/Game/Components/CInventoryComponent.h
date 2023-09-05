@@ -118,6 +118,7 @@ public:
 		FInventoryUpdated OnInventoryUpdated;		// 델리게이트
 	UPROPERTY(BlueprintReadWrite, Replicated)
 		TArray<FSlot> Content;
+	class AActor* LookAtActor;
 protected:
 	UPROPERTY(EditDefaultsOnly)
 		int32 InventorySize;
@@ -128,7 +129,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		class UDataTable* RuneTable;
 private:
-	class AActor* LookAtActor;
 	bool bActive = false;
 	UPROPERTY()
 		class UCWidget_DisplayMessage* DisplayMessage;

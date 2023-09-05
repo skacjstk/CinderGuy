@@ -107,7 +107,7 @@ void ACEnemy::BeginPlay()
 		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
 }
 
-void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
 {
 	switch (InNewType)
 	{
@@ -121,8 +121,8 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 		break;
 	case EStateType::Action:
 		break;
-	case EStateType::Hitted:	Hitted();	break;
-	case EStateType::Dead:		Dead();		break;
+	case EStateType::Hitted:	Hitted(DamageCauser);	break;
+	case EStateType::Dead:		Dead(DamageCauser);		break;
 	case EStateType::Max:
 		break;
 	default:
@@ -134,7 +134,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
 	if(!!DamageCauser)
-	Causer = DamageCauser;
+//	Causer = DamageCauser;
 
 	if(!!EventInstigator)
 		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
@@ -165,7 +165,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 		State->SetDeadMode(DamageCauser);
 		return this->DamageValue;
 	}
-	State->SetHittedMode();
+	State->SetHittedMode(DamageCauser);
 	return this->DamageValue;
 }
 
@@ -181,7 +181,7 @@ void ACEnemy::ChangeColor(FLinearColor InColor)
 	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 
-void ACEnemy::Hitted()	 
+void ACEnemy::Hitted(AActor* DamageCauser)
 {
 	// DecreaseHealth Widget
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
@@ -193,7 +193,7 @@ void ACEnemy::Hitted()
 
 	// Launch HitBack
 	FVector start = GetActorLocation();	// 나의 위치
-	FVector target = Causer->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음
+	FVector target = DamageCauser == nullptr ? FVector(0,0,0) : DamageCauser->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음
 	FVector direction =	(start - target);
 	direction.Normalize();
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
@@ -205,7 +205,7 @@ void ACEnemy::Hitted()
 	ChangeColor(FLinearColor::Red * 100.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
 }
-void ACEnemy::Dead() 
+void ACEnemy::Dead(AActor* DamageCauser)
 {
 	CheckFalse(State->IsDeadMode());
 
@@ -234,12 +234,12 @@ void ACEnemy::Dead()
 
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();
-	FVector target = Causer->GetActorLocation();
+	FVector target = DamageCauser->GetActorLocation();
 	FVector direction = start - target;
 	direction.Normalize();
 
 	// 투사체일 경우 DeadLaunch 를 낮추기 
-	if (Causer->IsA<ACThrow>())
+	if (DamageCauser->IsA<ACThrow>())
 		DeadLaunchValue *= 0.075f;
 
 	// Need Event

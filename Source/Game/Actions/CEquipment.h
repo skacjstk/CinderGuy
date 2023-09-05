@@ -22,10 +22,11 @@ public:
 	// 따로구현 해야하는데 귀찮
 	FORCEINLINE void SetData(FEquipmentData InData) { Data = InData; }
 	FORCEINLINE void SetColor(FLinearColor InColor) { Color = InColor; }
-	FORCEINLINE const bool* IsEquipped() { return &bEquipped; }
+	FORCEINLINE const bool IsEquipped() { return bEquipped; }
 
 	FORCEINLINE FEquipmentData GetData() { return Data; }
 protected:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -63,6 +64,7 @@ protected:
 private:
 	FEquipmentData Data;	// ActionData 에 있음
 	FLinearColor Color;
-	bool bEquipped;	// 장착 완료 표시
+	UPROPERTY(Replicated)
+		bool bEquipped;	// 장착 완료 표시
 
 };

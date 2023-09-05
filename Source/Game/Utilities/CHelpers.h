@@ -89,6 +89,21 @@ public:
 		}
 		return FKey();
 	}
+
+	static FString GetRoleText(ENetRole InRole)
+	{
+		switch (InRole)
+		{
+		case	ROLE_None:				return"None";
+		case	ROLE_SimulatedProxy:	return"SimulatedProxy";
+		case	ROLE_AutonomousProxy:	return"AutonomousProxy";
+		case	ROLE_Authority:			return"Authority";
+		case	ROLE_MAX:				return"MAX";
+		default:						return "None";
+
+		}
+		return "None";
+	}
 };
 
 

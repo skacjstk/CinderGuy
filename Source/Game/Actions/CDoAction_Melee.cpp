@@ -19,7 +19,7 @@ void ACDoAction_Melee::DoAction()
 
 	IsStrongAction = false;
 
-	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -36,7 +36,7 @@ void ACDoAction_Melee::Begin_DoAction()
 	ComboCount++;
 	if (ComboCount != Datas.Num())
 	{
-		PlayAttackAnimMontage(Datas[ComboCount].AnimMontage, Datas[ComboCount].PlayRate, Datas[ComboCount].StartSection);
+		Server_PlayAttackAnimMontage(Datas[ComboCount].AnimMontage, Datas[ComboCount].PlayRate, Datas[ComboCount].StartSection);
 		Datas[ComboCount].bCanMove ? Status->SetMove() : Status->SetStop();
 	}
 	else
@@ -50,7 +50,7 @@ void ACDoAction_Melee::DoStrongAction()
 	NextEndStrongAction = false;	// 일단은 false 로 
 
 	State->SetStrongActionMode();
-	PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
+	Server_PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -61,7 +61,7 @@ void ACDoAction_Melee::EndDoStrongAction()
 	IsStrongAction = true;	// 후속타 나가는중임
 
 	State->SetEndingStrongActionMode();
-	PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
+	Server_PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.EndSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -123,7 +123,7 @@ void ACDoAction_Melee::OnParry()
 	Super::OnParry();	
 	int32 random = UKismetMathLibrary::RandomIntegerInRange(0, ParryData.Num() -1);
 
-	PlayAttackAnimMontage(ParryData[random].AnimMontage, ParryData[random].PlayRate, ParryData[random].StartSection);
+	Server_PlayAttackAnimMontage(ParryData[random].AnimMontage, ParryData[random].PlayRate, ParryData[random].StartSection);
 	ParryData[random].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -131,7 +131,7 @@ void ACDoAction_Melee::OnBlock()
 {
 	Super::OnBlock();
 
-	PlayAttackAnimMontage(GuardData.AnimMontage, GuardData.PlayRate, GuardData.StartSection);
+	Server_PlayAttackAnimMontage(GuardData.AnimMontage, GuardData.PlayRate, GuardData.StartSection);
 	GuardData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 

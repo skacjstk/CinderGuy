@@ -17,6 +17,7 @@ ACAttachment::ACAttachment()
 		InventoryComponent->SetInventorySize(8);
 		AttachmentRunes.SetNumZeroed(InventoryComponent->GetInventorySize());
 	}
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

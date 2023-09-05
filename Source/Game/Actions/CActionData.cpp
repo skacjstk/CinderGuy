@@ -8,7 +8,7 @@
 #include "DamageType/DamageTypeBase.h"
 #include "Components/CAttachmentStatusComponent.h"
 
-void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject)	// CActionComponent 에서 호출
+void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject, int32 Index)	// CActionComponent 에서 호출
 {
 	FTransform transform;
 
@@ -16,12 +16,16 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	ACEquipment* Equipment = nullptr;
 	ACDoAction* DoAction = nullptr;
 	UCAttachmentStatusComponent* AttachmentStatusComp = nullptr;
+	ENetRole OwnerRole = InOwnerCharacter->GetLocalRole();
 
 	//CEquipment 생성: Character 만 World가 있기에 
 	if (!!AttachmentClass)
 	{
 		Attachment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACAttachment>(AttachmentClass, transform, InOwnerCharacter);
 		Attachment->Tags.Add(FName( *(GetLabelName(InOwnerCharacter, "Attachment")) ));
+
+		Attachment->SetRole(OwnerRole);
+		Attachment->bNetUseOwnerRelevancy = true;
 #if WITH_EDITOR
 		Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
 #endif
@@ -46,7 +50,8 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		Equipment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACEquipment>(EquipmentClass, transform, InOwnerCharacter);
 		Equipment->SetData(EquipmentData);	// 얘를 호출하고 BeginPlay 가 나와야 해서
 		Equipment->SetColor(EquipmentColor);
-
+		Equipment->SetRole(OwnerRole); 
+		Equipment->bNetUseOwnerRelevancy = true;
 		Equipment->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "Equipment"))));
 #if WITH_EDITOR	
 		Equipment->SetActorLabel(GetLabelName(InOwnerCharacter, "Equipment"));
@@ -66,6 +71,9 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	{
 		DoAction = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACDoAction>(DoActionClass, transform, InOwnerCharacter);
 		DoAction->AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
+
+		DoAction->SetRole(OwnerRole);
+		DoAction->bNetUseOwnerRelevancy = true;
 		DoAction->SetDatas(DoActionDatas);
 		// StrongData 넣기 ( DoAction 하위개념이라 Subclass가 필요 없음
 		DoAction->SetStrongData(StrongData);
@@ -75,24 +83,19 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 		//ParryDamageType 생성해서 넣기
 		DoAction->SetParryDamageType(ParryDamageType); 
 
+		// Rep 을 위해
+		DoAction->SetMyIndex(Index);
 		DoAction->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "DoAction"))));
 #if WITH_EDITOR
 		DoAction->SetActorLabel(GetLabelName(InOwnerCharacter, "DoAction"));
 #endif
 		UGameplayStatics::FinishSpawningActor(DoAction, transform);
-
-		// 있으면, Equipment의 현재 장착여부 변수 레퍼런스 설정
-		if(!!Equipment)
-		{ 
-			DoAction->SetEquipped(Equipment->IsEquipped());
-		}
-
+		
 		if (!!Attachment)
 		{
 			// DoAction 오버랩 이벤트 바인딩
 			Attachment->OnAttachmentBeginOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentBeginOverlap);
 			Attachment->OnAttachmentEndOverlap.AddDynamic(DoAction, &ACDoAction::OnAttachmentEndOverlap);
-//			Attachment->OnAttachmentBeginOverlap.Remove(DoAction, "OnAttachmentBeginOverlap");
 		}
 
 
@@ -100,10 +103,10 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	// 최종적으로 UCActionData의 BeginPlay를 호출한 곳의 OutObject에 완성된 결과를 반환. 현재는 CActionComponent::BeginPlay() 에서 호출한다.
 
 	*OutObject = NewObject<UCActionObjectContainer>(InOwnerCharacter);	// 시도: ActionData 의 Owner는 Character
+	(*OutObject)->SetOwnerCharacter(InOwnerCharacter);
 	(*OutObject)->Attachment = Attachment;
 	(*OutObject)->Equipment = Equipment;
-	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 
-		
+	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 		
 	(*OutObject)->EquipmentColor = EquipmentColor;
 }
 
