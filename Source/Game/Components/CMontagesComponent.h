@@ -49,7 +49,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "DataTable")
 		UDataTable* DataTable;
 
-	void PlayAnimMontage(EStateType InType);
+	UFUNCTION(Server, reliable)
+		void Server_PlayAnimMontage(EStateType InType);
+	void Server_PlayAnimMontage_Implementation(EStateType InType);
+
+	UFUNCTION(NetMulticast, reliable)
+		void MC_PlayAnimMontage(EStateType InType);
+	void MC_PlayAnimMontage_Implementation(EStateType InType);
 private:
 	FMontageData* Datas[(int8)EStateType::Max];	// 실제 데이터 담길 배열 
 

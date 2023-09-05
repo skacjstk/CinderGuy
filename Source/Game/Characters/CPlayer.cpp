@@ -119,6 +119,7 @@ void ACPlayer::BeginPlay()
 void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	return;	// TODO:: Timeline 조정 이후
 	GuardTimeline.TickTimeline(DeltaTime);
 	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
 	{
@@ -328,16 +329,16 @@ void ACPlayer::OnTestInventory()
 			PlayerHUD->DisplayPlayerMenu();
 		}
 	}
-
 }
 
 void ACPlayer::OnInteract()
 {
-	Inventory->Server_Interact_Implementation(nullptr);
+	Inventory->Server_Interact_Implementation(Inventory->LookAtActor);
 }
 
 void ACPlayer::Begin_Roll()
 {
+	// 여기까지 SImulbody가 들어와야 함.
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 

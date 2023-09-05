@@ -2,6 +2,7 @@
 
 
 #include "CStateComponent.h"
+#include "Utilities/CLog.h"
 
 // Sets default values for this component's properties
 UCStateComponent::UCStateComponent()
@@ -61,7 +62,7 @@ void UCStateComponent::SetParryMode()
 
 void UCStateComponent::SetStrongActionMode()
 {
-	ChangeType(EStateType::StrongAction);	
+	ChangeType(EStateType::StrongAction);
 }
 
 void UCStateComponent::SetEndingStrongActionMode()
@@ -82,7 +83,12 @@ void UCStateComponent::SetDeadMode(AActor* DamageCauser)
 {
 	ChangeType(EStateType::Dead, DamageCauser);
 }
-void UCStateComponent::ChangeType(EStateType InNewType, AActor* DamageCauser)
+void UCStateComponent::ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
+{
+	MC_ChangeType(InNewType, DamageCauser);
+}
+
+void UCStateComponent::MC_ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
 	EStateType prevType = Type;
 	Type = InNewType;

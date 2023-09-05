@@ -41,22 +41,28 @@ void UCMontagesComponent::BeginPlay()
 
 void UCMontagesComponent::PlayRoll()
 {
-	PlayAnimMontage(EStateType::Roll);
+	Server_PlayAnimMontage(EStateType::Roll);
 }
 
 void UCMontagesComponent::PlayBackStep()
 {
-	PlayAnimMontage(EStateType::BackStep);
+	Server_PlayAnimMontage(EStateType::BackStep);
 }
 void UCMontagesComponent::PlayHitted()
 {
-	PlayAnimMontage(EStateType::Hitted);
+	Server_PlayAnimMontage(EStateType::Hitted);
 }
 void UCMontagesComponent::PlayDead()
 {
-	PlayAnimMontage(EStateType::Dead);
+	Server_PlayAnimMontage(EStateType::Dead);
 }
-void UCMontagesComponent::PlayAnimMontage(EStateType InType)
+
+void UCMontagesComponent::Server_PlayAnimMontage_Implementation(EStateType InType)
+{
+	MC_PlayAnimMontage(InType);
+}
+
+void UCMontagesComponent::MC_PlayAnimMontage_Implementation(EStateType InType)
 {
 	ACharacter* character = Cast<ACharacter>(GetOwner());
 	CheckNull(character);
@@ -65,11 +71,12 @@ void UCMontagesComponent::PlayAnimMontage(EStateType InType)
 	if (!!data)
 	{
 		if (!!data->AnimMontage)
+		{
 			character->PlayAnimMontage(data->AnimMontage, data->PlayRate, data->StartSection);
+		}
 
 		UCStatusComponent* Status = CHelpers::GetComponent<UCStatusComponent>(character);
 		if (!!Status)
 			data->bCanMove ? Status->SetMove() : Status->SetStop();
 	}
 }
-

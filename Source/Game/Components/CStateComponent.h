@@ -55,7 +55,12 @@ public:
 
 	float GetGuardFrame() { return IFGuard; }
 private:
-	void ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
+	UFUNCTION(Server, Reliable)
+		void ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void ChangeType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void MC_ChangeType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
 
 	// Field
 public:
