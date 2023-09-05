@@ -32,42 +32,42 @@ void UCActionComponent::SetUnarmedMode()
 
 	DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
 
-	ChangeType(EActionType::Unarmed);
+	Server_ChangeType(EActionType::Unarmed);
 }
 
 void UCActionComponent::SetFistMode()
 {
-	SetMode(EActionType::Fist);
+	Server_SetMode(EActionType::Fist);
 }
 
 void UCActionComponent::SetOneHandMode()
 {
-	SetMode(EActionType::OneHand);
+	Server_SetMode(EActionType::OneHand);
 }
 
 void UCActionComponent::SetTwoHandMode()
 {
-	SetMode(EActionType::TwoHand);
+	Server_SetMode(EActionType::TwoHand);
 }
 
 void UCActionComponent::SetWarpMode()
 {
-	SetMode(EActionType::Warp);
+	Server_SetMode(EActionType::Warp);
 }
 
 void UCActionComponent::SetKatanaMode()
 {
-	SetMode(EActionType::Katana);
+	Server_SetMode(EActionType::Katana);
 }
 
 void UCActionComponent::SetMagicBallMode()
 {
-	SetMode(EActionType::MagicBall);
+	Server_SetMode(EActionType::MagicBall);
 }
 
 void UCActionComponent::SetStormMode()
 {
-	SetMode(EActionType::Storm);
+	Server_SetMode(EActionType::Storm);
 }
 
 void UCActionComponent::DoAction()
@@ -151,7 +151,12 @@ void UCActionComponent::DoBlock()
 	}
 }
 
-void UCActionComponent::SetMode(EActionType InNewType)
+void UCActionComponent::Server_SetMode_Implementation(EActionType InNewType)
+{
+	MC_SetMode(InNewType);
+}
+
+void UCActionComponent::MC_SetMode_Implementation(EActionType InNewType)
 {	
 	if (Type == InNewType)
 	{
@@ -167,10 +172,15 @@ void UCActionComponent::SetMode(EActionType InNewType)
 	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
 		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
 	
-	ChangeType(InNewType);
+	Server_ChangeType(InNewType);
 }
 
-void UCActionComponent::ChangeType(EActionType InNewType)
+void UCActionComponent::Server_ChangeType_Implementation(EActionType InNewType)
+{
+	MC_ChangeType(InNewType);
+}
+
+void UCActionComponent::MC_ChangeType_Implementation(EActionType InNewType)
 {
 	EActionType prevType = Type;
 	Type = InNewType;

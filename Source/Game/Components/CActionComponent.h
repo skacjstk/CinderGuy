@@ -92,8 +92,19 @@ public:
 
 	void AbortByDamaged();
 private:
-	void SetMode(EActionType InNewType);
-	void ChangeType(EActionType InNewType);
+	UFUNCTION(Reliable, Server)
+		void Server_SetMode(EActionType InNewType);
+	void Server_SetMode_Implementation(EActionType InNewType);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_SetMode(EActionType InNewType);
+	void MC_SetMode_Implementation(EActionType InNewType);
+
+	UFUNCTION(Reliable, Server)
+	void Server_ChangeType(EActionType InNewType);
+	void Server_ChangeType_Implementation(EActionType InNewType);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_ChangeType(EActionType InNewType);
+	void MC_ChangeType_Implementation(EActionType InNewType);
 
 	// 필드
 public:
