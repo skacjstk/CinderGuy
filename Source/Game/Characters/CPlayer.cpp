@@ -76,6 +76,7 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	bReplicates = true;
 }
 
 void ACPlayer::BeginPlay()

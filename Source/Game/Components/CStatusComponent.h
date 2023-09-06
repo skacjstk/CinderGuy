@@ -5,11 +5,15 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "CStatusComponent.generated.h"
+
+
 UENUM(BlueprintType)
 enum class EWalkSpeedType : uint8
 {
 	Sneak, Walk, Run, Max
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateHealth, float, NewHealth);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAME_API UCStatusComponent : public UActorComponent
@@ -42,12 +46,23 @@ public:
 	// Task 접근용 함수
 	void SetSpeed(EWalkSpeedType InType);
 private:
+	UFUNCTION(Reliable, Server)
+		void ServerHealthUpdate(float ChangeAmountHealth);
+	void ServerHealthUpdate_Implementation(float ChangeAmountHealth);
+
+	UFUNCTION()
+		void OnRep_UpdateHealth();
+public:
+	UPROPERTY()
+		FUpdateHealth OnUpdateHealth;
+private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		float MaxHealth = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float Speed[(int32)EWalkSpeedType::Max] = { 200,400,600 };
 private:
-	float Health;
+	UPROPERTY(ReplicatedUsing = "OnRep_UpdateHealth")
+		float Health;
 	bool bCanMove = true;
 };

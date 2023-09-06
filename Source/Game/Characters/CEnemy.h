@@ -12,8 +12,8 @@ class GAME_API ACEnemy : public ACharacter, public IICharacter
 	GENERATED_BODY()
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	ACEnemy();
-
 protected:
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -24,6 +24,8 @@ public:
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, class AActor* DamageCauser);
+	UFUNCTION()
+		void WidgetHeatlhUpdate(float NewHealth);
 	virtual void Hitted(class AActor* DamageCauser = nullptr) override;
 	virtual void Dead(class AActor* DamageCauser = nullptr) override;
 	UFUNCTION()
@@ -72,6 +74,7 @@ private:
 		float DeadLaunchValue = 10000.f;
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 5.f;	// 밀려나는 고유값
+	UPROPERTY(Replicated)
 	float DamageValue;
 	//AActor* Causer;
 	ACharacter* Attacker;

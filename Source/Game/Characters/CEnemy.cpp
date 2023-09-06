@@ -22,6 +22,14 @@
 #include "DamageType/KatanaParryDamageType.h"
 #include "CDamageText.h"
 
+#include "Net/UnrealNetwork.h"
+#include "Utilities/CHelpers.h"
+
+void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACEnemy, DamageValue); 
+}
 ACEnemy::ACEnemy()
 {
 	//Create SceneComponent
@@ -68,6 +76,8 @@ ACEnemy::ACEnemy()
 
 	//ItemDropComponent Settings
 	ItemDrop->DropTable.DropTableID = 100;
+
+	bReplicates = true;
 }
 
 void ACEnemy::BeginPlay()
@@ -87,18 +97,20 @@ void ACEnemy::BeginPlay()
 
 	// StateType Changed Evnet
 	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
+	Status->OnUpdateHealth.AddDynamic(this, &ACEnemy::WidgetHeatlhUpdate);
 
 	Super::BeginPlay();
 
 	//Widget Property Settings
 
-	CheckFalse(HasAuthority());
 	NameWidget->InitWidget();
 	UCUserWidget_Name* nameWidgetObject = Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)	
 	{		
 		nameWidgetObject->SetPawnName(GetName());
-		nameWidgetObject->SetControllerName(GetController()->GetName());		// Controller Setting
+		// AI 컨트롤러는 서버에만 존재한다.
+		nameWidgetObject->SetControllerName(GetController() != nullptr ? 
+			GetController()->GetName() : CHelpers::GetRoleText(GetLocalRole())	);		// Controller Setting
 	}
 	
 	HealthWidget->InitWidget();
@@ -133,8 +145,8 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AA
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
-	if(!!DamageCauser)
-//	Causer = DamageCauser;
+	if (!!DamageCauser)
+		//	Causer = DamageCauser;
 
 	if(!!EventInstigator)
 		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
@@ -158,7 +170,6 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 		CLog::Print(DamageValue, -1, 1);
 	}
 
-
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		// Need Event Call
@@ -181,12 +192,20 @@ void ACEnemy::ChangeColor(FLinearColor InColor)
 	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 
-void ACEnemy::Hitted(AActor* DamageCauser)
+void ACEnemy::WidgetHeatlhUpdate(float NewHealth)
 {
-	// DecreaseHealth Widget
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
 	if (!!healthWidgetObject)
-		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
+		healthWidgetObject->Update(NewHealth, Status->GetMaxHealth());
+
+	SpawnDamageText();
+	CLog::Print("NewHealth: " + FString::SanitizeFloat(NewHealth) + " | " + FString::SanitizeFloat(Status->GetMaxHealth()));
+}
+
+void ACEnemy::Hitted(AActor* DamageCauser)
+{
+	// DecreaseHealth Widget ( 서버로 옮김 )
+	// WidgetHeatlhUpdate();
 
 	// Play Hit Montage
 	Montages->PlayHitted();
@@ -199,8 +218,7 @@ void ACEnemy::Hitted(AActor* DamageCauser)
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
 
 	// 데미지 띄우기
-	SpawnDamageText();
-		
+	// SpawnDamageText();	// 델리게이트로 이동
 	// 바로 색 바꾸기
 	ChangeColor(FLinearColor::Red * 100.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
@@ -279,5 +297,7 @@ void ACEnemy::SpawnDamageText()
 	transform.SetRotation(FRotator(0, UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation().Yaw, 0).Quaternion());
 	UGameplayStatics::FinishSpawningActor(text, transform);
 	text->SetDamage(DamageValue);
+
+	CLog::Print("DamageText: " + CHelpers::GetRoleText(GetLocalRole()) + " | " + FString::SanitizeFloat(DamageValue));
 }
 

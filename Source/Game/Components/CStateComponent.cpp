@@ -83,9 +83,14 @@ void UCStateComponent::SetDeadMode(AActor* DamageCauser)
 {
 	ChangeType(EStateType::Dead, DamageCauser);
 }
-void UCStateComponent::ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
+void UCStateComponent::Server_ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
 	MC_ChangeType(InNewType, DamageCauser);
+}
+
+void UCStateComponent::ChangeType(EStateType InNewType, AActor* DamageCauser)
+{
+	MC_ChangeType(InNewType, DamageCauser);	// TODO: 테스트 후 삭제
 }
 
 void UCStateComponent::MC_ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)

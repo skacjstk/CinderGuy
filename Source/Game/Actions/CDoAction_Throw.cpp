@@ -85,14 +85,23 @@ void ACDoAction_Throw::Tick(float DeltaTime)
 
 void ACDoAction_Throw::OnThrowBeginOverlap(FHitResult InHitResult)
 {
-	FDamageEvent e;
-	// 데미지 타입 클래스 가져오기
-	if (!!ThrowObject->GetDamageType()) {
-		e.DamageTypeClass = ThrowObject->GetDamageType();
-		InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+	if (OwnerCharacter->HasAuthority())
+	{
+		// 실제 피해 주기
+		FDamageEvent e;
+		// 데미지 타입 클래스 가져오기
+		if (!!ThrowObject->GetDamageType()) {
+			e.DamageTypeClass = ThrowObject->GetDamageType();
+			InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+		}
+		else
+			InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
 	}
 	else
-		InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+	{
+		// 이쪽이 쬐까 애매함. 이펙트는 붙어야 해서.
+	}
+
 
 }
 

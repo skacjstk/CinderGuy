@@ -139,56 +139,61 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 {
 	Super::OnAttachmentBeginOverlap(InAttacker, InCauser, InOtherCharacter);
 
-	int32 before = HittedCharacters.Num();
-	HittedCharacters.AddUnique(InOtherCharacter);
-
-	TSubclassOf<UCameraShake> shake;
-
-	// HitStop
-	if (IsStrongAction == true)
-	{
-		// 강공격 HitStop
-		if (FMath::IsNearlyZero(StrongData.HitStop) == false)
-		{
-			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
-			UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * StrongData.HitStop, false);
-		}
-		// 강공격 CameraShake
-		shake = StrongData.ShakeClass;
-	}
-	else
-	{	// 일반공격 HitStop
-		if (FMath::IsNearlyZero(Datas[ComboCount].HitStop) == false)
-		{
-			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
-			UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * Datas[ComboCount].HitStop, false);
-		}
-		// 일반공격 CameraShake
-		shake = Datas[ComboCount].ShakeClass;
-	}
-
-
 	//Play Particle
 	UParticleSystem* hitEffect = Datas[ComboCount].Effect;
-	if(!!hitEffect)
+	if (!!hitEffect)
 	{
 		FTransform transform = Datas[ComboCount].EffectTransform;
 		transform.AddToTranslation(InOtherCharacter->GetActorLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), hitEffect, transform);
 	}
 
-	//Camera Shake
-	// Strong여부는 위에서 설정
-	if (!!shake)
+	// 자신만
+	if (OwnerCharacter->GetLocalRole() == ENetRole::ROLE_AutonomousProxy && 
+		InAttacker->GetLocalRole() == OwnerCharacter->GetLocalRole())
 	{
-		APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-		if (!!controller)	// 설마 없진 않...으려나?
+		TSubclassOf<UCameraShake> shake;
+		// HitStop
+		if (IsStrongAction == true)
 		{
-			controller->PlayerCameraManager->PlayCameraShake(shake);
+			// 강공격 HitStop
+			if (FMath::IsNearlyZero(StrongData.HitStop) == false)
+			{
+				UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
+				UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * StrongData.HitStop, false);
+			}
+			// 강공격 CameraShake
+			shake = StrongData.ShakeClass;
+		}
+		else
+		{	// 일반공격 HitStop
+			if (FMath::IsNearlyZero(Datas[ComboCount].HitStop) == false)
+			{
+				UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
+				UKismetSystemLibrary::K2_SetTimer(this, "RestoreGlobalTimeDilation", 2e-2f * Datas[ComboCount].HitStop, false);
+			}
+			// 일반공격 CameraShake
+			shake = Datas[ComboCount].ShakeClass;
+		}
+		//Camera Shake
+		// Strong여부는 위에서 설정
+		if (!!shake)
+		{
+			APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (!!controller)	// 설마 없진 않...으려나?
+			{
+				controller->PlayerCameraManager->PlayCameraShake(shake);
+			}
 		}
 	}
 
-	// 배열 크기가 달라졌을 때 데미지 부여 (다단히트 방지: 무려 내가 제안한 방식)
+
+	CheckFalse(InAttacker->HasAuthority());
+
+	int32 before = HittedCharacters.Num();
+	HittedCharacters.AddUnique(InOtherCharacter);
+
+	// 배열 크기가 달라졌을 때 데미지 부여 (다단히트 방지: 방식)
 	if (before < HittedCharacters.Num())
 	{
 		FDamageEvent e;
