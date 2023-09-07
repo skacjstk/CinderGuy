@@ -46,9 +46,6 @@ void UCActionComponent::BeginPlay()
 			CLog::Log(Result + Result2);
 		}
 	}
-	
-	
-
 }
 
 void UCActionComponent::SetUnarmedMode()

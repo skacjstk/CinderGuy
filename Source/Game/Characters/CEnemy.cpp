@@ -232,7 +232,7 @@ void ACEnemy::Dead(AActor* DamageCauser)
 	HealthWidget->SetVisibility(false);
 
 	// All Weapon Collision Disable
-	SpawnDamageText();
+//	SpawnDamageText();
 	Action->Dead();
 
 	// Ragdoll

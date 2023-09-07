@@ -6,6 +6,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Components/CReplicaBehaviorComponent.h"
 #include "Characters/CPlayer.h"
 
 ACAIController::ACAIController()
@@ -14,6 +15,9 @@ ACAIController::ACAIController()
 	CHelpers::CreateActorComponent<UBlackboardComponent>(this, &Blackboard, "Blackboard");
 	CHelpers::CreateActorComponent<UCBehaviorComponent>(this, &Behavior, "Behavior");
 	CHelpers::CreateActorComponent<UAIPerceptionComponent>(this, &Perception, "Perception");
+
+	// AIController 가 없는 바깥쪽에 통신할 BehaviorComponent가 필요하다
+//	CHelpers::CreateActorComponent<UCReplicaBehaviorComponent>(GetOwner(), &ReplicaBehavior, "ReplicaBehavior");
 
 	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");
 
@@ -62,7 +66,7 @@ void ACAIController::OnPossess(APawn * InPawn)
 	SetGenericTeamId(OwnerEnemy->GetTeamID());
 	Perception->OnPerceptionUpdated.AddDynamic(this, &ACAIController::OnPerceptionUpdated);
 
-	// Blackboard 세팅해줌
+	// Blackboard 세팅해줌 // TODO: 클라에 존재하지 않음을 해결해야 함
 	Behavior->SetBlackboard(Blackboard);
 	// BT 실행
 	RunBehaviorTree(OwnerEnemy->GetBehaviorTree());

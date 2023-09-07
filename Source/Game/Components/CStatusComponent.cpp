@@ -44,7 +44,8 @@ void UCStatusComponent::SetSpeed(EWalkSpeedType InType)
 
 void UCStatusComponent::ServerHealthUpdate_Implementation(float ChangeAmountHealth)
 {
-	Health = FMath::Clamp((Health + ChangeAmountHealth), 0.0f, MaxHealth);
+	Health = FMath::Clamp((Health + ChangeAmountHealth), 0.0f, MaxHealth);	
+	// 일반함수에 AUthority 제한걸어도 되기는 함 하지만 직접 처리하는걸 서버로 보내는게 안전하다고 판단했음
 }
 
 void UCStatusComponent::OnRep_UpdateHealth()

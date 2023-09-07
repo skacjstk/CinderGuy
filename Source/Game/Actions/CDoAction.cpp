@@ -68,8 +68,7 @@ void ACDoAction::MC_PlayAttackAnimMontage_Implementation(UAnimMontage* AnimMonta
 {
 	// AttachmentStatus 의 변수들 불러오기
 	float atkSpeed = 1.0f;
-	if (GetCurrentStatus() == nullptr)
-		return;
+
 	atkSpeed *= (GetCurrentStatus()->CurrentAtkSpeed * InPlayRate);
 	OwnerCharacter->PlayAnimMontage(AnimMontage, atkSpeed, StartSectionName);
 }
