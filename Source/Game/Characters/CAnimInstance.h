@@ -30,5 +30,5 @@ private:
 	UFUNCTION()
 		void OnActionTypeChanged(EActionType InPrevType, EActionType InNewType);
 	UFUNCTION()
-		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, class AActor* DamageCauser);
 };

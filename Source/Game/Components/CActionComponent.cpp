@@ -5,7 +5,17 @@
 #include "Actions/CActionData.h"
 #include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"
+#include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
+#include "Utilities/CHelpers.h"
+#include "Characters/CEnemy.h"
+#include "Net/UnrealNetwork.h"
+
+void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCActionComponent, Type);
+}
 
 UCActionComponent::UCActionComponent()
 {
@@ -20,8 +30,27 @@ void UCActionComponent::BeginPlay()
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
 	for (int i = 0; i < (int32)EActionType::Max; ++i)
 	{
-		if(!!Datas[i])	// 바뀌면 안됨. 생성부분
-			Datas[i]->BeginPlay(charcater, &DataObjects[i]);	// 만든 결과를 DataObjects에 저장
+		if (!!Datas[i])	// 바뀌면 안됨. 생성부분
+		{
+			Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
+		}
+	}
+	FString Result;
+
+	if (Cast<ACEnemy>(GetOwner()) == nullptr)
+		return;
+
+	Result += GetOwner()->GetName();
+	Result += " | ";
+	Result += CHelpers::GetRoleText(GetOwner()->GetLocalRole());
+
+	for (UCActionObjectContainer* DO : DataObjects)
+	{
+		if (DO != nullptr) {
+			FString Result2 = " | ";
+			Result2 += DO->GetName();
+			CLog::Log(Result + Result2);
+		}
 	}
 }
 
@@ -32,45 +61,73 @@ void UCActionComponent::SetUnarmedMode()
 
 	DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
 
-	ChangeType(EActionType::Unarmed);
+	Server_ChangeType(EActionType::Unarmed);
 }
 
 void UCActionComponent::SetFistMode()
 {
-	SetMode(EActionType::Fist);
+	Server_SetMode(EActionType::Fist);
 }
 
 void UCActionComponent::SetOneHandMode()
 {
-	SetMode(EActionType::OneHand);
+	Server_SetMode(EActionType::OneHand);
 }
 
 void UCActionComponent::SetTwoHandMode()
 {
-	SetMode(EActionType::TwoHand);
+	Server_SetMode(EActionType::TwoHand);
 }
 
 void UCActionComponent::SetWarpMode()
 {
-	SetMode(EActionType::Warp);
+	Server_SetMode(EActionType::Warp);
 }
 
 void UCActionComponent::SetKatanaMode()
 {
-	SetMode(EActionType::Katana);
+	Server_SetMode(EActionType::Katana);
 }
 
 void UCActionComponent::SetMagicBallMode()
 {
-	SetMode(EActionType::MagicBall);
+	Server_SetMode(EActionType::MagicBall);
 }
 
 void UCActionComponent::SetStormMode()
 {
-	SetMode(EActionType::Storm);
+	Server_SetMode(EActionType::Storm);
 }
 
-void UCActionComponent::DoAction()
+void UCActionComponent::Server_SetMode_Implementation(EActionType InNewType)
+{
+	MC_SetMode(InNewType);
+}
+
+void UCActionComponent::MC_SetMode_Implementation(EActionType InNewType)
+{
+	if (Type == InNewType)
+	{
+		SetUnarmedMode();	// Unarmed는 전용이 따로 있음 
+		return;
+	}
+	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
+	{
+		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+			DataObjects[(int32)Type]->GetEquipment()->Unequip();
+	}
+
+	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
+		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
+
+	Server_ChangeType(InNewType);
+}
+
+void UCActionComponent::Server_DoAction_Implementation()
+{
+	MC_DoAction();
+}
+void UCActionComponent::MC_DoAction_Implementation()
 {
 	CheckTrue(IsUnarmedMode());
 
@@ -80,6 +137,8 @@ void UCActionComponent::DoAction()
 
 		if (!!doAction)
 			doAction->DoAction();
+		else
+			CLog::Log("What");
 	}
 }
 
@@ -151,26 +210,12 @@ void UCActionComponent::DoBlock()
 	}
 }
 
-void UCActionComponent::SetMode(EActionType InNewType)
-{	
-	if (Type == InNewType)
-	{
-		SetUnarmedMode();	// Unarmed는 전용이 따로 있음 
-		return;
-	}
-	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
-	{
-		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
-			DataObjects[(int32)Type]->GetEquipment()->Unequip();
-	}
-	
-	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
-		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
-	
-	ChangeType(InNewType);
+void UCActionComponent::Server_ChangeType_Implementation(EActionType InNewType)
+{
+	MC_ChangeType(InNewType);
 }
 
-void UCActionComponent::ChangeType(EActionType InNewType)
+void UCActionComponent::MC_ChangeType_Implementation(EActionType InNewType)
 {
 	EActionType prevType = Type;
 	Type = InNewType;

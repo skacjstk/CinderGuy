@@ -22,6 +22,14 @@
 #include "DamageType/KatanaParryDamageType.h"
 #include "CDamageText.h"
 
+#include "Net/UnrealNetwork.h"
+#include "Utilities/CHelpers.h"
+
+void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACEnemy, DamageValue); 
+}
 ACEnemy::ACEnemy()
 {
 	//Create SceneComponent
@@ -68,6 +76,8 @@ ACEnemy::ACEnemy()
 
 	//ItemDropComponent Settings
 	ItemDrop->DropTable.DropTableID = 100;
+
+	bReplicates = true;
 }
 
 void ACEnemy::BeginPlay()
@@ -87,18 +97,20 @@ void ACEnemy::BeginPlay()
 
 	// StateType Changed Evnet
 	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
+	Status->OnUpdateHealth.AddDynamic(this, &ACEnemy::WidgetHeatlhUpdate);
 
 	Super::BeginPlay();
 
 	//Widget Property Settings
 
-	CheckFalse(HasAuthority());
 	NameWidget->InitWidget();
 	UCUserWidget_Name* nameWidgetObject = Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)	
 	{		
 		nameWidgetObject->SetPawnName(GetName());
-		nameWidgetObject->SetControllerName(GetController()->GetName());		// Controller Setting
+		// AI 컨트롤러는 서버에만 존재한다.
+		nameWidgetObject->SetControllerName(GetController() != nullptr ? 
+			GetController()->GetName() : CHelpers::GetRoleText(GetLocalRole())	);		// Controller Setting
 	}
 	
 	HealthWidget->InitWidget();
@@ -107,7 +119,7 @@ void ACEnemy::BeginPlay()
 		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
 }
 
-void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
 {
 	switch (InNewType)
 	{
@@ -121,8 +133,8 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 		break;
 	case EStateType::Action:
 		break;
-	case EStateType::Hitted:	Hitted();	break;
-	case EStateType::Dead:		Dead();		break;
+	case EStateType::Hitted:	Hitted(DamageCauser);	break;
+	case EStateType::Dead:		Dead(DamageCauser);		break;
 	case EStateType::Max:
 		break;
 	default:
@@ -133,8 +145,8 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
-	if(!!DamageCauser)
-	Causer = DamageCauser;
+	if (!!DamageCauser)
+		//	Causer = DamageCauser;
 
 	if(!!EventInstigator)
 		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
@@ -158,14 +170,13 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 		CLog::Print(DamageValue, -1, 1);
 	}
 
-
 	Status->DecreaseHealth(this->DamageValue);
 	if (Status->GetHealth() <= 0.f) {
 		// Need Event Call
 		State->SetDeadMode(DamageCauser);
 		return this->DamageValue;
 	}
-	State->SetHittedMode();
+	State->SetHittedMode(DamageCauser);
 	return this->DamageValue;
 }
 
@@ -181,31 +192,37 @@ void ACEnemy::ChangeColor(FLinearColor InColor)
 	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 
-void ACEnemy::Hitted()	 
+void ACEnemy::WidgetHeatlhUpdate(float NewHealth)
 {
-	// DecreaseHealth Widget
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
 	if (!!healthWidgetObject)
-		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
+		healthWidgetObject->Update(NewHealth, Status->GetMaxHealth());
+
+	SpawnDamageText();
+}
+
+void ACEnemy::Hitted(AActor* DamageCauser)
+{
+	// DecreaseHealth Widget ( 서버로 옮김 )
+	// WidgetHeatlhUpdate();
 
 	// Play Hit Montage
 	Montages->PlayHitted();
 
 	// Launch HitBack
 	FVector start = GetActorLocation();	// 나의 위치
-	FVector target = Causer->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음
+	FVector target = DamageCauser == nullptr ? FVector(0,0,0) : DamageCauser->GetActorLocation();	// 공격한 물체의 위치	(TakeDamage) 에서 받아왔음
 	FVector direction =	(start - target);
 	direction.Normalize();
 	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
 
 	// 데미지 띄우기
-	SpawnDamageText();
-		
+	// SpawnDamageText();	// 델리게이트로 이동
 	// 바로 색 바꾸기
 	ChangeColor(FLinearColor::Red * 100.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreLogoColor", 1.f, false);
 }
-void ACEnemy::Dead() 
+void ACEnemy::Dead(AActor* DamageCauser)
 {
 	CheckFalse(State->IsDeadMode());
 
@@ -214,7 +231,7 @@ void ACEnemy::Dead()
 	HealthWidget->SetVisibility(false);
 
 	// All Weapon Collision Disable
-	SpawnDamageText();
+//	SpawnDamageText();
 	Action->Dead();
 
 	// Ragdoll
@@ -234,12 +251,12 @@ void ACEnemy::Dead()
 
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();
-	FVector target = Causer->GetActorLocation();
+	FVector target = DamageCauser->GetActorLocation();
 	FVector direction = start - target;
 	direction.Normalize();
 
 	// 투사체일 경우 DeadLaunch 를 낮추기 
-	if (Causer->IsA<ACThrow>())
+	if (DamageCauser->IsA<ACThrow>())
 		DeadLaunchValue *= 0.075f;
 
 	// Need Event

@@ -5,7 +5,7 @@
 
 UCBehaviorComponent::UCBehaviorComponent()
 {
-	SetIsReplicatedByDefault(true);
+	SetIsReplicatedByDefault(false);
 }
 
 void UCBehaviorComponent::BeginPlay()

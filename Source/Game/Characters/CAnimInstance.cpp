@@ -38,7 +38,7 @@ void UCAnimInstance::OnActionTypeChanged(EActionType InPrevType, EActionType InN
 	ActionType = InNewType;
 }
 
-void UCAnimInstance::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+void UCAnimInstance::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
 {
 	StateType = InNewType;
 }

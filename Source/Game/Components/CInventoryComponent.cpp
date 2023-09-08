@@ -233,10 +233,9 @@ bool UCInventoryComponent::InteractWith_Implementation(class ACharacter* playerC
 
 void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 {
-	// Target 넣어놓긴 했는데 쓸일이 있나?
-	if (!!LookAtActor)
+	if (!!Target)
 	{	
-		UCItemDataComponent* item = CHelpers::GetComponent<UCItemDataComponent>(LookAtActor);		
+		UCItemDataComponent* item = CHelpers::GetComponent<UCItemDataComponent>(Target);
 		if (!!item)
 		{
 			item->Execute_InteractWith(item, Cast<ACharacter>(GetOwner()));
@@ -246,7 +245,7 @@ void UCInventoryComponent::Server_Interact_Implementation(class AActor* Target)
 			ACPlayer* player = Cast<ACPlayer>(GetOwner());
 			if (player == nullptr) return;
 	//		LookAtActor->SetOwner(player);// Todo: 만약 HUD를 Controller에 넣을 경우 얘도 바뀌어야 한다.
-			OnLocalInteract(LookAtActor, player);
+			OnLocalInteract(Target, player);
 		}
 	}
 }

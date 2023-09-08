@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTTaskNode_Action::ExecuteTask(UBehaviorTreeComponent& Owne
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(aiPawn);
 
 	TotalTime = 0.0f;
-	action->DoAction();
+	action->Server_DoAction();
 
 	return EBTNodeResult::InProgress;
 }

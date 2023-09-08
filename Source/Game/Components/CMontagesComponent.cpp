@@ -2,16 +2,19 @@
 #include "Global.h"
 #include "Components/CStatusComponent.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetWork.h"
 
-// Sets default values for this component's properties
+void UCMontagesComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
 UCMontagesComponent::UCMontagesComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SetIsReplicatedByDefault(true);
-	// ...
+	if(GetOwnerRole() == ENetRole::ROLE_Authority)
+		SetIsReplicatedByDefault(true);
 }
 
 
@@ -20,7 +23,6 @@ UCMontagesComponent::UCMontagesComponent()
 void UCMontagesComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	CheckNull(DataTable);
 
 	TArray<FMontageData*> datas;
@@ -41,22 +43,28 @@ void UCMontagesComponent::BeginPlay()
 
 void UCMontagesComponent::PlayRoll()
 {
-	PlayAnimMontage(EStateType::Roll);
+	Server_PlayAnimMontage(EStateType::Roll);
 }
 
 void UCMontagesComponent::PlayBackStep()
 {
-	PlayAnimMontage(EStateType::BackStep);
+	Server_PlayAnimMontage(EStateType::BackStep);
 }
 void UCMontagesComponent::PlayHitted()
 {
-	PlayAnimMontage(EStateType::Hitted);
+	Server_PlayAnimMontage(EStateType::Hitted);
 }
 void UCMontagesComponent::PlayDead()
 {
-	PlayAnimMontage(EStateType::Dead);
+	Server_PlayAnimMontage(EStateType::Dead);
 }
-void UCMontagesComponent::PlayAnimMontage(EStateType InType)
+
+void UCMontagesComponent::Server_PlayAnimMontage_Implementation(EStateType InType)
+{
+	MC_PlayAnimMontage(InType);
+}
+
+void UCMontagesComponent::MC_PlayAnimMontage_Implementation(EStateType InType)
 {
 	ACharacter* character = Cast<ACharacter>(GetOwner());
 	CheckNull(character);
@@ -65,11 +73,12 @@ void UCMontagesComponent::PlayAnimMontage(EStateType InType)
 	if (!!data)
 	{
 		if (!!data->AnimMontage)
+		{
 			character->PlayAnimMontage(data->AnimMontage, data->PlayRate, data->StartSection);
+		}
 
 		UCStatusComponent* Status = CHelpers::GetComponent<UCStatusComponent>(character);
 		if (!!Status)
 			data->bCanMove ? Status->SetMove() : Status->SetStop();
 	}
 }
-

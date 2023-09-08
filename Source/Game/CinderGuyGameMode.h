@@ -12,4 +12,5 @@ class GAME_API ACinderGuyGameMode : public AGameMode
 	GENERATED_BODY()
 public: 
 	ACinderGuyGameMode();
+	virtual void PostLogin(APlayerController* NewController) override;
 };

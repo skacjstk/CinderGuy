@@ -38,6 +38,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE class UCActionObjectContainer* GetCurrent() { return DataObjects[(int32)Type]; } // 실제 메모리 데이터로 변경
@@ -75,7 +77,13 @@ public:
 	UFUNCTION(BlueprintCallable) void SetStormMode();
 	UFUNCTION(BlueprintCallable) void SetKatanaMode();
 
-	void DoAction();
+	UFUNCTION(Server, Reliable)
+	void Server_DoAction();
+	void Server_DoAction_Implementation();
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_DoAction();
+	void MC_DoAction_Implementation();
+
 	void DoStrongAction();	// 꾹 눌러서 사용하는 강공격
 	void EndDoStrongActionWait();	// 강공격 해제 대기
 
@@ -92,19 +100,31 @@ public:
 
 	void AbortByDamaged();
 private:
-	void SetMode(EActionType InNewType);
-	void ChangeType(EActionType InNewType);
+	UFUNCTION(Reliable, Server)
+		void Server_SetMode(EActionType InNewType);
+	void Server_SetMode_Implementation(EActionType InNewType);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_SetMode(EActionType InNewType);
+	void MC_SetMode_Implementation(EActionType InNewType);
+
+	UFUNCTION(Reliable, Server)
+	void Server_ChangeType(EActionType InNewType);
+	void Server_ChangeType_Implementation(EActionType InNewType);
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_ChangeType(EActionType InNewType);
+	void MC_ChangeType_Implementation(EActionType InNewType);
 
 	// 필드
 public:
 	UPROPERTY(BlueprintAssignable)
 		FActionTypeChanged OnActionTypeChanged;
 private:
-	EActionType Type;
+	UPROPERTY(Replicated)
+		EActionType Type;
 private:
 	UPROPERTY(EditDefaultsOnly)
 		class UCActionData* Datas[(int32)EActionType::Max];	// DataAsset: 세팅값 포함 
-	UPROPERTY()	// 내부 Heap할당 하기 때문에 넣어줌 
+	UPROPERTY(Replicated)	// 내부 Heap할당 하기 때문에 넣어줌 
 		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// Data 실제 객체 
 
 };

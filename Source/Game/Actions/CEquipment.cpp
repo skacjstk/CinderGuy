@@ -3,14 +3,22 @@
 #include "Characters/ICharacter.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
+#include "Components/CActionComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
+
+void ACEquipment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACEquipment, bEquipped);
+}
 
 ACEquipment::ACEquipment()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

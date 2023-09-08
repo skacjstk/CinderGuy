@@ -15,6 +15,7 @@ class GAME_API ACPlayer : public ACharacter, public IICharacter, public IGeneric
 
 public:
 	ACPlayer();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	// SceneComponent
@@ -109,15 +110,15 @@ public:
 	void End_Parry();	// notify 호출
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void Hitted() override;
-	virtual void Dead() override;
+	virtual void Hitted(class AActor* DamageCauser) override;
+	virtual void Dead(class AActor* DamageCauser = nullptr) override;
 	virtual void End_Dead() override;
 	virtual bool CheckInvincible() override;
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 private:
 	UFUNCTION()
-		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);	
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, class AActor* DamageCauser);
 	// CStateComponent에 OnStateTypeChanged에 바인딩
 	UFUNCTION()
 		void GuardAlpha(float Output);
@@ -129,6 +130,8 @@ private:
 
 	// 가드에 필요한 거
 	class UCurveFloat* Curve;
-	FOnTimelineFloat TimelineFloat;
-	FTimeline GuardTimeline;
+	UPROPERTY(Replicated)
+		FOnTimelineFloat TimelineFloat;
+	UPROPERTY(Replicated)
+		FTimeline GuardTimeline;
 };

@@ -37,7 +37,7 @@ void ACDoAction_Warp::BeginPlay()
 }
 void ACDoAction_Warp::DoAction()
 {
-	CheckFalse(*bEquipped);
+	CheckFalse(GetEquippedFromEquipment());
 	CheckFalse(State->IsIdleMode());
 
 	bool bPlayer = OwnerCharacter->IsA<ACPlayer>();
@@ -59,7 +59,7 @@ void ACDoAction_Warp::DoAction()
 
 
 	State->SetActionMode();
-	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);	// 얘를 공격속도로 보는게 맞을까?
+	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);	// 얘를 공격속도로 보는게 맞을까?
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -92,7 +92,7 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckFalse(*bEquipped);
+	CheckFalse(GetEquippedFromEquipment());
 
 	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
 	CheckNull(player);

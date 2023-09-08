@@ -35,7 +35,7 @@ void ACDoAction_Throw::DoAction()
 
 	State->SetActionMode();
 
-	PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -46,7 +46,7 @@ void ACDoAction_Throw::Begin_DoAction()
 	CheckNull(Datas[0].ThrowClass);	// 널 체크 
 	
 	FVector location = OwnerCharacter->GetMesh()->GetSocketLocation("Hand_Throw");	// 소켓 찾기
-	FRotator rotation = OwnerCharacter->GetController()->GetControlRotation();
+	FRotator rotation = OwnerCharacter->GetTransform().GetRotation().Rotator();	//->GetController()
 
 	FTransform transform = Datas[0].EffectTransform;
 	transform.AddToTranslation(location);
@@ -85,14 +85,23 @@ void ACDoAction_Throw::Tick(float DeltaTime)
 
 void ACDoAction_Throw::OnThrowBeginOverlap(FHitResult InHitResult)
 {
-	FDamageEvent e;
-	// 데미지 타입 클래스 가져오기
-	if (!!ThrowObject->GetDamageType()) {
-		e.DamageTypeClass = ThrowObject->GetDamageType();
-		InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+	if (OwnerCharacter->HasAuthority())
+	{
+		// 실제 피해 주기
+		FDamageEvent e;
+		// 데미지 타입 클래스 가져오기
+		if (!!ThrowObject->GetDamageType()) {
+			e.DamageTypeClass = ThrowObject->GetDamageType();
+			InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+		}
+		else
+			InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
 	}
 	else
-		InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), ThrowObject);
+	{
+		// 이쪽이 쬐까 애매함. 이펙트는 붙어야 해서.
+	}
+
 
 }
 

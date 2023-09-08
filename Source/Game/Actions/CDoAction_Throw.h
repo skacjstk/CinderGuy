@@ -14,7 +14,6 @@ class GAME_API ACDoAction_Throw : public ACDoAction
 	
 public:
 	void BeginPlay() override;
-
 public:
 	virtual void DoAction()			override;
 	virtual void Begin_DoAction()	override;
