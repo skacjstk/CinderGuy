@@ -199,7 +199,6 @@ void ACEnemy::WidgetHeatlhUpdate(float NewHealth)
 		healthWidgetObject->Update(NewHealth, Status->GetMaxHealth());
 
 	SpawnDamageText();
-	CLog::Print("NewHealth: " + FString::SanitizeFloat(NewHealth) + " | " + FString::SanitizeFloat(Status->GetMaxHealth()));
 }
 
 void ACEnemy::Hitted(AActor* DamageCauser)
@@ -297,7 +296,5 @@ void ACEnemy::SpawnDamageText()
 	transform.SetRotation(FRotator(0, UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation().Yaw, 0).Quaternion());
 	UGameplayStatics::FinishSpawningActor(text, transform);
 	text->SetDamage(DamageValue);
-
-	CLog::Print("DamageText: " + CHelpers::GetRoleText(GetLocalRole()) + " | " + FString::SanitizeFloat(DamageValue));
 }
 

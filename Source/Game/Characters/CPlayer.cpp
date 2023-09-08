@@ -34,6 +34,7 @@ void ACPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 ACPlayer::ACPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	// Create SceneComponent
 	CHelpers::CreateSceneComponent(this, &SpringArm, "SpringArm", GetMesh());
@@ -75,8 +76,6 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = Status->GetRunSpeed();
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	bReplicates = true;
 }
 
 void ACPlayer::BeginPlay()
@@ -132,13 +131,15 @@ void ACPlayer::Tick(float DeltaTime)
 	DrawDebugString(GetWorld(), FVector(0, 0, 120), "Local: " + CHelpers::GetRoleText(GetLocalRole()), this, FColor::Black, DeltaTime, false, 1.2f);
 	DrawDebugString(GetWorld(), FVector(0, 0, 180), "Remote: " + CHelpers::GetRoleText(GetRemoteRole()), this, FColor::Blue, DeltaTime, false, 1.2f);
 
-	return;	// TODO: 데이터 로딩문제 해결해야 함
-	GuardTimeline.TickTimeline(DeltaTime);
-	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+	return;
+	if (HasAuthority())
 	{
-		OnDoStrongAction();
-	}
-	
+		GuardTimeline.TickTimeline(DeltaTime);
+	//	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+	//	{
+	//		OnDoStrongAction();
+	//	}
+	}	
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -242,13 +243,14 @@ void ACPlayer::OnEvade() {
 
 	CheckFalse((State->IsIdleMode() || State->IsGuardMode()));
 	CheckFalse(Status->IsCanMove());
-
-	if (InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
+	//InputComponent->GetAxisValue("MoveForward") < 0.f && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")
+	if (FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveForward")) && FMath::IsNearlyZero(InputComponent->GetAxisValue("MoveRight")))
 	{
 		State->SetBackStepMode();
 		return;
 	}
 	State->SetRollMode();
+	// 반응 느린 문제 해결하려면, 얘는 키 Axis 와 Camera 바라보는 방향을가져다 줘야 함
 }
 
 void ACPlayer::OnWalk()
@@ -351,7 +353,6 @@ void ACPlayer::OnInteract()
 
 void ACPlayer::Begin_Roll()
 {
-	// 여기까지 SImulbody가 들어와야 함.
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 

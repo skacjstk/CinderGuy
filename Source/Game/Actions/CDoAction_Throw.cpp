@@ -46,7 +46,7 @@ void ACDoAction_Throw::Begin_DoAction()
 	CheckNull(Datas[0].ThrowClass);	// 널 체크 
 	
 	FVector location = OwnerCharacter->GetMesh()->GetSocketLocation("Hand_Throw");	// 소켓 찾기
-	FRotator rotation = OwnerCharacter->GetController()->GetControlRotation();
+	FRotator rotation = OwnerCharacter->GetTransform().GetRotation().Rotator();	//->GetController()
 
 	FTransform transform = Datas[0].EffectTransform;
 	transform.AddToTranslation(location);
