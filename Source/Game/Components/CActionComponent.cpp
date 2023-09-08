@@ -8,6 +8,7 @@
 #include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
 #include "Utilities/CHelpers.h"
+#include "Characters/CEnemy.h"
 #include "Net/UnrealNetwork.h"
 
 void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -35,6 +36,9 @@ void UCActionComponent::BeginPlay()
 		}
 	}
 	FString Result;
+
+	if (Cast<ACEnemy>(GetOwner()) == nullptr)
+		return;
 
 	Result += GetOwner()->GetName();
 	Result += " | ";

@@ -11,9 +11,10 @@ ACinderGuyGameMode::ACinderGuyGameMode()
 void ACinderGuyGameMode::PostLogin(APlayerController* NewController)
 {
 	Super::PostLogin(NewController);
-//	ACPlayer* Player = Cast<ACPlayer>(GetWorld()->SpawnActor(DefaultPawnClass));	// 다시 소환
-//	if (Player != nullptr)
-//	{
-//		NewController->Possess(Player);
-//	}
+	ACPlayer* Player = Cast<ACPlayer>(GetWorld()->SpawnActor(DefaultPawnClass));	// 다시 소환
+	Player->SpawnDefaultController();
+	if (Player != nullptr)
+	{
+		NewController->Possess(Player);
+	}
 }
