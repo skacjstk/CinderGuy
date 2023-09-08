@@ -119,7 +119,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FActionTypeChanged OnActionTypeChanged;
 private:
-	EActionType Type;
+	UPROPERTY(Replicated)
+		EActionType Type;
 private:
 	UPROPERTY(EditDefaultsOnly)
 		class UCActionData* Datas[(int32)EActionType::Max];	// DataAsset: 세팅값 포함 

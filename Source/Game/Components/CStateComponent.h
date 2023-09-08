@@ -21,6 +21,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	void SetIdleMode();
@@ -55,14 +56,16 @@ public:
 	float GetGuardFrame() { return IFGuard; }
 private:
 	UFUNCTION(Server, Reliable)
-		void Server_ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
-		void Server_ChangeType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void Server_ChangeStateType(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void Server_ChangeStateType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
 
 		void ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
 	UFUNCTION(NetMulticast, Reliable)
-		void MC_ChangeType(EStateType InNewType, class AActor* DamageCauser = nullptr);
-		void MC_ChangeType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void MC_ChangeStateType(EStateType InNewType, class AActor* DamageCauser = nullptr);
+		void MC_ChangeStateType_Implementation(EStateType InNewType, class AActor* DamageCauser = nullptr);
 
+		UFUNCTION()
+			void OnRep_ChangeType();
 	// Field
 public:
 	UPROPERTY(BlueprintAssignable)	// BP 이벤트 꽂을 수 있음
@@ -70,7 +73,8 @@ public:
 	UPROPERTY(BlueprintAssignable)	// BP 이벤트 꽂을 수 있음
 		FStateTypeChanged OnStateTypeChanged;
 private:
-	EStateType Type;
+	UPROPERTY(ReplicatedUsing = "OnRep_ChangeType")
+		EStateType Type;
 
 	UPROPERTY(EditAnywhere, Category = "Invincible")
 		float IFGuard = 0.15f;	// I-Frame Guard 라는 뜻, Parry Alpha 값

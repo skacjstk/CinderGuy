@@ -3,7 +3,14 @@
 
 #include "CStateComponent.h"
 #include "Utilities/CLog.h"
+#include "Net/UnrealNetwork.h"
+#include "Utilities/CHelpers.h"
 
+void UCStateComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCStateComponent, Type);
+}
 // Sets default values for this component's properties
 UCStateComponent::UCStateComponent()
 {
@@ -83,18 +90,20 @@ void UCStateComponent::SetDeadMode(AActor* DamageCauser)
 {
 	ChangeType(EStateType::Dead, DamageCauser);
 }
-void UCStateComponent::Server_ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
+void UCStateComponent::Server_ChangeStateType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
-	MC_ChangeType(InNewType, DamageCauser);
+	MC_ChangeStateType(InNewType, DamageCauser);
 }
 
 void UCStateComponent::ChangeType(EStateType InNewType, AActor* DamageCauser)
 {
-	MC_ChangeType(InNewType, DamageCauser);	// TODO: 테스트 후 삭제
+	Server_ChangeStateType(InNewType, DamageCauser);
+	// ServerCall 을 Implementation 버전으로 하니 No owning connection for actor 해결됨
 }
 
-void UCStateComponent::MC_ChangeType_Implementation(EStateType InNewType, AActor* DamageCauser)
+void UCStateComponent::MC_ChangeStateType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
+	CLog::Log("EnteranceTest: ChangeStateType:: " + CHelpers::GetRoleText(GetOwnerRole()) +" | "+ FString::FromInt((int32)InNewType));
 	EStateType prevType = Type;
 	Type = InNewType;
 	if (OnStateTypePreChanged.IsBound())
@@ -102,4 +111,9 @@ void UCStateComponent::MC_ChangeType_Implementation(EStateType InNewType, AActor
 
 	if (OnStateTypeChanged.IsBound())
 		OnStateTypeChanged.Broadcast(prevType, Type, DamageCauser);
+}
+
+void UCStateComponent::OnRep_ChangeType()
+{
+	CLog::Print("EnteranceTest: ChangeStateType:: " + CHelpers::GetRoleText(GetOwnerRole()) + FString::FromInt((int32)Type));
 }

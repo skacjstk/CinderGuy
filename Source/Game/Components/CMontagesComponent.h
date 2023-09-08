@@ -38,7 +38,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:	
 	void PlayRoll();
 	void PlayBackStep();
@@ -57,6 +57,6 @@ private:
 		void MC_PlayAnimMontage(EStateType InType);
 	void MC_PlayAnimMontage_Implementation(EStateType InType);
 private:
-	FMontageData* Datas[(int8)EStateType::Max];	// 실제 데이터 담길 배열 
+	FMontageData* Datas[(int8)EStateType::Max];	// 실제 데이터 담길 배열
 
 };

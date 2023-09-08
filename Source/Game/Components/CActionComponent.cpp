@@ -8,10 +8,12 @@
 #include "Utilities/CLog.h"
 #include "GameFramework/Character.h"
 #include "Utilities/CHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCActionComponent, Type);
 }
 
 UCActionComponent::UCActionComponent()
@@ -91,6 +93,30 @@ void UCActionComponent::SetMagicBallMode()
 void UCActionComponent::SetStormMode()
 {
 	Server_SetMode(EActionType::Storm);
+}
+
+void UCActionComponent::Server_SetMode_Implementation(EActionType InNewType)
+{
+	MC_SetMode(InNewType);
+}
+
+void UCActionComponent::MC_SetMode_Implementation(EActionType InNewType)
+{
+	if (Type == InNewType)
+	{
+		SetUnarmedMode();	// Unarmed는 전용이 따로 있음 
+		return;
+	}
+	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
+	{
+		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+			DataObjects[(int32)Type]->GetEquipment()->Unequip();
+	}
+
+	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
+		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
+
+	Server_ChangeType(InNewType);
 }
 
 void UCActionComponent::Server_DoAction_Implementation()
@@ -178,30 +204,6 @@ void UCActionComponent::DoBlock()
 		if (!!doAction)
 			doAction->OnBlock();
 	}
-}
-
-void UCActionComponent::Server_SetMode_Implementation(EActionType InNewType)
-{
-	MC_SetMode(InNewType);
-}
-
-void UCActionComponent::MC_SetMode_Implementation(EActionType InNewType)
-{	
-	if (Type == InNewType)
-	{
-		SetUnarmedMode();	// Unarmed는 전용이 따로 있음 
-		return;
-	}
-	else if (IsUnarmedMode() == false)	// 다른 무기 누르면 해제와 장착을 
-	{
-		if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
-			DataObjects[(int32)Type]->GetEquipment()->Unequip();
-	}
-	
-	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
-		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
-	
-	Server_ChangeType(InNewType);
 }
 
 void UCActionComponent::Server_ChangeType_Implementation(EActionType InNewType)
