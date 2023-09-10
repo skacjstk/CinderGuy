@@ -52,8 +52,9 @@ void ACDoAction_Melee::DoStrongAction()
 	IsStrongAction = true;
 	NextEndStrongAction = false;	// 일단은 false 로 
 
-	State->SetStrongActionMode();
-	Server_PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
+	State->SetStrongActionMode(true);
+	if (ROLE_Authority == OwnerCharacter->GetLocalRole())	// 진입점이 멀티캐스트
+		Server_PlayAttackAnimMontage(StrongData.AnimMontage, StrongData.PlayRate, StrongData.StartSection);
 	StrongData.bCanMove ? Status->SetMove() : Status->SetStop();
 }
 

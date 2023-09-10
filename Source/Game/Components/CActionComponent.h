@@ -71,11 +71,16 @@ public:
 	UFUNCTION(BlueprintCallable) void SetUnarmedMode();								 
 	UFUNCTION(BlueprintCallable) void SetFistMode();								 
 	UFUNCTION(BlueprintCallable) void SetOneHandMode();								 
-	UFUNCTION(BlueprintCallable) void SetTwoHandMode();								 
+	UFUNCTION(BlueprintCallable) void SetTwoHandMode();						 
+	UFUNCTION(BlueprintCallable) void SetTwoHandModeLate();						 
 	UFUNCTION(BlueprintCallable) void SetWarpMode();								 
 	UFUNCTION(BlueprintCallable) void SetMagicBallMode();								 
 	UFUNCTION(BlueprintCallable) void SetStormMode();
 	UFUNCTION(BlueprintCallable) void SetKatanaMode();
+
+public:
+	void LateEquip();
+
 
 	UFUNCTION(Server, Reliable)
 	void Server_DoAction();
@@ -84,8 +89,22 @@ public:
 		void MC_DoAction();
 	void MC_DoAction_Implementation();
 
-	void DoStrongAction();	// 꾹 눌러서 사용하는 강공격
+	void DoStrongAction();	
+	UFUNCTION(Server, Reliable)
+		void Server_DoStrongAction();
+	void Server_DoStrongAction_Implementation();
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_DoStrongAction();
+	void MC_DoStrongAction_Implementation();
+
 	void EndDoStrongActionWait();	// 강공격 해제 대기
+	UFUNCTION(Server, Reliable)
+		void Server_EndDoStrongActionWait();
+	void Server_EndDoStrongActionWait_Implementation();
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_EndDoStrongActionWait();
+	void MC_EndDoStrongActionWait_Implementation();
+
 
 	void DoOnAim();		// 우클릭 누르기
 	void DoOffAim();	// 우클릭 떼기
@@ -125,6 +144,5 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 		class UCActionData* Datas[(int32)EActionType::Max];	// DataAsset: 세팅값 포함 
 	UPROPERTY(Replicated)	// 내부 Heap할당 하기 때문에 넣어줌 
-		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// Data 실제 객체 
-
+		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// Data 실제 객체
 };

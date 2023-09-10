@@ -26,7 +26,7 @@ UCActionComponent::UCActionComponent()
 void UCActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
 	for (int i = 0; i < (int32)EActionType::Max; ++i)
 	{
@@ -34,24 +34,7 @@ void UCActionComponent::BeginPlay()
 		{
 			Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
 		}
-	}
-	FString Result;
-
-	if (Cast<ACEnemy>(GetOwner()) == nullptr)
-		return;
-
-	Result += GetOwner()->GetName();
-	Result += " | ";
-	Result += CHelpers::GetRoleText(GetOwner()->GetLocalRole());
-
-	for (UCActionObjectContainer* DO : DataObjects)
-	{
-		if (DO != nullptr) {
-			FString Result2 = " | ";
-			Result2 += DO->GetName();
-			CLog::Log(Result + Result2);
-		}
-	}
+	}	
 }
 
 void UCActionComponent::SetUnarmedMode()
@@ -80,6 +63,10 @@ void UCActionComponent::SetTwoHandMode()
 	Server_SetMode(EActionType::TwoHand);
 }
 
+void UCActionComponent::SetTwoHandModeLate()
+{
+	Type = EActionType::TwoHand;
+}
 void UCActionComponent::SetWarpMode()
 {
 	Server_SetMode(EActionType::Warp);
@@ -88,6 +75,15 @@ void UCActionComponent::SetWarpMode()
 void UCActionComponent::SetKatanaMode()
 {
 	Server_SetMode(EActionType::Katana);
+}
+
+void UCActionComponent::LateEquip()
+{
+	if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+		DataObjects[(int32)Type]->GetEquipment()->Unequip();	
+
+	if (!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
+		DataObjects[(int32)Type]->GetEquipment()->Equip();
 }
 
 void UCActionComponent::SetMagicBallMode()
@@ -144,6 +140,16 @@ void UCActionComponent::MC_DoAction_Implementation()
 
 void UCActionComponent::DoStrongAction()
 {
+	Server_DoStrongAction();
+}
+
+void UCActionComponent::Server_DoStrongAction_Implementation()
+{
+	MC_DoStrongAction();
+}
+
+void UCActionComponent::MC_DoStrongAction_Implementation()
+{
 	CheckTrue(IsUnarmedMode());
 	// Todo: StrongAction 상태일 경우 CheckTrue()
 	if (!!DataObjects[(int32)Type])
@@ -154,8 +160,16 @@ void UCActionComponent::DoStrongAction()
 			doAction->DoStrongAction();
 	}
 }
-
 void UCActionComponent::EndDoStrongActionWait()
+{
+	Server_EndDoStrongActionWait();
+}
+void UCActionComponent::Server_EndDoStrongActionWait_Implementation()
+{
+	MC_EndDoStrongActionWait();
+}
+
+void UCActionComponent::MC_EndDoStrongActionWait_Implementation()
 {
 	CheckTrue(IsUnarmedMode());
 	if (!!DataObjects[(int32)Type])
@@ -166,6 +180,7 @@ void UCActionComponent::EndDoStrongActionWait()
 			doAction->EndDoStrongActionWait();	// 강공격 해제 대기
 	}
 }
+
 void UCActionComponent::DoOnAim()
 {
 	if (!!DataObjects[(int32)Type])

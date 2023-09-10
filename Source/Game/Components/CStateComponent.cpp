@@ -10,25 +10,19 @@ void UCStateComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCStateComponent, Type);
+	DOREPLIFETIME(UCStateComponent, IFGuardAlpha);
+	DOREPLIFETIME(UCStateComponent, IFEvadeAlpha);
 }
-// Sets default values for this component's properties
+
 UCStateComponent::UCStateComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
-	// ...
 }
 
-
-// Called when the game starts
 void UCStateComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -73,9 +67,13 @@ void UCStateComponent::SetParryMode()
 	ChangeType(EStateType::Parry);
 }
 
-void UCStateComponent::SetStrongActionMode()
+void UCStateComponent::SetStrongActionMode(bool FromServer)
 {
 	ChangeType(EStateType::StrongAction);
+	if (FromServer)
+		MC_ChangeStateType(EStateType::StrongAction);
+	else
+		ChangeType(EStateType::StrongAction);
 }
 
 void UCStateComponent::SetEndingStrongActionMode()

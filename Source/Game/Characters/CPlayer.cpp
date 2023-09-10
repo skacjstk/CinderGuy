@@ -128,18 +128,16 @@ void ACPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 	DrawDebugString(GetWorld(), FVector(0, 0, 120), "Local: " + CHelpers::GetRoleText(GetLocalRole()), this, FColor::Black, DeltaTime, false, 1.2f);
 	DrawDebugString(GetWorld(), FVector(0, 0, 180), "Remote: " + CHelpers::GetRoleText(GetRemoteRole()), this, FColor::Blue, DeltaTime, false, 1.2f);
 
-	return;
-	if (HasAuthority())
+	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		GuardTimeline.TickTimeline(DeltaTime);
-	//	if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
-	//	{
-	//		OnDoStrongAction();
-	//	}
+		if (Controller->GetInputKeyTimeDown(FKey(ActionMapKey)) > 0.5f)
+		{
+			OnDoStrongAction();
+		}
 	}	
 }
 
@@ -394,10 +392,14 @@ void ACPlayer::End_BackStep()
 
 void ACPlayer::End_Parry()
 {
-	if (Controller->GetInputKeyTimeDown(FKey(AimMapKey)))	// 우클릭 누르고있으면, Guard로, 아니면 Idle 로
-		State->SetGuardMode();		
-	else
-		State->SetIdleMode();
+	if (ROLE_AutonomousProxy == GetLocalRole())
+	{
+		if (Controller->GetInputKeyTimeDown(FKey(AimMapKey)))	// 우클릭 누르고있으면, Guard로, 아니면 Idle 로
+			State->SetGuardMode();
+		else
+			State->SetIdleMode();
+	}
+
 
 	Status->SetMove();
 }
@@ -523,7 +525,7 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, A
 
 void ACPlayer::GuardAlpha(float Output)
 {
-	State->SetGuardAlpha(Output);	// 가드 알파를 세팅
+	State->Server_SetGuardAlpha(Output);	// 가드 알파를 세팅
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)

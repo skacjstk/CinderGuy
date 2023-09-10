@@ -32,7 +32,7 @@ public:
 	void SetGuardMode();
 	void SetBlockMode();
 	void SetParryMode();
-	void SetStrongActionMode();
+	void SetStrongActionMode(bool FromServer = false);
 	void SetEndingStrongActionMode();
 	void SetHittedMode(class AActor* DamageCauser = nullptr);
 	void SetDeadMode(class AActor* DamageCauser = nullptr);
@@ -50,7 +50,10 @@ public:
 	FORCEINLINE bool IsHittedMode() { return Type == EStateType::Hitted; }
 	FORCEINLINE bool IsDeadMode() { return Type == EStateType::Dead; }
 
-	void SetGuardAlpha(float OutAlpha) { IFGuardAlpha = OutAlpha; }
+	UFUNCTION(Server, Unreliable)
+		void Server_SetGuardAlpha(float OutAlpha);
+	void Server_SetGuardAlpha_Implementation(float OutAlpha) { IFGuardAlpha = OutAlpha; }
+
 	float GetGuardAlpha() { return IFGuardAlpha; }
 
 	float GetGuardFrame() { return IFGuard; }
@@ -66,7 +69,7 @@ private:
 
 		UFUNCTION()
 			void OnRep_ChangeType();
-	// Field
+
 public:
 	UPROPERTY(BlueprintAssignable)	// BP 이벤트 꽂을 수 있음
 		FStateTypeChanged OnStateTypePreChanged;
@@ -81,6 +84,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Invincible")
 		float IFEvade = 0.2f;	// I-Frame Evade, Evade 무적시간 이라는 뜻
 
-	float IFGuardAlpha = 0.0f;	// 가드 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
-	float IFEvadeAlpha = 0.0f;	// 구르기 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
+	UPROPERTY(Replicated)
+		float IFGuardAlpha = 0.0f;	// 가드 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
+	UPROPERTY(Replicated)
+		float IFEvadeAlpha = 0.0f;	// 구르기 알파값 ( 어떤 TimeLine 에 의해 1~ 감소할 것 )
 };

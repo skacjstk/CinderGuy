@@ -117,6 +117,8 @@ void ACEnemy::BeginPlay()
 	UCUserWidget_Health* healthWidgetObject = Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject());
 	if (!!healthWidgetObject)
 		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
+
+	Action->LateEquip();
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
