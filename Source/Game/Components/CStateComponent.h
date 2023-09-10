@@ -24,11 +24,11 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	void SetIdleMode();
+	void SetIdleMode(bool FromServer = false);
 	void SetRollMode();
 	void SetBackStepMode();
-	void SetEquipMode();
-	void SetActionMode();
+	void SetEquipMode(bool FromServer = false);
+	void SetActionMode(bool FromServer = false);
 	void SetGuardMode();
 	void SetBlockMode();
 	void SetParryMode();

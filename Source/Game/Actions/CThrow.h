@@ -15,6 +15,7 @@ class GAME_API ACThrow : public AActor , public IIDamageState
 public:	
 	ACThrow();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,12 +28,19 @@ public:
 	virtual void Damaged_Implementation() override;
 
 	class TSubclassOf<UDamageType> GetDamageType() { return ThrowDamageType; }
+private:
+	UFUNCTION(Server, Unreliable)
+		void Server_ImpactParticle(FTransform transform);
+	void Server_ImpactParticle_Implementation(FTransform transform);
+	UFUNCTION(NetMulticast, Unreliable)
+		void MC_ImpactParticle(FTransform transform);
+	void MC_ImpactParticle_Implementation(FTransform transform);
 public:
 	UPROPERTY(BlueprintAssignable)
 		FThrowBeginOverlap OnThrowBeginOverlap;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Replicated)
 		class UParticleSystem* ImpactParticle;
 	UPROPERTY(EditDefaultsOnly)
 		FTransform ImpactParticleTransform;

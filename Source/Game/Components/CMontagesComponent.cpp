@@ -43,20 +43,21 @@ void UCMontagesComponent::BeginPlay()
 
 void UCMontagesComponent::PlayRoll()
 {
-	Server_PlayAnimMontage(EStateType::Roll);
+//	Server_PlayAnimMontage(EStateType::Roll);
+	MC_PlayAnimMontage(EStateType::Roll);
 }
 
 void UCMontagesComponent::PlayBackStep()
 {
-	Server_PlayAnimMontage(EStateType::BackStep);
+	MC_PlayAnimMontage(EStateType::BackStep);
 }
 void UCMontagesComponent::PlayHitted()
 {
-	Server_PlayAnimMontage(EStateType::Hitted);
+	MC_PlayAnimMontage(EStateType::Hitted);
 }
 void UCMontagesComponent::PlayDead()
 {
-	Server_PlayAnimMontage(EStateType::Dead);
+	MC_PlayAnimMontage(EStateType::Dead);
 }
 
 void UCMontagesComponent::Server_PlayAnimMontage_Implementation(EStateType InType)

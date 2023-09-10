@@ -25,6 +25,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	UFUNCTION(Reliable, Server)
+		void Server_SpawnThrow(FTransform Transform);
+	void Server_SpawnThrow_Implementation(FTransform Transform);
+
+private:
 	UFUNCTION()
 		void OnThrowBeginOverlap(FHitResult InHitResult);
 

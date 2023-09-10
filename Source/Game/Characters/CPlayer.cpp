@@ -100,6 +100,7 @@ void ACPlayer::BeginPlay()
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);	// StateComponent의 상태 변경 관련 델리게이트 등록
 
 	Action->SetUnarmedMode();
+
 	Controller = Cast<APlayerController>(GetController());
 	// "Action" 매핑된 키 값 가져오기
 	if (!!Controller)	// CHelpers 에 등록했음
@@ -373,7 +374,7 @@ void ACPlayer::Begin_BackStep()
 
 void ACPlayer::End_Roll()
 {
-	State->SetIdleMode();
+	State->SetIdleMode(true);	// 멀티캐스트 진입
 	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;
@@ -383,7 +384,7 @@ void ACPlayer::End_Roll()
 
 void ACPlayer::End_BackStep()
 {
-	State->SetIdleMode();
+	State->SetIdleMode(true);	// 멀티캐스트 진입
 	Status->SetMove();
 
 	bool lookForward = Action->GetCurrent()->GetEquipment()->GetData().bPawnControl;

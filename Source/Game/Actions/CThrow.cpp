@@ -3,7 +3,13 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
+void ACThrow::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACThrow, ImpactParticle);
+}
 ACThrow::ACThrow()
 {
 	CHelpers::CreateSceneComponent(this, &Sphere, "Sphere");
@@ -16,6 +22,9 @@ ACThrow::ACThrow()
 	Projectile->bSweepCollision = true;
 
 	InitialLifeSpan = 3.f;
+	bReplicates = true;
+	Projectile->SetIsReplicated(true);
+	ThrowParticle->SetIsReplicated(true);
 }
 
 void ACThrow::BeginPlay()
@@ -54,13 +63,24 @@ void ACThrow::Damaged_Implementation()
 {
 	if (!!ImpactParticle)
 	{
-		FTransform transform = ImpactParticleTransform;
+		FTransform	transform = ImpactParticleTransform;
 		// 폭발 이펙트 재생위치 보정하기 sweep 됬으면 충돌된 위치 vs 원래 있던 투사체의 위치 
 		transform.AddToTranslation(this->FromSweep ? LastSweepResult.Location : GetActorLocation());
 		transform.SetRotation(FQuat(LastSweepResult.ImpactNormal.Rotation()));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, transform);
+		Server_ImpactParticle(transform);
 	}
 	Destroy();
+}
+
+void ACThrow::Server_ImpactParticle_Implementation(FTransform transform)
+{
+	CHelpers::GetRoleText(GetLocalRole());
+	MC_ImpactParticle(transform);
+}
+
+void ACThrow::MC_ImpactParticle_Implementation(FTransform transform)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, transform);
 }
 
 /*

@@ -61,7 +61,8 @@ void UCActionComponent::SetUnarmedMode()
 
 	DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
 
-	Server_ChangeType(EActionType::Unarmed);
+	if (GetOwnerRole() != ROLE_SimulatedProxy)
+		Server_ChangeType(EActionType::Unarmed);
 }
 
 void UCActionComponent::SetFistMode()
@@ -119,8 +120,9 @@ void UCActionComponent::MC_SetMode_Implementation(EActionType InNewType)
 
 	if (!!DataObjects[(int32)InNewType] && DataObjects[(int32)InNewType]->GetEquipment())
 		DataObjects[(int32)InNewType]->GetEquipment()->Equip();
-
-	Server_ChangeType(InNewType);
+	
+	if(GetOwnerRole() == ROLE_Authority)
+		Server_ChangeType(InNewType);
 }
 
 void UCActionComponent::Server_DoAction_Implementation()
@@ -137,8 +139,6 @@ void UCActionComponent::MC_DoAction_Implementation()
 
 		if (!!doAction)
 			doAction->DoAction();
-		else
-			CLog::Log("What");
 	}
 }
 

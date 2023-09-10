@@ -32,9 +32,12 @@ void UCStateComponent::BeginPlay()
 }
 
 
-void UCStateComponent::SetIdleMode()
+void UCStateComponent::SetIdleMode(bool FromServer)
 {
-	ChangeType(EStateType::Idle);
+	if(FromServer)
+		MC_ChangeStateType(EStateType::Idle);
+	else
+		ChangeType(EStateType::Idle);
 }
 
 void UCStateComponent::SetRollMode()
@@ -47,9 +50,12 @@ void UCStateComponent::SetBackStepMode()
 	ChangeType(EStateType::BackStep);
 }
 
-void UCStateComponent::SetActionMode()
+void UCStateComponent::SetActionMode(bool FromServer)
 {
-	ChangeType(EStateType::Action);
+	if (FromServer)
+		MC_ChangeStateType(EStateType::Action);
+	else
+		ChangeType(EStateType::Action);
 }
 
 void UCStateComponent::SetGuardMode()
@@ -77,9 +83,12 @@ void UCStateComponent::SetEndingStrongActionMode()
 	ChangeType(EStateType::EndingStrongAction);
 }
 
-void UCStateComponent::SetEquipMode()
+void UCStateComponent::SetEquipMode(bool FromServer)
 {
-	ChangeType(EStateType::Equip);
+	if (FromServer)
+		MC_ChangeStateType(EStateType::Equip);
+	else
+		ChangeType(EStateType::Equip);
 }
 void UCStateComponent::SetHittedMode(AActor* DamageCauser)
 {
@@ -90,20 +99,19 @@ void UCStateComponent::SetDeadMode(AActor* DamageCauser)
 {
 	ChangeType(EStateType::Dead, DamageCauser);
 }
+
+void UCStateComponent::ChangeType(EStateType InNewType, AActor* DamageCauser)
+{
+	Server_ChangeStateType(InNewType, DamageCauser);
+}
+
 void UCStateComponent::Server_ChangeStateType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
 	MC_ChangeStateType(InNewType, DamageCauser);
 }
 
-void UCStateComponent::ChangeType(EStateType InNewType, AActor* DamageCauser)
-{
-	Server_ChangeStateType(InNewType, DamageCauser);
-	// ServerCall 을 Implementation 버전으로 하니 No owning connection for actor 해결됨
-}
-
 void UCStateComponent::MC_ChangeStateType_Implementation(EStateType InNewType, AActor* DamageCauser)
 {
-	CLog::Log("EnteranceTest: ChangeStateType:: " + CHelpers::GetRoleText(GetOwnerRole()) +" | "+ FString::FromInt((int32)InNewType));
 	EStateType prevType = Type;
 	Type = InNewType;
 	if (OnStateTypePreChanged.IsBound())
@@ -115,5 +123,5 @@ void UCStateComponent::MC_ChangeStateType_Implementation(EStateType InNewType, A
 
 void UCStateComponent::OnRep_ChangeType()
 {
-	CLog::Print("EnteranceTest: ChangeStateType:: " + CHelpers::GetRoleText(GetOwnerRole()) + FString::FromInt((int32)Type));
+//	CLog::Print("EnteranceTest: ChangeStateType:: " + CHelpers::GetRoleText(GetOwnerRole()) + FString::FromInt((int32)Type));
 }

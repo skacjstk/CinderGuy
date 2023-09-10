@@ -14,6 +14,9 @@ void UCAnimNotify_BeginAction::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 	Super::Notify(MeshComp, Animation);
 	CheckNull(MeshComp);
 
+	if (MeshComp->GetOwnerRole() != ROLE_Authority)
+		return;
+
 	UCActionComponent* action = CHelpers::GetComponent<UCActionComponent>(MeshComp->GetOwner());
 	CheckNull(action);
 

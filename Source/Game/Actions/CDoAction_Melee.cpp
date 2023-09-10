@@ -7,6 +7,7 @@
 
 void ACDoAction_Melee::DoAction()
 {
+	// 멀티캐스트 진입
 	Super::DoAction();
 	CheckFalse(Datas.Num() > 0);
 	if (bCanCombo == true)
@@ -15,11 +16,13 @@ void ACDoAction_Melee::DoAction()
 		bSucceed = true;
 	}
 	CheckFalse(State->IsIdleMode());
-	State->SetActionMode();
+	State->SetActionMode(true);
 
 	IsStrongAction = false;
 
-	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	if (ROLE_Authority == OwnerCharacter->GetLocalRole())	// 진입점이 멀티캐스트
+		Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);	// 진입점이 멀티캐스트
+
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -95,8 +98,9 @@ void ACDoAction_Melee::End_DoAction()
 	IsStrongAction = false; 
 	NextEndStrongAction = false;
 
-	State->SetIdleMode();
 	Status->SetMove();
+	if (OwnerCharacter->GetLocalRole() == ROLE_Authority)
+		State->SetIdleMode();
 }
 
 void ACDoAction_Melee::OnAim()

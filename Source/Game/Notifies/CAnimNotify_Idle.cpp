@@ -12,11 +12,13 @@ void UCAnimNotify_Idle::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 {
 	Super::Notify(MeshComp, Animation);
 	CheckNull(MeshComp);
-
+	
 	UCStateComponent* state = CHelpers::GetComponent<UCStateComponent>(MeshComp->GetOwner());
 	UCStatusComponent* status = CHelpers::GetComponent<UCStatusComponent>(MeshComp->GetOwner());
 	CheckNull(state);
-	state->SetIdleMode();
 	CheckNull(status);
 	status->SetMove();
+
+	if (MeshComp->GetOwner()->HasAuthority() == true)
+		state->SetIdleMode();
 }

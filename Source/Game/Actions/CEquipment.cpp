@@ -37,7 +37,7 @@ void ACEquipment::Equip_Implementation()
 	// 장착몽타주 재생
 	// 상태 equip
 
-	State->SetEquipMode();
+	State->SetEquipMode(true);
 
 	if(!!Data.AnimMontage)	// 몽타주가 있으면, 몽타주에서 노티파이로 호출
 		OwnerCharacter->PlayAnimMontage(Data.AnimMontage, Data.PlayRate, Data.StartSection);
@@ -65,7 +65,7 @@ void ACEquipment::Begin_Equip_Implementation()
 
 void ACEquipment::End_Equip_Implementation()
 {
-	State->SetIdleMode();
+	State->SetIdleMode(true);
 	bEquipped = true;
 }
 

@@ -6,7 +6,6 @@
 #include "Components/CStatusComponent.h"
 #include "GameFramework/Character.h"
 
-
 void ACDoAction_Throw::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,9 +32,11 @@ void ACDoAction_Throw::DoAction()
 		}
 	}
 
-	State->SetActionMode();
+	State->SetActionMode(true);
 
-	Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+	if (ROLE_Authority == OwnerCharacter->GetLocalRole())	// 진입점이 멀티캐스트
+		Server_PlayAttackAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
+
 	Datas[0].bCanMove ? Status->SetMove() : Status->SetStop();
 }
 
@@ -46,15 +47,13 @@ void ACDoAction_Throw::Begin_DoAction()
 	CheckNull(Datas[0].ThrowClass);	// 널 체크 
 	
 	FVector location = OwnerCharacter->GetMesh()->GetSocketLocation("Hand_Throw");	// 소켓 찾기
-	FRotator rotation = OwnerCharacter->GetTransform().GetRotation().Rotator();	//->GetController()
+	FRotator rotation = OwnerCharacter->GetController()->GetControlRotation(); // ->GetTransform().GetRotation().Rotator();	//
 
 	FTransform transform = Datas[0].EffectTransform;
 	transform.AddToTranslation(location);
 	transform.SetRotation(FQuat(rotation));
 	// 투사체 생성
-	ThrowObject = GetWorld()->SpawnActorDeferred<ACThrow>(Datas[0].ThrowClass, transform, OwnerCharacter, OwnerCharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	ThrowObject->OnThrowBeginOverlap.AddDynamic(this, &ACDoAction_Throw::OnThrowBeginOverlap);	// 오버랩 이벤트 바인딩( 투사체의 BeginOverlap을 가져오는 셈 )
-	UGameplayStatics::FinishSpawningActor(ThrowObject, transform);
+	Server_SpawnThrow(transform);
 }
 
 void ACDoAction_Throw::End_DoAction()
@@ -63,7 +62,7 @@ void ACDoAction_Throw::End_DoAction()
 
 	OwnerCharacter->StopAnimMontage();
 
-	State->SetIdleMode();
+	State->SetIdleMode(true);
 	Status->SetMove();
 }
 
@@ -81,6 +80,13 @@ void ACDoAction_Throw::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 	Aim->Tick(DeltaTime);
+}
+
+void ACDoAction_Throw::Server_SpawnThrow_Implementation(FTransform Transform)
+{
+	ThrowObject = GetWorld()->SpawnActorDeferred<ACThrow>(Datas[0].ThrowClass, Transform, OwnerCharacter, OwnerCharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ThrowObject->OnThrowBeginOverlap.AddDynamic(this, &ACDoAction_Throw::OnThrowBeginOverlap);	// 오버랩 이벤트 바인딩( 투사체의 BeginOverlap을 가져오는 셈 )
+	UGameplayStatics::FinishSpawningActor(ThrowObject, Transform);
 }
 
 void ACDoAction_Throw::OnThrowBeginOverlap(FHitResult InHitResult)
