@@ -29,10 +29,10 @@ public:
 
 	class TSubclassOf<UDamageType> GetDamageType() { return ThrowDamageType; }
 private:
-	UFUNCTION(Server, Unreliable)
+	UFUNCTION(Server, Reliable)
 		void Server_ImpactParticle(FTransform transform);
 	void Server_ImpactParticle_Implementation(FTransform transform);
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 		void MC_ImpactParticle(FTransform transform);
 	void MC_ImpactParticle_Implementation(FTransform transform);
 public:

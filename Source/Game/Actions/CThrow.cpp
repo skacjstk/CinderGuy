@@ -23,8 +23,6 @@ ACThrow::ACThrow()
 
 	InitialLifeSpan = 3.f;
 	bReplicates = true;
-	Projectile->SetIsReplicated(true);
-	ThrowParticle->SetIsReplicated(true);
 }
 
 void ACThrow::BeginPlay()
@@ -74,12 +72,12 @@ void ACThrow::Damaged_Implementation()
 
 void ACThrow::Server_ImpactParticle_Implementation(FTransform transform)
 {
-	CHelpers::GetRoleText(GetLocalRole());
 	MC_ImpactParticle(transform);
 }
 
 void ACThrow::MC_ImpactParticle_Implementation(FTransform transform)
-{
+{	
+	// Reliable을 안붙이면 Authority 에서만 실행될 수 있다.
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, transform);
 }
 

@@ -105,7 +105,12 @@ void ACDoAction_Throw::OnThrowBeginOverlap(FHitResult InHitResult)
 	}
 	else
 	{
-		// 이쪽이 쬐까 애매함. 이펙트는 붙어야 해서.
+		// Reflect 처리 문제로 TakeDamage 쪽에서 관리
+	//	IIDamageState* stateEffect = Cast<IIDamageState>(ThrowObject);
+	//	if (!!stateEffect)
+	//	{
+	//		stateEffect->Execute_Damaged(ThrowObject);	// 이 DamageCauser 가 성공적으로 데미지를 주었음.
+	//	}
 	}
 
 

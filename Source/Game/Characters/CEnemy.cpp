@@ -253,14 +253,16 @@ void ACEnemy::Dead(AActor* DamageCauser)
 
 	// AddForce(LaunchCharacter)
 	FVector start = GetActorLocation();
-	FVector target = DamageCauser->GetActorLocation();
-	FVector direction = start - target;
-	direction.Normalize();
+	if (DamageCauser != nullptr)
+	{
+		FVector target = DamageCauser->GetActorLocation();
+		FVector direction = start - target;
+		direction.Normalize();
 
-	// 투사체일 경우 DeadLaunch 를 낮추기 
-	if (DamageCauser->IsA<ACThrow>())
-		DeadLaunchValue *= 0.075f;
-
+		// 투사체일 경우 DeadLaunch 를 낮추기 
+		if (DamageCauser->IsA<ACThrow>())
+			DeadLaunchValue *= 0.075f;
+	}
 	// Need Event
 	ItemDrop->DropItem(start);
 //	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 너무 멀리 날아가
@@ -285,6 +287,7 @@ void ACEnemy::RestoreLogoColor()
 	if (IsPendingKill()) return;
 	CheckTrue(State->IsDeadMode());
 
+	return;	// TODO 얘는 대체 왜이러냐
 	FLinearColor color = Action->GetCurrent()->GetEquipmentColor();
 	LogoMaterial->SetVectorParameterValue("LogoLightColor", color);
 	LogoMaterial->SetScalarParameterValue("IsHitted", 0);

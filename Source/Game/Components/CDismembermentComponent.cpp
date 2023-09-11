@@ -44,7 +44,7 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 {
 	ACharacter* SlicedCharacter = nullptr;
 	SlicedCharacter = Cast<ACharacter>(GetOwner());
-	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false)
+	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false || DamageCauser == nullptr)
 		return;
 
 	USkeletalMeshComponent* CharSkel = SlicedCharacter->GetMesh();
@@ -55,6 +55,9 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	ProcMesh->SetMaterial(0, CharSkel->GetMaterial(0));
 	// 3. 방향에 맞춰 절단
 	UShapeComponent* ShapeCauser = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
+
+	if (ShapeCauser == nullptr)
+		return;
 
 	FVector start;
 	FVector end;
