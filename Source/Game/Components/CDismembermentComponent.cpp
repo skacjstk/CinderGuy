@@ -47,7 +47,9 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	ACharacter* SlicedCharacter = nullptr;
 	SlicedCharacter = Cast<ACharacter>(GetOwner());
 	if (DamageCauser == nullptr)
-		CLog::Log("DamageCauser Null");
+	{
+		bDoSlice = false;	// 데미지 커서가 없으면 랙돌이나 해라
+	}
 	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false || DamageCauser == nullptr)
 		return;
 	if (Cast<ACThrow>(DamageCauser) != nullptr)	// 일단 투사체라면 자르지 않기
