@@ -118,7 +118,7 @@ void ACEnemy::BeginPlay()
 	if (!!healthWidgetObject)
 		healthWidgetObject->Update(Status->GetHealth(), Status->GetMaxHealth());
 
-	Action->LateEquip();
+//	Action->LateEquip();	// Attachment Replicate 끄면 절단효과 재현이 불가능
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
