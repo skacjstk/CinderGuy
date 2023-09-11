@@ -24,4 +24,5 @@ public:
 	virtual void Dead(class AActor* DamageCauser = nullptr) = 0;
 	virtual void End_Dead() = 0;
 	virtual bool CheckInvincible() = 0;
+	virtual bool IsDead() = 0;
 };

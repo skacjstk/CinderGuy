@@ -10,5 +10,5 @@ class GAME_API UKatanaParryDamageType : public UDamageType , public IIDamageType
 {
 	GENERATED_BODY()
 public:
-	virtual void DamageTrigger_Implementation(UCDamageEffectComponent* DamageEffectComp) override;
+	virtual void DamageTrigger_Implementation(class AActor* DamageCauser, UCDamageEffectComponent* DamageEffectComp) override;
 };

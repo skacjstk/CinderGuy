@@ -18,7 +18,7 @@ public:
 
 protected:
 	UFUNCTION()
-		void OnStateTypeChanged(EStateType PrevType, EStateType NewType, class AActor* DamageCauser = nullptr);
+		void OnStateTypePreChanged(EStateType PrevType, EStateType NewType, class AActor* DamageCauser = nullptr);
 	virtual void BeginPlay() override;
 
 private:

@@ -18,8 +18,8 @@ class GAME_API IIDamageType
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "DamageType")
-		void DamageTrigger(UCDamageEffectComponent* DamageEffectComp);
-	virtual void DamageTrigger_Implementation(UCDamageEffectComponent* DamageEffectComp);
+		void DamageTrigger(class AActor* DamageCauser, UCDamageEffectComponent* DamageEffectComp);
+	virtual void DamageTrigger_Implementation(class AActor* DamageCauser, UCDamageEffectComponent* DamageEffectComp);
 
 	virtual void GetHitResult(FHitResult** OutHitResult);
 

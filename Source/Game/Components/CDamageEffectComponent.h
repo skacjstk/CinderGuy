@@ -31,18 +31,28 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "DamageEffectComponent")
-		bool DamageEffect(EDamageType InType, EDamageEffectType InEffectType = EDamageEffectType::Normal);
+		bool DamageEffect(class AActor* DamageCauser, EDamageType InType, EDamageEffectType InEffectType = EDamageEffectType::Normal);
 		
 private:
 	UFUNCTION()
-		void FireDamage();
-	UFUNCTION()	// 디버그용 UFUNCTION
-		void SetEmberFire();
-	UFUNCTION()
-		void RemoveEmberFire();
+		void FireDamage(class AActor* DamageCauser);
+	UFUNCTION(Reliable, Server)
+		void Server_SetEmberFire();
+		void Server_SetEmberFire_Implementation();
+	UFUNCTION(Reliable, NetMulticast)
+		void MC_SetEmberFire();
+		void MC_SetEmberFire_Implementation();
+
+	UFUNCTION(Reliable, Server)
+		void Server_RemoveEmberFire();
+	void Server_RemoveEmberFire_Implementation();
+
+	UFUNCTION(Reliable, NetMulticast)
+		void MC_RemoveEmberFire();
+	void MC_RemoveEmberFire_Implementation();
 
 	FTimerHandle FireDamageHandle;
-	
+	FTimerDelegate FireDamageDel;
 	UPROPERTY(EditAnywhere, Category = "DamageEffectParticle")
 		UParticleSystem* emberParticle;
 	UParticleSystemComponent* emberParticleComp;

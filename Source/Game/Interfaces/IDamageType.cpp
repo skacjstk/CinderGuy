@@ -1,6 +1,6 @@
 #include "IDamageType.h"
 
-void IIDamageType::DamageTrigger_Implementation(UCDamageEffectComponent* DamageEffectComp)
+void IIDamageType::DamageTrigger_Implementation(AActor* DamageCauser, UCDamageEffectComponent* DamageEffectComp)
 {
 }
 

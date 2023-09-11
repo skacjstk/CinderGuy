@@ -70,7 +70,6 @@ void UCItemDropComponent::SettingValue()
 			AddingItem.Amount = row->Amount;
 			AddingItem.DropChance = row->DropChance;
 			DropTable.DropItemSet.Add(AddingItem);
-			CLog::Log("Item Found");
 		}
 	}
 }

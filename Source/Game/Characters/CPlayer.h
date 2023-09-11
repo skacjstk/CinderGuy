@@ -114,6 +114,7 @@ public:
 	virtual void Dead(class AActor* DamageCauser = nullptr) override;
 	virtual void End_Dead() override;
 	virtual bool CheckInvincible() override;
+	virtual bool IsDead() override;
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 private:

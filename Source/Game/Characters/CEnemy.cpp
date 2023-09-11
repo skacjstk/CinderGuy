@@ -147,8 +147,6 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AA
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	this->DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator , DamageCauser);
-	if (!!DamageCauser)
-		//	Causer = DamageCauser;
 
 	if(!!EventInstigator)
 		Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
@@ -159,7 +157,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 		if (!!damageType)
 		{
 			// 공격의 부가효과 재생
-			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageCauser, DamageEffect);
 		}
 	}
 	if (!!DamageCauser)
@@ -179,6 +177,7 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 		return this->DamageValue;
 	}
 	State->SetHittedMode(DamageCauser);
+	
 	return this->DamageValue;
 }
 
@@ -255,6 +254,7 @@ void ACEnemy::Dead(AActor* DamageCauser)
 	FVector start = GetActorLocation();
 	if (DamageCauser != nullptr)
 	{
+	//	CLog::Log(DamageCauser->GetName());
 		FVector target = DamageCauser->GetActorLocation();
 		FVector direction = start - target;
 		direction.Normalize();
@@ -282,6 +282,10 @@ bool ACEnemy::CheckInvincible()
 	return false;
 }
 
+bool ACEnemy::IsDead()
+{
+	return State->IsDeadMode();
+}
 void ACEnemy::RestoreLogoColor()
 {
 	if (IsPendingKill()) return;

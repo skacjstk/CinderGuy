@@ -31,7 +31,7 @@ private:
 	UFUNCTION()
 		void End_Dead() override;
 	virtual bool CheckInvincible() override;
-
+	virtual bool IsDead() override;
 	UFUNCTION()
 		void RestoreLogoColor();
 	UFUNCTION()

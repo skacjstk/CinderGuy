@@ -458,11 +458,11 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 		if (!!damageType)
 		{
 			// 공격의 부가효과 재생
-			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageEffect);
+			damageType->Execute_DamageTrigger(DamageEvent.DamageTypeClass->GetDefaultObject(), DamageCauser, DamageEffect);
 		}
 	}
 	CLog::Print(DamageValue, -1, 1);
-
+	
 	IIDamageState* DamageState = Cast<IIDamageState>(DamageCauser);
 	if (!!DamageState)
 	{
@@ -477,6 +477,7 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 		return this->DamageValue;
 	}
 	State->SetHittedMode();
+	
 	return this->DamageValue;
 }
 
@@ -509,6 +510,10 @@ bool ACPlayer::CheckInvincible()
 	return true;
 }
 
+bool ACPlayer::IsDead()
+{
+	return State->IsDeadMode();
+}
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, AActor* DamageCauser)
 {
 	switch (InNewType)
@@ -516,7 +521,7 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType, A
 	case EStateType::Roll:			Begin_Roll();			break;
 	case EStateType::BackStep:		Begin_BackStep();		break;
 	case EStateType::Hitted:		Hitted(DamageCauser);	break;
-	case EStateType::Dead:			Dead();					break;
+	case EStateType::Dead:			Dead(DamageCauser);		break;
 	case EStateType::Guard:			OnGuard();				break;
 	default:
 		break;

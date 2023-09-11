@@ -11,6 +11,8 @@
 #include "Materials/MaterialInstanceConstant.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
+#include "Actions/CThrow.h"
+#include "Utilities/CHelpers.h"
 
 UCDismembermentComponent::UCDismembermentComponent()
 {
@@ -27,11 +29,11 @@ void UCDismembermentComponent::BeginPlay()
 	{
 		UCStateComponent* Component = Cast<UCStateComponent>(GetOwner()->GetComponentByClass(UCStateComponent::StaticClass()));
 		if (Component != nullptr)		
-			Component->OnStateTypePreChanged.AddDynamic(this, &UCDismembermentComponent::OnStateTypeChanged);		
+			Component->OnStateTypePreChanged.AddDynamic(this, &UCDismembermentComponent::OnStateTypePreChanged);
 	}
 }
 
-void UCDismembermentComponent::OnStateTypeChanged(EStateType PrevType, EStateType NewType, AActor* DamageCauser)
+void UCDismembermentComponent::OnStateTypePreChanged(EStateType PrevType, EStateType NewType, AActor* DamageCauser)
 {
 	switch (NewType)
 	{
@@ -44,7 +46,11 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 {
 	ACharacter* SlicedCharacter = nullptr;
 	SlicedCharacter = Cast<ACharacter>(GetOwner());
+	if (DamageCauser == nullptr)
+		CLog::Log("DamageCauser Null");
 	if (SlicedCharacter == nullptr || ProcMesh == nullptr || bDoSlice == false || DamageCauser == nullptr)
+		return;
+	if (Cast<ACThrow>(DamageCauser) != nullptr)	// 일단 투사체라면 자르지 않기
 		return;
 
 	USkeletalMeshComponent* CharSkel = SlicedCharacter->GetMesh();
@@ -55,9 +61,6 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	ProcMesh->SetMaterial(0, CharSkel->GetMaterial(0));
 	// 3. 방향에 맞춰 절단
 	UShapeComponent* ShapeCauser = Cast<UShapeComponent>(DamageCauser->GetComponentByClass(UShapeComponent::StaticClass()));
-
-	if (ShapeCauser == nullptr)
-		return;
 
 	FVector start;
 	FVector end;
@@ -95,8 +98,8 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 	}
 	if (UsedHitResult.GetActor() == nullptr)	
 		UsedHitResult.ImpactPoint = DamageCauser->GetActorLocation();	// 만약 못 찾으면	
-	else
-		CLog::Log(UsedHitResult.Actor->GetName());
+//	else
+//		CLog::Log(UsedHitResult.Actor->GetName());
 	// 4. 물리 반영
 	// 잘려진 ProcMesh 2개를 날려버리기
 	//Slice
