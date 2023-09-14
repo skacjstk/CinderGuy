@@ -29,6 +29,7 @@ UCInventoryComponent::UCInventoryComponent()
 	}
 	CHelpers::GetAsset<UDataTable>(&ItemTable, TEXT("DataTable'/Game/Inventory/DT_ItemData.DT_ItemData'"));
 	CHelpers::GetAsset<UDataTable>(&RuneTable, TEXT("DataTable'/Game/Inventory/DT_RuneData.DT_RuneData'"));
+	SetIsReplicatedByDefault(true);
 }
 
 
