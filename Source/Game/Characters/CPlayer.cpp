@@ -347,7 +347,7 @@ void ACPlayer::OnTestInventory()
 
 void ACPlayer::OnInteract()
 {
-	Inventory->Server_Interact_Implementation(Inventory->LookAtActor);
+	Inventory->Server_Interact(Inventory->LookAtActor);
 }
 
 void ACPlayer::Begin_Roll()

@@ -23,6 +23,11 @@ public:
 
 	// IInteract 상속
 	virtual bool InteractWith_Implementation(class ACharacter* InPlayerCharacter) override;
+
+private:
+	UFUNCTION(Reliable, Server)
+		void AfterInteract();
+	void AfterInteract_Implementation();
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "ItemData")
 		FDataTableRowHandle ItemID;	// 포인터 쓸수없다.

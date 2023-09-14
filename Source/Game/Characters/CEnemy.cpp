@@ -264,7 +264,8 @@ void ACEnemy::Dead(AActor* DamageCauser)
 			DeadLaunchValue *= 0.075f;
 	}
 	// Need Event
-	ItemDrop->DropItem(start);
+	if(HasAuthority())
+		ItemDrop->DropItem(start);
 //	GetMesh()->AddForce(direction * DamageValue * DeadLaunchValue);	// 일단 취소, 너무 멀리 날아가
 	
 	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
