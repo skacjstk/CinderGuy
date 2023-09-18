@@ -13,4 +13,8 @@ class GAME_API ACinderGuyGameMode : public AGameMode
 public: 
 	ACinderGuyGameMode();
 	virtual void PostLogin(APlayerController* NewController) override;
+	virtual void Logout(AController* Exiting) override;
+
+	UFUNCTION(BlueprintCallable)
+		void Travel(FString LevelName);
 };

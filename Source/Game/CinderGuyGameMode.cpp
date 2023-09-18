@@ -18,3 +18,19 @@ void ACinderGuyGameMode::PostLogin(APlayerController* NewController)
 //		NewController->Possess(Player);
 //	}
 }
+
+void ACinderGuyGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+	// 여기말고, PlayerState에서 세션 만들면서 로그아웃 시 파괴 델리게이트 호출하기
+}
+
+void ACinderGuyGameMode::Travel(FString LevelName)
+{
+	UWorld* world = GetWorld();
+	if (!!world)
+	{
+		FString LevelFullName = "/Game/Maps/" + LevelName + "?Listen";
+		world->ServerTravel(LevelFullName);//"/Game/Maps/Dungeon1?Listen"
+	}
+}
