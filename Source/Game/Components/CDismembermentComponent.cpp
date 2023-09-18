@@ -144,6 +144,10 @@ void UCDismembermentComponent::OnSlice(AActor* DamageCauser)
 		outProcMesh->SetSimulatePhysics(true);
 		outProcMesh->AddImpulse(-2000.f * planeNormal);
 	}
+	else
+	{
+		bDoSlice = false;	// 자르기 실패
+	}
 }
 
 void UCDismembermentComponent::CopySkeletalMeshToProcedural(USkeletalMeshComponent* SkeletalMeshComponent, int32 LODIndex, UCapsuleComponent* Capsule, UProceduralMeshComponent* ProcMeshComponent)
