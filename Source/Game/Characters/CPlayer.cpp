@@ -199,6 +199,16 @@ void ACPlayer::DestoryPlayerHUD()
 	PlayerHUD = nullptr;
 }
 
+void ACPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (!!Action)
+	{
+		Action->Server_DestroyOwningWeapon();	// TODO: 장착무기 삭제 현재 클라에서 미작동
+		// BeginDestory는 Server 함수를 실행하지 못하게 막는 것 같다.
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void ACPlayer::OnMoveForward(float InAxis)
 {
 	CheckFalse(Status->IsCanMove());

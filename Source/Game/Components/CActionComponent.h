@@ -105,6 +105,14 @@ public:
 		void MC_EndDoStrongActionWait();
 	void MC_EndDoStrongActionWait_Implementation();
 
+//	void DestroyOwningWeapon();
+	UFUNCTION(Server, Reliable)
+		void Server_DestroyOwningWeapon();
+	void Server_DestroyOwningWeapon_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MC_DestroyOwningWeapon();
+	void MC_DestroyOwningWeapon_Implementation();
 
 	void DoOnAim();		// 우클릭 누르기
 	void DoOffAim();	// 우클릭 떼기
@@ -114,6 +122,7 @@ public:
 	//	사망 시 충돌체 끄기 외 사망했을 때 했어야 할 일을 호출 (컴포넌트 속 has 관계 아이템 제거 등)
 	void Dead();
 	void End_Dead();
+
 
 	void OffAllCollisions();
 

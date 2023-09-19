@@ -13,6 +13,15 @@
 #include "Actions/CAttachment.h"
 #include "Items/ItemRuneBase.h"
 
+void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCInventoryComponent, Content, COND_None, REPNOTIFY_Always);
+//	DOREPLIFETIME(UCInventoryComponent, Content);
+	DOREPLIFETIME(UCInventoryComponent, OnInventoryUpdated);	// 델리게이트도 리플리케이트 등록이 되겠지?
+}
+
 UCInventoryComponent::UCInventoryComponent()
 {
 	// 플레이어가 아닐 경우 Tick 꺼버리기 
@@ -105,7 +114,8 @@ void UCInventoryComponent::InteractionTrace()
 			DisplayMessage->HiddenMessage();
 	}
 }
-	// ItemDataComponent 에서 호출, 상호작용한 아이템을 Inventory에 삽입
+
+// ItemDataComponent 에서 호출, 상호작용한 아이템을 Inventory에 삽입
 bool UCInventoryComponent::AddToInventory(FName InitemID, int32 InQuantity, int32& OutQuantityRemaining)
 {
 	int32 quantityRemaining = InQuantity;
@@ -372,18 +382,17 @@ void UCInventoryComponent::ConsumeItem(int32 index)
 		Server_RemoveItem(index, false, true);	// 아이템 소모함.
 }
 
-void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UCInventoryComponent, Content);
-	DOREPLIFETIME(UCInventoryComponent, OnInventoryUpdated);	// 델리게이트도 리플리케이트 등록이 되겠지?
-}
-
 void UCInventoryComponent::ToggleInventroy()
 {
 	bActive = !bActive;
 	// Client 만 
 }
+
+void UCInventoryComponent::Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
+{
+	TransferSlots(InSourceIndex, InSourceInventory, InDestinationIndex);
+}
+
 // Drop에서 호출해서 DestComp는 필요가없다. 아이템을 교체하는 함수
 void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
 {
@@ -442,11 +451,6 @@ void UCInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryCompone
 	InSourceInventory->MC_Update();	// 서로의 인벤토리 업데이트
 }
 
-void UCInventoryComponent::Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
-{
-	TransferSlots(InSourceIndex, InSourceInventory, InDestinationIndex);
-
-}
 AItemRuneBase* UCInventoryComponent::SpawnRune(ACAttachment* attachment, int32 InIndex, UCInventoryComponent* InInventory)
 {
 	AItemRuneBase* runeActor = nullptr;
@@ -467,4 +471,9 @@ AItemRuneBase* UCInventoryComponent::SpawnRune(ACAttachment* attachment, int32 I
 		}
 	}
 	return runeActor;
+}
+
+void UCInventoryComponent::OnRep_UpdateContent()
+{
+	MC_Update();
 }

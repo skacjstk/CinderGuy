@@ -181,6 +181,28 @@ void UCActionComponent::MC_EndDoStrongActionWait_Implementation()
 	}
 }
 
+void UCActionComponent::Server_DestroyOwningWeapon_Implementation()
+{
+	MC_DestroyOwningWeapon();
+}
+
+void UCActionComponent::MC_DestroyOwningWeapon_Implementation()
+{
+	CLog::Log("DestroyOwningWeapon");
+	// ActionComponent가 가진 것들 지우기 (Simul 미작동 혹은... No Owning Connection)
+	for (int32 i = 0; i < (int32)EActionType::Max; ++i)
+	{
+		if (!!DataObjects[i] && !!DataObjects[i]->GetAttachment())
+			DataObjects[i]->GetAttachment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetEquipment())
+			DataObjects[i]->GetEquipment()->Destroy();
+
+		if (!!DataObjects[i] && !!DataObjects[i]->GetDoAction())
+			DataObjects[i]->GetDoAction()->Destroy();
+	}
+}
+
 void UCActionComponent::DoOnAim()
 {
 	if (!!DataObjects[(int32)Type])
@@ -245,18 +267,7 @@ void UCActionComponent::Dead()
 
 void UCActionComponent::End_Dead()
 {
-	// ActionComponent가 가진 것들 지우기
-	for (int32 i = 0; i < (int32)EActionType::Max; ++i)
-	{
-		if (!!DataObjects[i] && !!DataObjects[i]->GetAttachment())
-			DataObjects[i]->GetAttachment()->Destroy();
-
-		if (!!DataObjects[i] && !!DataObjects[i]->GetEquipment())
-			DataObjects[i]->GetEquipment()->Destroy();
-
-		if (!!DataObjects[i] && !!DataObjects[i]->GetDoAction())
-			DataObjects[i]->GetDoAction()->Destroy();
-	}
+	Server_DestroyOwningWeapon_Implementation();
 }
 
 void UCActionComponent::OffAllCollisions()

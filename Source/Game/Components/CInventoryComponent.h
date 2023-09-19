@@ -65,8 +65,8 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Slot")
-		void Server_TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
-	void Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+		virtual void Server_TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
+	virtual void Server_TransferSlots_Implementation(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex);
 
 	UFUNCTION(Reliable, Server)	// 서버에서 실행: 
 		void Server_Interact(class AActor* Target);
@@ -112,11 +112,13 @@ protected:
 	virtual bool InteractWith_Implementation(class ACharacter* playerCharacter) override;
 
 	class AItemRuneBase* SpawnRune(class ACAttachment* attachment, int32 InIndex, UCInventoryComponent* InInventory);
-
+private:
+	UFUNCTION()
+	void OnRep_UpdateContent();
 public:
 	UPROPERTY(BlueprintAssignable, Replicated)
 		FInventoryUpdated OnInventoryUpdated;		// 델리게이트
-	UPROPERTY(BlueprintReadWrite, Replicated)
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = "OnRep_UpdateContent")
 		TArray<FSlot> Content;
 	class AActor* LookAtActor;
 protected:

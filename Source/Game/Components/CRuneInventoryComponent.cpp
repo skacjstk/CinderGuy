@@ -3,6 +3,12 @@
 #include "Items/ItemRuneBase.h"
 #include "Actions/CAttachment.h"
 
+
+UCRuneInventoryComponent::UCRuneInventoryComponent()
+{
+	SetIsReplicatedByDefault(true);
+}
+
 // 룬 검사 및 Equip 호출
 void UCRuneInventoryComponent::TransferSlots(int32 InSourceIndex, UCInventoryComponent* InSourceInventory, int32 InDestinationIndex)
 {
@@ -42,6 +48,7 @@ void UCRuneInventoryComponent::MC_Update_Blueprint()
 			}
 		}		
 	}
+	Super::MC_Update_Blueprint();
 }
 // 모든 룬 장착해제 (저장 불러올 때 호출)
 void UCRuneInventoryComponent::AllRuneUnequip()
