@@ -3,6 +3,13 @@
 #include "CoreMinimal.h"
 
 #define PrintLine() { CLog::Log(__FUNCTION__, __LINE__); }
+#define FUNCTION_NAME (TEXT(" / Function Name : ") + FString(__FUNCTION__)+TEXT(" "))
+#define CURRENT_CLASS (TEXT(" / Class Name : ") + FString(__FUNCTION__).Left(FString(__FUNCTION__).Find(TEXT(":"))) + TEXT(" "))
+#define CURRENT_LINE  (TEXT(" / Line : ") + FString::FromInt(__LINE__) + TEXT(" "))
+#define CURRENT_FUNCSIG (TEXT(" / Func Signature : ") +FString(__FUNCSIG__)+ TEXT(" "))
+#define DEBUG_TEXT_POSITION (FUNCTION_NAME + CURRENT_LINE)
+// Param0Àº FString À¸·Î
+#define DEBUG_TEXT(Param0) (TEXT(Param0) + DEBUG_TEXT_POSITION)
 
 class GAME_API CLog
 {
