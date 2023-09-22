@@ -17,7 +17,7 @@ void UCInventoryComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCInventoryComponent, Content, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCInventoryComponent, Content, COND_None, REPNOTIFY_OnChanged);
 //	DOREPLIFETIME(UCInventoryComponent, Content);
 	DOREPLIFETIME(UCInventoryComponent, OnInventoryUpdated);	// 델리게이트도 리플리케이트 등록이 되겠지?
 }

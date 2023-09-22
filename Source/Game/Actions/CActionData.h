@@ -11,16 +11,13 @@ class GAME_API UCActionData : public UDataAsset
 	GENERATED_BODY()
 		
 public:
-	void BeginPlay(class ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject, int32 Index);	// 얘는 BeginPlay가 없어서 직접 만듬
+	void BeginPlay(class ACharacter* InOwnerCharacter, ACActionObjectContainer** OutObject, int32 Index);	// 얘는 BeginPlay가 없어서 직접 만듬
 private:
 	FString GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName);
 public:
 	//Attachment
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment")
 		TSubclassOf<class ACAttachment> AttachmentClass;	// 무기 Mesh, Attach 담당
-
-
-
 	// Equipment
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
 		TSubclassOf<class ACEquipment> EquipmentClass;	// 무기 내부 장착 몽타주 담당 

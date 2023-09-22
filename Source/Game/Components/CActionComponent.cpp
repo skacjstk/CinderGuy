@@ -15,10 +15,13 @@ void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCActionComponent, Type);
+	DOREPLIFETIME(UCActionComponent, DataObjects);
+//	DOREPLIFETIME_CONDITION_NOTIFY(UCActionComponent, DataObjects, COND_None, REPNOTIFY_OnChanged);
 }
 
 UCActionComponent::UCActionComponent()
 {
+	DataObjects.SetNum((int32)EActionType::Max);
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 }
@@ -28,13 +31,17 @@ void UCActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
-	for (int i = 0; i < (int32)EActionType::Max; ++i)
+	if (!!charcater && charcater->HasAuthority())
 	{
-		if (!!Datas[i])	// 바뀌면 안됨. 생성부분
+		for (int i = 0; i < (int32)EActionType::Max; ++i)
 		{
-			Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
+			if (!!Datas[i])	// 바뀌면 안됨. 생성부분
+			{
+				Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
+			}
 		}
-	}	
+	}
+	
 }
 
 void UCActionComponent::SetUnarmedMode()
@@ -42,7 +49,8 @@ void UCActionComponent::SetUnarmedMode()
 	if(!!DataObjects[(int32)Type] && DataObjects[(int32)Type]->GetEquipment())
 		DataObjects[(int32)Type]->GetEquipment()->Unequip();
 
-	DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
+	if(!!DataObjects[(int32)EActionType::Unarmed])
+		DataObjects[(int32)EActionType::Unarmed]->GetEquipment()->Equip();
 
 	if (GetOwnerRole() != ROLE_SimulatedProxy)
 		Server_ChangeType(EActionType::Unarmed);

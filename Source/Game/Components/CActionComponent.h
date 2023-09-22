@@ -42,10 +42,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintPure)
-		FORCEINLINE class UCActionObjectContainer* GetCurrent() { return DataObjects[(int32)Type]; } // 실제 메모리 데이터로 변경
+		FORCEINLINE class ACActionObjectContainer* GetCurrent() { return DataObjects[(int32)Type]; } // 실제 메모리 데이터로 변경
 	// Anvil, 룬 변경 기능을 위한 배열 전체 반환
 	UFUNCTION(BlueprintPure)
-		class UCActionObjectContainer* GetDataObject(int32 InIndex) { return DataObjects[InIndex]; } // Attachment 가져오기
+		class ACActionObjectContainer* GetDataObject(int32 InIndex) { return DataObjects[InIndex]; } // Attachment 가져오기
 	UFUNCTION(BlueprintPure)
 		int32 GetActionIndex() { return (int32)EActionType::Max; }
 public:
@@ -153,5 +153,5 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 		class UCActionData* Datas[(int32)EActionType::Max];	// DataAsset: 세팅값 포함 
 	UPROPERTY(Replicated)	// 내부 Heap할당 하기 때문에 넣어줌 
-		class UCActionObjectContainer* DataObjects[(int32)EActionType::Max];	// Data 실제 객체
+		TArray<class ACActionObjectContainer*> DataObjects;	// Data 실제 객체
 };

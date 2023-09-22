@@ -8,7 +8,7 @@
 #include "DamageType/DamageTypeBase.h"
 #include "Components/CAttachmentStatusComponent.h"
 
-void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContainer** OutObject, int32 Index)	// CActionComponent 에서 호출
+void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, ACActionObjectContainer** OutObject, int32 Index)	// CActionComponent 에서 호출
 {
 	FTransform transform;
 
@@ -105,12 +105,18 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, UCActionObjectContain
 	}//end if
 	// 최종적으로 UCActionData의 BeginPlay를 호출한 곳의 OutObject에 완성된 결과를 반환. 현재는 CActionComponent::BeginPlay() 에서 호출한다.
 
-	*OutObject = NewObject<UCActionObjectContainer>(InOwnerCharacter);	// 시도: ActionData 의 Owner는 Character
+	FActorSpawnParameters SpawnParams;
+
+	*OutObject = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACActionObjectContainer>(ACActionObjectContainer::StaticClass(), transform, InOwnerCharacter);
+
+//	*OutObject = NewObject<ACActionObjectContainer>(InOwnerCharacter);	// 시도: ActionData 의 Owner는 Character
 	(*OutObject)->SetOwnerCharacter(InOwnerCharacter);
 	(*OutObject)->Attachment = Attachment;
 	(*OutObject)->Equipment = Equipment;
 	(*OutObject)->DoAction = DoAction;		// Friend 먹여놔서 된다. 		
 	(*OutObject)->EquipmentColor = EquipmentColor;
+
+	UGameplayStatics::FinishSpawningActor(*OutObject, FTransform());
 }
 
 FString UCActionData::GetLabelName(class ACharacter* InOwnerCharacter, FString InMiddleName)

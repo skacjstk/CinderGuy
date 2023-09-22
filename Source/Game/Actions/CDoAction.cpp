@@ -10,7 +10,7 @@
 #include "Characters/CPlayer.h"
 
 // Sets default values
-ACDoAction::ACDoAction()
+ACDoAction::ACDoAction() 
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,7 +30,7 @@ bool ACDoAction::GetEquippedFromEquipment()
 	UCActionComponent* ActionComp =	CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
 	if (!!ActionComp)
 	{
-		UCActionObjectContainer* DO = ActionComp->GetDataObject(MyIndex);
+		ACActionObjectContainer* DO = ActionComp->GetDataObject(MyIndex);
 		if (!!DO)
 		{
 			ACEquipment* Equipment = DO->GetEquipment();
@@ -85,7 +85,7 @@ UCAttachmentStatusComponent* ACDoAction::GetCurrentStatus()
 {
 	// 널 검사는 하지말자. 안될리가 없어
 	UCActionComponent* actionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
-	UCActionObjectContainer* container = actionComp->GetCurrent();
+	ACActionObjectContainer* container = actionComp->GetCurrent();
 	return container->GetAttachment()->GetAttachmentStatusComponent();
 }
 

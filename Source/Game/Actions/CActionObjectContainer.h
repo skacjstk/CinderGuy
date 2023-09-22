@@ -102,14 +102,15 @@ public:
 * @ class Action Object Container
 ------------------------------------------------------------------------*/
 UCLASS()
-class GAME_API UCActionObjectContainer : public UObject
+class GAME_API ACActionObjectContainer : public AActor
 {
 	GENERATED_BODY()
 public:
 	friend class UCActionData;	// UCActionData에서 this를 모두 공개한다. 
 	friend class UCAttachmentStatusComponent;
 public:
-	UCActionObjectContainer();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	ACActionObjectContainer();
 	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
 	UFUNCTION(BlueprintPure)
 		FORCEINLINE class ACAttachment* GetAttachment() { return Attachment; }	// Attachment 클래스 가져오기: 이 Attachment 속 Inventory 가져오면 성공
@@ -119,9 +120,13 @@ public:
 	FORCEINLINE void SetOwnerCharacter(class ACharacter* InCharacter) { this->character = InCharacter; }
 
 private:	// 실제 객체
+	UPROPERTY(Replicated)
 	class ACAttachment* Attachment;
+	UPROPERTY(Replicated)
 	class ACEquipment* Equipment;
+	UPROPERTY(Replicated)
 	class ACDoAction* DoAction;
+	UPROPERTY(Replicated)
 	FLinearColor EquipmentColor;
 	class ACharacter* character;
 };
