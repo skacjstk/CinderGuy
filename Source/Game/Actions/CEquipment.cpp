@@ -12,6 +12,7 @@ void ACEquipment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACEquipment, bEquipped);
+	DOREPLIFETIME(ACEquipment, OwnerCharacter);
 }
 
 ACEquipment::ACEquipment()

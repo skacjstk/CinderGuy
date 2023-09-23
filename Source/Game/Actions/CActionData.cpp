@@ -18,22 +18,21 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, ACActionObjectContain
 	UCAttachmentStatusComponent* AttachmentStatusComp = nullptr;
 	ENetRole OwnerRole = InOwnerCharacter->GetLocalRole();
 
-	if (!!AttachmentClass)
+	if (OwnerRole == ROLE_Authority)
 	{
-		Attachment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACAttachment>(AttachmentClass, transform, InOwnerCharacter);
-		Attachment->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "Attachment"))));
+		if (!!AttachmentClass)
+		{
+			Attachment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACAttachment>(AttachmentClass, transform, InOwnerCharacter);
+			Attachment->Tags.Add(FName(*(GetLabelName(InOwnerCharacter, "Attachment"))));
 
-		Attachment->SetRole(OwnerRole);
-		Attachment->bNetUseOwnerRelevancy = true;
+			Attachment->SetRole(OwnerRole);
+			Attachment->bNetUseOwnerRelevancy = true;
 #if WITH_EDITOR
-		Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
+			Attachment->SetActorLabel(GetLabelName(InOwnerCharacter, "Attachment"));
 #endif
-		UGameplayStatics::FinishSpawningActor(Attachment, transform);	// 얘는 상속받은 위치에서 AttachTo 함 
-	}
-	
-
-	//CEquipment 생성: Character 만 World가 있기에 
-
+			UGameplayStatics::FinishSpawningActor(Attachment, transform);	// 얘는 상속받은 위치에서 AttachTo 함 
+		}
+	}	
 
 	if (!!Attachment)
 	{
@@ -48,6 +47,7 @@ void UCActionData::BeginPlay(ACharacter* InOwnerCharacter, ACActionObjectContain
 		}
 	}
 
+	//CEquipment 생성: Character 만 World가 있기에 
 	if (!!EquipmentClass)
 	{
 		Equipment = InOwnerCharacter->GetWorld()->SpawnActorDeferred<ACEquipment>(EquipmentClass, transform, InOwnerCharacter);

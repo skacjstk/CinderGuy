@@ -15,8 +15,8 @@ void UCActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCActionComponent, Type);
-	DOREPLIFETIME(UCActionComponent, DataObjects);
-//	DOREPLIFETIME_CONDITION_NOTIFY(UCActionComponent, DataObjects, COND_None, REPNOTIFY_OnChanged);
+//	DOREPLIFETIME(UCActionComponent, DataObjects);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCActionComponent, DataObjects, COND_None, REPNOTIFY_Always);
 }
 
 UCActionComponent::UCActionComponent()
@@ -31,7 +31,7 @@ void UCActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	ACharacter* charcater = Cast<ACharacter>(GetOwner());
-	if (!!charcater && charcater->HasAuthority())
+//	if (!!charcater && charcater->HasAuthority())
 	{
 		for (int i = 0; i < (int32)EActionType::Max; ++i)
 		{
@@ -40,8 +40,7 @@ void UCActionComponent::BeginPlay()
 				Datas[i]->BeginPlay(charcater, &DataObjects[i], i);	// 만든 결과를 DataObjects에 저장
 			}
 		}
-	}
-	
+	}	
 }
 
 void UCActionComponent::SetUnarmedMode()

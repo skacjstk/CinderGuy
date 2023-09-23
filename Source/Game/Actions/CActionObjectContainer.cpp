@@ -7,8 +7,8 @@ void ACActionObjectContainer::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACActionObjectContainer, Attachment);
-	DOREPLIFETIME(ACActionObjectContainer, Equipment);
-	DOREPLIFETIME(ACActionObjectContainer, DoAction);
+//	DOREPLIFETIME(ACActionObjectContainer, Equipment);
+//	DOREPLIFETIME(ACActionObjectContainer, DoAction);
 	DOREPLIFETIME(ACActionObjectContainer, EquipmentColor);
 }
 ACActionObjectContainer::ACActionObjectContainer()

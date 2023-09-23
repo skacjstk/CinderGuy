@@ -55,7 +55,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FUnequipmentDelegate OnUnequipmentDelegate;
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 		class ACharacter* OwnerCharacter;
 	UPROPERTY(BlueprintReadOnly)
 		class UCStateComponent* State;	// 상태를 Equip으로 변경해야 함 
